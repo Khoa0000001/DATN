@@ -12,7 +12,7 @@ export default function CollHeader({
 }) {
   return (
     <div
-      className={`flex items-center space-x-2 bg-[${color}] rounded-[4px] h-[42px] cursor-pointer`}
+      className={`flex items-center bg-[${color}] rounded-[4px] h-[42px] cursor-pointer`}
     >
       {icon && (
         <div className="h-[42px] items-center flex justify-center w-[36px]">
@@ -21,7 +21,7 @@ export default function CollHeader({
       )}
       <span className="flex flex-col text-[14px] font-[600] pl-[3px] pr-[8px]">
         {titleArray.map((title, index) => (
-          <span key={index} className="block">
+          <span key={index} className="hidden lg:block">
             {title}
           </span>
         ))}

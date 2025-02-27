@@ -8,17 +8,18 @@ import {
   faHouseUser,
   faMoneyBillTransfer,
   faBars,
-  faArrowRightToBracket,
   faHeadset,
   faCartShopping,
   faReceipt,
-  faCircleQuestion,
 } from "@fortawesome/free-solid-svg-icons";
 import Tippy from "@tippyjs/react";
 import CollHeader from "../../components/CollHeader";
 import SearchHeader from "./SearchHeader";
 import BlurFull from "../../components/BlurFull";
 import MenuToggle from "../../components/MenuToggle";
+import LoginRegister from "./LoginRegister";
+import Drawer from "@mui/material/Drawer";
+import MenuMobile from "../../components/MenuMobile";
 
 export default function Header() {
   const dataDichVu = [
@@ -55,9 +56,10 @@ export default function Header() {
   ];
 
   const [menuToggle, setMenuToggle] = useState(false);
+  const [menuMobile, setMenuMobile] = useState(false);
   return (
     <>
-      <div className="flex items-center justify-center bg-[rgb(255,183,67)] z-50 relative">
+      <div className="hidden sm:flex items-center justify-center bg-[rgb(255,183,67)] z-50 relative">
         <a href="">
           <img
             src="https://file.hstatic.net/200000722513/file/banner_ffb743.png"
@@ -66,15 +68,15 @@ export default function Header() {
           />
         </a>
       </div>
-      <div className="bg-[var(--primary-color)] sticky top-0 z-50 shadow-md">
+      <div className="bg-[var(--primary-color)] sticky top-0 z-200 shadow-md">
         <div className="max-w-[1220px] mx-auto flex justify-between items-center bg-[var(--primary-color)] text-[var(--white-color)] p-4">
           {/* Bên trái */}
           <div className="flex items-center space-x-4">
-            <div>Home</div>
+            <div className="hidden lg:block">Home</div>
             <Tippy
               content={
                 <>
-                  <div className="w-full sticky z-50 ">
+                  <div className="sm:w-full sticky z-50">
                     <MenuToggle />
                   </div>
                 </>
@@ -89,7 +91,7 @@ export default function Header() {
               onShow={() => setMenuToggle(true)}
               onHide={() => setMenuToggle(false)}
             >
-              <div>
+              <div className="hidden sm:block">
                 <CollHeader
                   titleArray={["Danh mục"]}
                   icon={faBars}
@@ -99,67 +101,43 @@ export default function Header() {
               </div>
             </Tippy>
           </div>
+          <div className="block sm:hidden" onClick={() => setMenuMobile(true)}>
+            <CollHeader
+              titleArray={["Danh mục"]}
+              icon={faBars}
+              color="#BE1529"
+              sizeIcon="24"
+            />
+          </div>
 
           {/* Bên phải */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 ml-[8px]">
             <SearchHeader />
-            <CollHeader titleArray={["Hotline", "0989880"]} icon={faHeadset} />
-            <CollHeader
-              titleArray={["Kiểm tra", "đơn hàng"]}
-              icon={faReceipt}
-            />
+            <div className="hidden sm:block">
+              <CollHeader
+                titleArray={["Hotline", "0989880"]}
+                icon={faHeadset}
+              />
+            </div>
+            <div>
+              <CollHeader
+                titleArray={["Kiểm tra", "đơn hàng"]}
+                icon={faReceipt}
+              />
+            </div>
             <div className="relative">
               <CollHeader titleArray={["Giỏ", "hàng"]} icon={faCartShopping} />
               <span className="absolute -top-1 left-4 bg-[#FDD835] text-black text-xs font-bold px-1 py-0.15 rounded-full border-2 border-white">
                 1
               </span>
             </div>
-            <div>
-              <Tippy
-                placement="bottom"
-                theme="light"
-                interactive={true}
-                content={
-                  <div className="w-[320px] max-w-[400px] ">
-                    <div className="p-5">
-                      <span className="text-lg font-medium text-black">
-                        Xin chào, vui lòng đăng nhập.
-                      </span>
-                      <div className="flex gap-3 mt-4">
-                        <button className="flex items-center justify-center min-w-[120px] min-h-[30px] px-4 py-2 text-white bg-black border border-black rounded-md font-medium cursor-pointer transition-all hover:bg-gray-800">
-                          Đăng nhập
-                        </button>
-                        <button className="flex items-center justify-center min-w-[120px] min-h-[30px] px-4 py-2 text-black bg-white border border-black rounded-md font-medium cursor-pointer transition-all hover:bg-gray-100">
-                          Đăng ký
-                        </button>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 p-4 border-t border-gray-200">
-                      <FontAwesomeIcon
-                        icon={faCircleQuestion}
-                        className="text-gray-500"
-                      />
-                      <span className="text-gray-600 text-sm cursor-pointer hover:text-black">
-                        Trợ giúp
-                      </span>
-                    </div>
-                  </div>
-                }
-              >
-                <div>
-                  <CollHeader
-                    titleArray={["Đăng nhập"]}
-                    icon={faArrowRightToBracket}
-                    color="#BE1529"
-                    sizeIcon="18"
-                  />
-                </div>
-              </Tippy>
+            <div className="hidden sm:block">
+              <LoginRegister />
             </div>
           </div>
         </div>
       </div>
-      <div className="flex justify-center bg-[var(--white-color)] border-b border-[#E0E0E0]">
+      <div className="hidden sm:flex justify-center bg-[var(--white-color)] border-b border-[#E0E0E0]">
         <ul className="flex flex-wrap gap-4 relative w-full justify-center">
           {dataDichVu.map((item, index, arr) => (
             <li
@@ -183,7 +161,12 @@ export default function Header() {
           ))}
         </ul>
       </div>
-      <div>{menuToggle && <BlurFull />}</div>
+      <div>{menuToggle && <BlurFull zIndex={40} />}</div>
+      <Drawer open={menuMobile} onClose={() => setMenuMobile(false)}>
+        <div className="w-[88vw]">
+          <MenuMobile callBack={() => setMenuMobile(false)} />
+        </div>
+      </Drawer>
     </>
   );
 }
