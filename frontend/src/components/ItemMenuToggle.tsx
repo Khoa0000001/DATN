@@ -1,0 +1,56 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+export default function ItemMenuToggle({
+  title,
+  icon,
+  data,
+}: {
+  title: string;
+  icon: any;
+  data: any[];
+}) {
+  return (
+    <div className="group">
+      <div className="relative">
+        <a className=" cursor-pointer flex items-center py-[2px] px-[16px]  h-[32px] relative hover:bg-[#ea1c04] hover:text-whit transition group-hover:bg-[#ea1c04]">
+          <FontAwesomeIcon
+            icon={icon}
+            className="text-[16px] text-[#333] mr-[10px] group-hover:text-white"
+          />
+          <span className="text-[13px] font-[600] text-[#333] group-hover:text-white">
+            {title}
+          </span>
+          <FontAwesomeIcon
+            icon={faAngleRight}
+            className="text-[16px] text-[#333] ml-auto group-hover:text-white"
+          />
+        </a>
+        {/* Pseudo Element ::before */}
+        <div className="absolute z-20 top-0 right-[-32px] hidden group-hover:block">
+          <div className="w-0 h-0 border-t-[16px] border-t-transparent border-l-[16px] border-l-[#ea1c04] border-b-[15px] border-b-transparent border-r-[16px] border-r-transparent z-10 "></div>
+        </div>
+      </div>
+      <div className="overflow-y-auto custom-scrollbar ml-[10px] absolute z-10 top-0 left-[100%] border-l-[8px] border-[#fff] min-h-[500px] w-[calc(1220px-235px)] max-h-[500px] bg-[#fff] hidden group-hover:block">
+        <div className="grid grid-cols-5 gap-4">
+          {data.map((item, index) => (
+            <div key={index} className=" text-black p-4">
+              <span className="text-[15px] font-[600] text-[#BE1529] block mb-[6px]">
+                {item.title}
+              </span>
+              <ul className="text-[13px] font-[600]">
+                {item.data.map((subItem: { title: string }, index: number) => (
+                  <li
+                    key={index}
+                    className="p-[6px] cursor-pointer hover:text-[var(--primary-color)]"
+                  >
+                    {subItem.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
