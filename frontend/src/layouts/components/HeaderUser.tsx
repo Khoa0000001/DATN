@@ -19,16 +19,7 @@ import BlurFull from "../../components/BlurFull";
 import MenuToggle from "../../components/MenuToggle";
 import LoginRegister from "./LoginRegister";
 import MenuMobile from "../../components/MenuMobile";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Header() {
   const dataDichVu = [
@@ -80,35 +71,43 @@ export default function Header() {
         <div className="bg-[var(--primary-color)] sticky top-0 z-50 shadow-md">
           <div className="max-w-[1220px] mx-auto flex justify-between items-center bg-[var(--primary-color)] text-[var(--white-color)] p-4">
             {/* Bên trái */}
-            <div className="flex items-center space-x-4">
-              <div className="hidden lg:block">Home</div>
-              <Tippy
-                content={
-                  <>
-                    <div className="sm:w-full sticky z-50">
-                      <MenuToggle />
-                    </div>
-                  </>
-                }
-                placement="bottom"
-                theme="light"
-                interactive={true}
-                arrow={false}
-                trigger="click"
-                maxWidth="none"
-                offset={[-60, 80]}
-                onShow={() => setMenuToggle(true)}
-                onHide={() => setMenuToggle(false)}
-              >
-                <div className="hidden sm:block">
-                  <CollHeader
-                    titleArray={["Danh mục"]}
-                    icon={faBars}
-                    color="#BE1529"
-                    sizeIcon="24"
-                  />
-                </div>
-              </Tippy>
+            <div className=" flex items-center space-x-4">
+              <div className="hidden lg:flex items-center gap-2">
+                <img
+                  src="src/assets/image/logoCPT.png"
+                  alt="Logo"
+                  className="w-18 h-10 cursor-pointer"
+                />
+              </div>
+              <div>
+                <Tippy
+                  content={
+                    <>
+                      <div className="sm:w-full sticky z-50">
+                        <MenuToggle />
+                      </div>
+                    </>
+                  }
+                  placement="bottom"
+                  theme="light"
+                  interactive={true}
+                  arrow={false}
+                  trigger="click"
+                  maxWidth="none"
+                  offset={[-40, 80]}
+                  onShow={() => setMenuToggle(true)}
+                  onHide={() => setMenuToggle(false)}
+                >
+                  <div className="hidden  sm:block">
+                    <CollHeader
+                      titleArray={["Danh mục"]}
+                      icon={faBars}
+                      color="#BE1529"
+                      sizeIcon={24}
+                    />
+                  </div>
+                </Tippy>
+              </div>
             </div>
             <div className="block sm:hidden">
               <SheetTrigger>
@@ -116,27 +115,27 @@ export default function Header() {
                   titleArray={["Danh mục"]}
                   icon={faBars}
                   color="#BE1529"
-                  sizeIcon="24"
+                  sizeIcon={24}
                 />
               </SheetTrigger>
             </div>
 
             {/* Bên phải */}
-            <div className="flex items-center ml-[8px]">
+            <div className="flex flex-1 items-center ml-[8px] justify-between">
               <SearchHeader />
-              <div className="hidden sm:block">
+              <div className="hidden sm:block mr-[10px]">
                 <CollHeader
                   titleArray={["Hotline", "0989880"]}
                   icon={faHeadset}
                 />
               </div>
-              <div>
+              <div className="mr-[10px]">
                 <CollHeader
                   titleArray={["Kiểm tra", "đơn hàng"]}
                   icon={faReceipt}
                 />
               </div>
-              <div className="relative">
+              <div className="relative mr-[10px]">
                 <CollHeader
                   titleArray={["Giỏ", "hàng"]}
                   icon={faCartShopping}
@@ -176,15 +175,10 @@ export default function Header() {
           </ul>
         </div>
         <div>{menuToggle && <BlurFull zIndex={40} />}</div>
-
         <SheetContent side="left" className="w-[88vw]">
           <MenuMobile />
         </SheetContent>
       </Sheet>
-
-      {/* <Drawer open={menuMobile} onClose={() => setMenuMobile(false)}>
-        
-      </Drawer> */}
     </>
   );
 }

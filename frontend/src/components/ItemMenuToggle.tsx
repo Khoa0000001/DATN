@@ -30,8 +30,8 @@ export default function ItemMenuToggle({
           <div className="w-0 h-0 border-t-[16px] border-t-transparent border-l-[16px] border-l-[#ea1c04] border-b-[15px] border-b-transparent border-r-[16px] border-r-transparent z-10 "></div>
         </div>
       </div>
-      <div className="overflow-y-auto custom-scrollbar ml-[10px] absolute z-10 top-0 left-[100%] border-l-[8px] border-[#fff] min-h-[500px] w-[calc(1220px-235px)] max-h-[500px] bg-[#fff] hidden group-hover:block">
-        <div className="grid grid-cols-5 gap-4">
+      <div className="overflow-y-auto custom-scrollbar ml-[10px] absolute z-10 top-0 left-[100%] border-l-[8px] border-[#fff] min-h-[500px] w-[calc(85vw-235px)] max-h-[500px] bg-[#fff] hidden group-hover:block">
+        <div className="grid grid-cols-2 lg:grid-cols-5  gap-4">
           {data.map((item, index) => (
             <div key={index} className=" text-black p-4">
               <span className="text-[15px] font-[600] text-[#BE1529] block mb-[6px]">

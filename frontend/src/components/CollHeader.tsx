@@ -3,19 +3,23 @@ export default function CollHeader({
   icon,
   titleArray,
   color,
-  sizeIcon = "24",
+  sizeIcon = 20,
 }: {
   icon?: any;
   titleArray: string[];
   color?: string;
-  sizeIcon?: string;
+  sizeIcon?: number;
 }) {
   return (
     <div
-      className={`flex items-center bg-[${color}] rounded-[4px] h-[42px] cursor-pointer`}
+      className={`flex items-center rounded-[4px] h-[42px] cursor-pointer`}
+      style={{ backgroundColor: color }}
     >
       {icon && (
-        <div className="h-[42px] items-center flex justify-center w-[36px]">
+        <div
+          className="h-[42px] items-center flex justify-center w-[36px]"
+          style={{ fontSize: sizeIcon }}
+        >
           <FontAwesomeIcon icon={icon} className={`text-[${sizeIcon}px]`} />
         </div>
       )}

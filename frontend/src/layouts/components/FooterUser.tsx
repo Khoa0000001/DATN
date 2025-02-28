@@ -1,7 +1,6 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function Footer() {
   return (
-    <footer className=" bg-[#fff]">
+    <footer className="bg-[#fff]">
       <div className="pt-[30px]">
         <div className="max-w-[1220px] mx-[auto] px-[10px]">
           <div className="grid grid-cols-12 gap-4 text-black">

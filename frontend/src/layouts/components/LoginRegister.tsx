@@ -47,7 +47,10 @@ export default function LoginRegister() {
                     </button>
                   </DialogTrigger>
                   <DialogTrigger>
-                    <button className="flex items-center justify-center min-w-[120px] min-h-[30px] px-4 py-2 text-black bg-white border border-black rounded-md font-medium cursor-pointer transition-all hover:bg-gray-100">
+                    <button
+                      onClick={() => setTypeLogin(false)}
+                      className="flex items-center justify-center min-w-[120px] min-h-[30px] px-4 py-2 text-black bg-white border border-black rounded-md font-medium cursor-pointer transition-all hover:bg-gray-100"
+                    >
                       Đăng ký
                     </button>
                   </DialogTrigger>
@@ -70,7 +73,7 @@ export default function LoginRegister() {
               titleArray={["Đăng nhập"]}
               icon={faArrowRightToBracket}
               color="#BE1529"
-              sizeIcon="18"
+              sizeIcon={18}
             />
           </div>
         </Tippy>

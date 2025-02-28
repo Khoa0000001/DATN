@@ -247,7 +247,7 @@ export default function MenuToggle() {
     },
   ];
   return (
-    <div className="w-[216px] bg-[val(--white-color)]">
+    <div className="w-[216px] bg-[#fff] relative">
       {dataFake.map((item, index) => (
         <ItemMenuToggle
           key={index}
