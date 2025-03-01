@@ -42,17 +42,17 @@ export default function LoginRegister() {
                 </span>
                 <div className="flex gap-3 mt-4">
                   <DialogTrigger>
-                    <button className="flex items-center justify-center min-w-[120px] min-h-[30px] px-4 py-2 text-white bg-black border border-black rounded-md font-medium cursor-pointer transition-all hover:bg-gray-800">
+                    <div className="flex items-center justify-center min-w-[120px] min-h-[30px] px-4 py-2 text-white bg-black border border-black rounded-md font-medium cursor-pointer transition-all hover:bg-gray-800">
                       Đăng nhập
-                    </button>
+                    </div>
                   </DialogTrigger>
                   <DialogTrigger>
-                    <button
+                    <div
                       onClick={() => setTypeLogin(false)}
                       className="flex items-center justify-center min-w-[120px] min-h-[30px] px-4 py-2 text-black bg-white border border-black rounded-md font-medium cursor-pointer transition-all hover:bg-gray-100"
                     >
                       Đăng ký
-                    </button>
+                    </div>
                   </DialogTrigger>
                 </div>
               </div>

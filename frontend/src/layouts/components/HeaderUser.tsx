@@ -76,7 +76,7 @@ export default function Header() {
                 <img
                   src="src/assets/image/logoCPT.png"
                   alt="Logo"
-                  className="w-18 h-10 cursor-pointer"
+                  className="w-[140px] h-10 cursor-pointer"
                 />
               </div>
               <div>
@@ -94,7 +94,7 @@ export default function Header() {
                   arrow={false}
                   trigger="click"
                   maxWidth="none"
-                  offset={[-40, 80]}
+                  offset={[-110, 80]}
                   onShow={() => setMenuToggle(true)}
                   onHide={() => setMenuToggle(false)}
                 >
@@ -109,6 +109,7 @@ export default function Header() {
                 </Tippy>
               </div>
             </div>
+            {/* Menu Mobile */}
             <div className="block sm:hidden">
               <SheetTrigger>
                 <CollHeader
@@ -122,7 +123,9 @@ export default function Header() {
 
             {/* Bên phải */}
             <div className="flex flex-1 items-center ml-[8px] justify-between">
-              <SearchHeader />
+              <div className="flex-1 flex justify-center">
+                <SearchHeader />
+              </div>
               <div className="hidden sm:block mr-[10px]">
                 <CollHeader
                   titleArray={["Hotline", "0989880"]}

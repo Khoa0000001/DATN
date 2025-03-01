@@ -23,9 +23,9 @@ export default function CollHeader({
           <FontAwesomeIcon icon={icon} className={`text-[${sizeIcon}px]`} />
         </div>
       )}
-      <span className="flex flex-col text-[14px] font-[600] pl-[3px] pr-[8px]">
+      <span className="flex flex-col text-[14px] font-[600] pl-[3px]">
         {titleArray.map((title, index) => (
-          <span key={index} className="hidden lg:block">
+          <span key={index} className="hidden lg:block  pr-[8px]">
             {title}
           </span>
         ))}

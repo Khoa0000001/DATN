@@ -52,6 +52,162 @@ export default function MenuToggle() {
             },
           ],
         },
+      ],
+    },
+    {
+      title: "Laptop",
+      icon: faBars,
+      data: [
+        {
+          title: "Thương hiệu",
+          data: [
+            {
+              title: "ASUS",
+            },
+            {
+              title: "MSI",
+            },
+            {
+              title: "GL",
+            },
+            {
+              title: "LENOVO",
+            },
+            {
+              title: "TI",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: "Laptop",
+      icon: faBars,
+      data: [
+        {
+          title: "Thương hiệu",
+          data: [
+            {
+              title: "ASUS",
+            },
+            {
+              title: "MSI",
+            },
+            {
+              title: "GL",
+            },
+            {
+              title: "LENOVO",
+            },
+            {
+              title: "TI",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: "Laptop",
+      icon: faBars,
+      data: [
+        {
+          title: "Thương hiệu",
+          data: [
+            {
+              title: "ASUS",
+            },
+            {
+              title: "MSI",
+            },
+            {
+              title: "GL",
+            },
+            {
+              title: "LENOVO",
+            },
+            {
+              title: "TI",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: "Laptop",
+      icon: faBars,
+      data: [
+        {
+          title: "Thương hiệu",
+          data: [
+            {
+              title: "ASUS",
+            },
+            {
+              title: "MSI",
+            },
+            {
+              title: "GL",
+            },
+            {
+              title: "LENOVO",
+            },
+            {
+              title: "TI",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: "Laptop",
+      icon: faBars,
+      data: [
+        {
+          title: "Thương hiệu",
+          data: [
+            {
+              title: "ASUS",
+            },
+            {
+              title: "MSI",
+            },
+            {
+              title: "GL",
+            },
+            {
+              title: "LENOVO",
+            },
+            {
+              title: "TI",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: "Laptop",
+      icon: faBars,
+      data: [
+        {
+          title: "Thương hiệu",
+          data: [
+            {
+              title: "ASUS",
+            },
+            {
+              title: "MSI",
+            },
+            {
+              title: "GL",
+            },
+            {
+              title: "LENOVO",
+            },
+            {
+              title: "TI",
+            },
+          ],
+        },
         {
           title: "Thương hiệu",
           data: [
