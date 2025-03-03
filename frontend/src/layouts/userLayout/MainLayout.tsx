@@ -5,7 +5,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <div className="relative bg-[var(--color-body-bg)]">
       <Header />
-      <div>{children}</div>
+      <div className="pb-[18px]">{children}</div>
       <Footer />
     </div>
   );

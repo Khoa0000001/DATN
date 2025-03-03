@@ -17,7 +17,7 @@ export default function RegisterUser() {
         placeholder="Again password"
         className="p-[10px] mx-[16px] mb-[16px] border border-gray-500"
       />
-      <Button color="#E30019" className="mx-[60px] h-[50px]">
+      <Button color="#E30019" className="mx-[60px] h-[50px] text-white">
         Register
       </Button>
     </div>

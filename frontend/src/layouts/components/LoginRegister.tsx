@@ -95,11 +95,11 @@ export default function LoginRegister() {
                       <span>hoặc đăng nhập bằng</span>
                     </div>
                     <div className="flex gap-2 mt-4 justify-between px-[12px] mb-[24px]">
-                      <Button color="#DF4A32" className="w-[50%]">
+                      <Button color="#DF4A32" className="w-[50%] text-white">
                         <FontAwesomeIcon icon={faGoogle} />
                         <span className="ml-2">Google</span>
                       </Button>
-                      <Button color="#3B5998" className="w-[50%]">
+                      <Button color="#3B5998" className="w-[50%] text-white">
                         <FontAwesomeIcon icon={faFacebookF} />
                         <span className="ml-2">Facebook</span>
                       </Button>

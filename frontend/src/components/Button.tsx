@@ -15,7 +15,7 @@ export default function Button({
 }) {
   return (
     <button
-      className={`hover:opacity-[.8] text-white font-bold py-2 px-4 rounded cursor-pointer flex items-center gap-2 ${className}`}
+      className={`hover:opacity-[.8] font-bold py-2 px-4 rounded cursor-pointer flex items-center justify-center gap-2 ${className}`}
       style={{ backgroundColor: color }}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
