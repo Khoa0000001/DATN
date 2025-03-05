@@ -25,7 +25,7 @@ export default function WrapFlashSale({
           </div>
         </div>
         <div>
-          <h2 className="text-auto ms:text-[26px] font-[900] flex italic">
+          <h2 className="text-auto ms:text-[26px] font-[900] flex italic items-center">
             <img
               className="w-[48px] h-[36px] block"
               src="https://static.vecteezy.com/system/resources/previews/009/663/150/original/thunder-icon-transparent-free-png.png"
