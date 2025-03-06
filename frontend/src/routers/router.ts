@@ -4,6 +4,7 @@ import UserMainLayout from "../layouts/userLayout/MainLayout";
 import HomeUser from "../pages/userPage/Home";
 import HomeAdmin from "../pages/adminPage/Home";
 import ProductPage from "../pages/userPage/Product";
+import CartPage from "../pages/userPage/Cart";
 import NotFound from "../pages/userPage/NotFound";
 
 const publicRoutes = [
@@ -15,6 +16,11 @@ const publicRoutes = [
   {
     path: "/products",
     component: ProductPage,
+    layout: UserMainLayout,
+  },
+  {
+    path: "/carts",
+    component: CartPage,
     layout: UserMainLayout,
   },
   {
