@@ -5,7 +5,8 @@ import HomeUser from "../pages/userPage/Home";
 import HomeAdmin from "../pages/adminPage/Home";
 import ProductPage from "../pages/userPage/Product";
 import CartPage from "../pages/userPage/Cart";
-import listProducts from "@/pages/userPage/ListProducts";
+import ListProducts from "@/pages/userPage/ListProducts";
+import BuildPC from "@/pages/userPage/BuildPC";
 import NotFound from "../pages/userPage/NotFound";
 
 const publicRoutes = [
@@ -26,7 +27,12 @@ const publicRoutes = [
   },
   {
     path: "/listproducts",
-    component: listProducts,
+    component: ListProducts,
+    layout: UserMainLayout,
+  },
+  {
+    path: "/buildpc",
+    component: BuildPC,
     layout: UserMainLayout,
   },
   {

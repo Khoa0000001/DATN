@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   faArrowRightToBracket,
   faCircleQuestion,
-  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { faGoogle, faFacebookF } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -86,35 +85,35 @@ export default function LoginRegister() {
                 </h4>
               </div>
             </DialogTitle>
-            <DialogDescription>
-              <div className="pb-[16px]">
+          </DialogHeader>
+          <DialogDescription>
+            <div className="pb-[16px]">
+              <div>
+                <div>{typeLogin ? <LoginUser /> : <RegisterUser />}</div>
                 <div>
-                  <div>{typeLogin ? <LoginUser /> : <RegisterUser />}</div>
-                  <div>
-                    <div className="flex justify-center items-center mt-4 my-[24px]">
-                      <span>hoặc đăng nhập bằng</span>
-                    </div>
-                    <div className="flex gap-2 mt-4 justify-between px-[12px] mb-[24px]">
-                      <Button color="#DF4A32" className="w-[50%] text-white">
-                        <FontAwesomeIcon icon={faGoogle} />
-                        <span className="ml-2">Google</span>
-                      </Button>
-                      <Button color="#3B5998" className="w-[50%] text-white">
-                        <FontAwesomeIcon icon={faFacebookF} />
-                        <span className="ml-2">Facebook</span>
-                      </Button>
-                    </div>
-                    <div className="text-center flex justify-center cursor-pointer">
-                      Bạn chưa có tài khoản?
-                      <div className="text-blue-500" onClick={handleTypeLogin}>
-                        Đăng ký ngay!
-                      </div>
+                  <div className="flex justify-center items-center mt-4 my-[24px]">
+                    <span>hoặc đăng nhập bằng</span>
+                  </div>
+                  <div className="flex gap-2 mt-4 justify-between px-[12px] mb-[24px]">
+                    <Button color="#DF4A32" className="w-[50%] text-white">
+                      <FontAwesomeIcon icon={faGoogle} />
+                      <span className="ml-2">Google</span>
+                    </Button>
+                    <Button color="#3B5998" className="w-[50%] text-white">
+                      <FontAwesomeIcon icon={faFacebookF} />
+                      <span className="ml-2">Facebook</span>
+                    </Button>
+                  </div>
+                  <div className="text-center flex justify-center cursor-pointer">
+                    Bạn chưa có tài khoản?
+                    <div className="text-blue-500" onClick={handleTypeLogin}>
+                      Đăng ký ngay!
                     </div>
                   </div>
                 </div>
               </div>
-            </DialogDescription>
-          </DialogHeader>
+            </div>
+          </DialogDescription>
         </DialogContent>
       </Dialog>
     </div>

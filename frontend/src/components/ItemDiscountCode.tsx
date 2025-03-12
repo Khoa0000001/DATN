@@ -15,7 +15,7 @@ const ItemDiscountCard: React.FC<ItemDiscountCardProps> = ({
   return (
     <div className="flex items-center border rounded-lg px-[8px] shadow-md w-full max-w-lg">
       <div className="flex items-center justify-center w-16 h-16 rounded-lg">
-        <img src="src/assets/image/DiscountCode.webp" alt="" />
+        <img src="image/DiscountCode.webp" alt="" />
       </div>
       <div className="ml-4 flex-grow">
         <h3 className="text-lg font-semibold">{title}</h3>
