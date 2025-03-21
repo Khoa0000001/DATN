@@ -160,7 +160,7 @@ export default function Counsel() {
                     </div>
                   ))}
                 </div>
-                <div className="flex flex-row-reverse mr-[40px]">
+                <div className="flex flex-row-reverse mr-[40px] mt-[18px]">
                   <div
                     onClick={handleChon}
                     className="text-[#fff] bg-[#e01a1d] p-[20px] cursor-pointer rounded-2xl hover:opacity-[.8]"

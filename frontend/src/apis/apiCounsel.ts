@@ -36,7 +36,7 @@ export const getBuildPCResponse = async (
 
   const prompt = `
 Bạn là một chuyên gia lắp ráp máy tính.  
-Hãy tư vấn cấu hình PC với ngân sách **${budget} VND**, phục vụ cho **${usage}**.  
+Hãy tư vấn cấu hình PC với ngân sách không vượt quá và gần **${budget} VND** nhất , phục vụ cho **${usage}**.  
 
 🛠 **Linh kiện đã có**: ${Object.keys(existingParts)
     .map((item) => `"${item}"`)
