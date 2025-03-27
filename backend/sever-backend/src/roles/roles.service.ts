@@ -1,0 +1,71 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { formatResponse } from '@/utils/response.util';
+
+@Injectable()
+export class RolesService {
+  constructor(private readonly _prisma: PrismaService) {}
+  async create(createRoleDto: CreateRoleDto) {
+    const role = await this._prisma.roles.create({ data: createRoleDto });
+    return formatResponse('This action adds a new role', role);
+  }
+
+  async findAll(page?: number, limit?: number) {
+    const queryOptions: any = {
+      where: {
+        isDeleted: false,
+      },
+    };
+    if (page && limit) {
+      queryOptions.skip = (page - 1) * limit;
+      queryOptions.take = limit;
+    }
+    const roles = await this._prisma.roles.findMany(queryOptions);
+    const totalRoles = await this._prisma.roles.count({
+      where: {
+        isDeleted: false,
+      },
+    });
+    return formatResponse(`This action returns all roles`, roles, {
+      page,
+      limit,
+      total: totalRoles,
+    });
+  }
+
+  async findOne(id: string) {
+    const role = await this._prisma.roles.findUnique({
+      where: {
+        isDeleted: false,
+        id,
+      },
+    });
+    if (!role) throw new NotFoundException('Role not found');
+    return formatResponse(`This action returns a role`, role);
+  }
+
+  async update(id: string, updateRoleDto: UpdateRoleDto) {
+    const role = await this._prisma.roles.update({
+      where: {
+        isDeleted: false,
+        id,
+      },
+      data: updateRoleDto,
+    });
+    if (!role) throw new NotFoundException('Role not found');
+    return formatResponse(`This action updates a role`, role);
+  }
+
+  async remove(id: string) {
+    const role = await this._prisma.roles.update({
+      where: {
+        isDeleted: false,
+        id,
+      },
+      data: { isDeleted: true },
+    });
+    return formatResponse(`This action removes a role`, role);
+  }
+}

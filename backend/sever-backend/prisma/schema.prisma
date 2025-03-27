@@ -7,3 +7,320 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ImportStatus {
+  PENDING
+  COMPLETED
+  CANCELED
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+model Users {
+  id             String      @id @default(uuid())
+  createDate     DateTime    @default(now())
+  updateDate     DateTime    @updatedAt
+  email          String      @unique
+  password       String
+  phone          String?
+  nameUser       String
+  profilePicture String?
+  address        String?
+  isDeleted      Boolean     @default(false)
+  userRoles      UserRoles[]
+  Orders         Orders[]
+  Reviews        Reviews[]
+  Wishlists      Wishlists[]
+  Logs           Logs[]
+  Cart           Cart[]
+
+  @@index([isDeleted, id])
+  @@index([email])
+}
+
+model UserRoles {
+  id         String   @id @default(uuid())
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+  userId     String
+  roleId     String
+  isDeleted  Boolean  @default(false)
+  user       Users    @relation(fields: [userId], references: [id])
+  role       Roles    @relation(fields: [roleId], references: [id])
+
+  @@index([isDeleted, id])
+}
+
+model Roles {
+  id              String            @id @default(uuid())
+  createDate      DateTime          @default(now())
+  updateDate      DateTime          @default(now())
+  nameRole        String
+  description     String?
+  isDeleted       Boolean           @default(false)
+  userRoles       UserRoles[]
+  rolePermissions RolePermissions[]
+
+  @@index([isDeleted, id])
+}
+
+model RolePermissions {
+  id           String      @id @default(uuid())
+  createDate   DateTime    @default(now())
+  updateDate   DateTime    @updatedAt
+  roleId       String
+  permissionId String
+  role         Roles       @relation(fields: [roleId], references: [id])
+  permission   Permissions @relation(fields: [permissionId], references: [id])
+}
+
+model Permissions {
+  id              String            @id @default(uuid())
+  createDate      DateTime          @default(now())
+  updateDate      DateTime          @updatedAt
+  permissionName  String            @unique
+  description     String?
+  rolePermissions RolePermissions[]
+}
+
+model Products {
+  id              String            @id @default(uuid())
+  createDate      DateTime          @default(now())
+  updateDate      DateTime          @updatedAt
+  nameProduct     String
+  price           Float
+  description     String?
+  categoryId      String
+  isDeleted       Boolean           @default(false)
+  category        Categories        @relation(fields: [categoryId], references: [id])
+  productImages   ProductImages[]
+  attributeValues AttributeValues[]
+  importDetails   ImportDetails[]
+  OrderDetails    OrderDetails[]
+  Reviews         Reviews[]
+  Wishlists       Wishlists[]
+  Cart            Cart[]
+
+  @@index([isDeleted, id])
+  @@index([nameProduct])
+}
+
+model Categories {
+  id           String       @id @default(uuid())
+  createDate   DateTime     @default(now())
+  updateDate   DateTime     @updatedAt
+  nameCategory String
+  description  String?
+  isDeleted    Boolean      @default(false)
+  products     Products[]
+  attributes   Attributes[]
+
+  @@index([isDeleted, id])
+}
+
+model ProductImages {
+  id         String   @id @default(uuid())
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+  productId  String
+  imageUrl   String
+  product    Products @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+}
+
+model Attributes {
+  id              String            @id @default(uuid())
+  createDate      DateTime          @default(now())
+  updateDate      DateTime          @updatedAt
+  nameAttribute   String            @unique
+  description     String?
+  attributeValues AttributeValues[]
+  category        Categories        @relation(fields: [categoryId], references: [id])
+  categoryId      String
+
+  @@index([categoryId])
+}
+
+model AttributeValues {
+  id             String     @id @default(uuid())
+  createDate     DateTime   @default(now())
+  updateDate     DateTime   @updatedAt
+  productId      String
+  attributeId    String
+  attributeValue String
+  product        Products   @relation(fields: [productId], references: [id])
+  attribute      Attributes @relation(fields: [attributeId], references: [id])
+
+  @@index([productId])
+  @@index([attributeId])
+}
+
+model Suppliers {
+  id             String           @id @default(uuid())
+  createDate     DateTime         @default(now())
+  updateDate     DateTime         @updatedAt
+  nameSupplier   String
+  address        String
+  email          String
+  phone          String
+  description    String?
+  isDeleted      Boolean          @default(false)
+  importInvoices ImportInvoices[]
+
+  @@index([nameSupplier])
+}
+
+model ImportInvoices {
+  id            String          @id @default(uuid())
+  createDate    DateTime        @default(now())
+  updateDate    DateTime        @default(now())
+  supplierId    String
+  importDate    DateTime
+  totalAmount   Float
+  description   String?
+  status        ImportStatus    @default(PENDING)
+  isDeleted     Boolean         @default(false)
+  supplier      Suppliers       @relation(fields: [supplierId], references: [id])
+  importDetails ImportDetails[]
+
+  @@index([isDeleted, id])
+}
+
+model ImportDetails {
+  id               String         @id @default(uuid())
+  createDate       DateTime       @default(now())
+  updateDate       DateTime       @updatedAt
+  importInvoiceId  String
+  productId        String
+  quantity         Int
+  importPrice      Float
+  totalImportPrice Float
+  description      String?
+  isDeleted        Boolean        @default(false)
+  importInvoice    ImportInvoices @relation(fields: [importInvoiceId], references: [id])
+  product          Products       @relation(fields: [productId], references: [id])
+
+  @@index([isDeleted, id])
+}
+
+model Orders {
+  id             String         @id @default(uuid())
+  createDate     DateTime       @default(now())
+  updateDate     DateTime       @updatedAt
+  userId         String
+  shippingInfo   String // Thông tin giao hàng
+  paymentMethod  String // Phương thức thanh toán
+  shippingMethod String // Phương thức vận chuyển
+  totalAmount    Float
+  status         OrderStatus    @default(PENDING) // Trạng thái đơn hàng
+  isDeleted      Boolean        @default(false)
+  user           Users          @relation(fields: [userId], references: [id])
+  orderDetails   OrderDetails[]
+
+  @@index([isDeleted, id])
+  @@index([userId])
+}
+
+model OrderDetails {
+  id         String   @id @default(uuid())
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+  orderId    String
+  productId  String
+  quantity   Int
+  price      Float
+  totalPrice Float
+  order      Orders   @relation(fields: [orderId], references: [id])
+  product    Products @relation(fields: [productId], references: [id])
+}
+
+model Reviews {
+  id         String   @id @default(uuid())
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+  userId     String
+  productId  String
+  rating     Int // Đánh giá (1-5 sao)
+  comment    String // Bình luận
+  isDeleted  Boolean  @default(false)
+  user       Users    @relation(fields: [userId], references: [id])
+  product    Products @relation(fields: [productId], references: [id])
+
+  @@index([isDeleted, id])
+}
+
+//Phiếu giảm giá
+model Coupons {
+  id         String   @id @default(uuid())
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+  code       String   @unique // Mã giảm giá
+  discount   Float // Phần trăm giảm giá
+  expiryDate DateTime // Ngày hết hạn
+  isActive   Boolean  @default(true)
+}
+
+//Danh sách yêu thích
+model Wishlists {
+  id         String   @id @default(uuid())
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+  userId     String
+  productId  String
+  user       Users    @relation(fields: [userId], references: [id])
+  product    Products @relation(fields: [productId], references: [id])
+}
+
+//Phương thức thanh toán
+model PaymentMethods {
+  id          String   @id @default(uuid())
+  name        String   @unique // Tên phương thức (e.g., Credit Card, PayPal)
+  description String?
+  isActive    Boolean  @default(true)
+  createDate  DateTime @default(now())
+  updateDate  DateTime @updatedAt
+}
+
+//Phương thức vận chuyển
+model ShippingMethods {
+  id          String   @id @default(uuid())
+  name        String   @unique // Tên phương thức (e.g., Standard, Express)
+  cost        Float // Chi phí vận chuyển
+  description String?
+  isActive    Boolean  @default(true)
+  createDate  DateTime @default(now())
+  updateDate  DateTime @updatedAt
+}
+
+model Logs {
+  id          String   @id @default(uuid())
+  createDate  DateTime @default(now())
+  userId      String? // Ai thực hiện hành động (nếu có)
+  action      String // Hành động (e.g., "CREATE_ORDER", "DELETE_PRODUCT")
+  description String // Mô tả chi tiết
+  user        Users?   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Cart {
+  id         String   @id @default(uuid()) // ID của giỏ hàng
+  createDate DateTime @default(now()) // Ngày thêm vào giỏ hàng
+  updateDate DateTime @updatedAt // Ngày cập nhật
+  userId     String // ID người dùng
+  productId  String // ID sản phẩm
+  quantity   Int      @default(1) // Số lượng sản phẩm
+  isDeleted  Boolean  @default(false) // Soft delete (nếu cần)
+  user       Users    @relation(fields: [userId], references: [id]) // Quan hệ với bảng Users
+  product    Products @relation(fields: [productId], references: [id]) // Quan hệ với bảng Products
+
+  @@index([isDeleted, userId])
+  @@index([isDeleted, productId])
+  @@index([isDeleted, id])
+}

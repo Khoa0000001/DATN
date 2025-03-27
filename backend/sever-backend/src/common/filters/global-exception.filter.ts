@@ -15,19 +15,26 @@ export class GlobalExceptionFilter<T> implements ExceptionFilter {
     const status = exception.getStatus();
     const errorResponse = exception.getResponse();
 
-    // Kiểm tra nếu errorResponse là một object, nếu không thì trả về lỗi mặc định
+    // Kiểm tra nếu errorResponse là object, nếu không thì dùng default message
     const errors =
       typeof errorResponse === 'object' && 'errors' in errorResponse
         ? (errorResponse as any).errors
-        : ['Something went wrong'];
+        : 'Something went wrong';
+
+    // Tính executionTime
+    const startTime = request['startTime'] as number;
+    const executionTime = startTime ? `${Date.now() - startTime}ms` : 'N/A';
+    console.log(`⏱️ Execution time: ${executionTime}`);
 
     response.status(status).json({
       success: false,
       statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
       message: exception.message,
       errors: errors,
+      path: request.url,
+      timestamp: new Date().toISOString(),
+      executionTime,
+      api_version: process.env.API_VERSION,
     });
   }
 }

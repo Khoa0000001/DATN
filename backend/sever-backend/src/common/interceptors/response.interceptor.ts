@@ -18,9 +18,10 @@ export class ResponseInterceptor implements NestInterceptor {
         success: true,
         statusCode: response.statusCode,
         ...data,
-        timestamp: new Date().toISOString(),
         path: ctx.getRequest().url,
+        timestamp: new Date().toISOString(),
         executionTime: `${Date.now() - now}ms`,
+        api_version: process.env.API_VERSION,
       })),
     );
   }
