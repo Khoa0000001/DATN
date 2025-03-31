@@ -19,6 +19,9 @@ export class ProductsService {
       where: {
         isDeleted: false,
       },
+      include: {
+        productImages: true, // Join với bảng ProductImages
+      },
     };
     if (page && limit) {
       queryOptions.skip = (page - 1) * limit;
@@ -45,6 +48,35 @@ export class ProductsService {
       },
     });
     return formatResponse(`This action returns a product`, product);
+  }
+
+  async findByCategory(categoryId: string, page?: number, limit?: number) {
+    const queryOptions: any = {
+      where: {
+        isDeleted: false,
+        categoryId,
+      },
+    };
+    if (page && limit) {
+      queryOptions.skip = (page - 1) * limit;
+      queryOptions.take = limit;
+    }
+    const products = await this._prisma.products.findMany(queryOptions);
+    const totalProducts = await this._prisma.products.count({
+      where: {
+        isDeleted: false,
+        categoryId,
+      },
+    });
+    return formatResponse(
+      `This action returns products by category`,
+      products,
+      {
+        page,
+        limit,
+        total: totalProducts,
+      },
+    );
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {

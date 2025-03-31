@@ -25,8 +25,8 @@ export class CreateImportDetailDto {
   totalImportPrice: number;
   @IsString({ message: 'description phải là 1 chuỗi' })
   @IsOptional()
-  description: string;
+  description?: string;
   @IsBoolean({ message: 'isDeleted phải là boolean' })
   @IsOptional()
-  isDeleted: boolean;
+  isDeleted?: boolean;
 }

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { AttributesService } from './attributes.service';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
@@ -26,7 +27,16 @@ export class AttributesController {
   @Get()
   @CheckId('attributes', 'id')
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
-    return this._attributesService.findAll(Number(page), Number(limit));
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    if (page && limit) {
+      if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
+        throw new BadRequestException(
+          'Page and limit must be positive numbers.',
+        );
+      }
+    }
+    return this._attributesService.findAll(pageNum, limitNum);
   }
 
   @Get(':id')

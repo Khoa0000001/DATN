@@ -54,13 +54,27 @@ export class CheckIdGuard implements CanActivate {
       throw new InternalServerErrorException(`Model ${table} không hợp lệ`);
     }
 
-    const record = await model.findUnique({ where: { id } });
+    // Kiểm tra xem bảng có cột `isDeleted` không
+    const hasIsDeleted = await this._prisma.$queryRawUnsafe<boolean>(
+      `SELECT COUNT(*) > 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = 'isDeleted'`,
+      table,
+    );
+
+    // Điều kiện tìm kiếm
+    const whereCondition: any = { id };
+    if (hasIsDeleted) {
+      whereCondition.isDeleted = false;
+    }
+
+    const record = await model.findUnique({ where: whereCondition });
 
     if (!record) {
       this.logger.warn(
-        `ID "${id}" không tồn tại trong bảng "${table}". Request từ IP: ${request.ip}`,
+        `ID "${id}" không tồn tại hoặc đã bị xóa trong bảng "${table}". Request từ IP: ${request.ip}`,
       );
-      throw new NotFoundException(`ID ${id} không tồn tại trong bảng ${table}`);
+      throw new NotFoundException(
+        `ID ${id} không tồn tại hoặc đã bị xóa trong bảng ${table}`,
+      );
     }
 
     return true;

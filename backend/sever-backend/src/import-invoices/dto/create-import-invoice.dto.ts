@@ -21,12 +21,12 @@ export class CreateImportInvoiceDto {
   importDate: Date;
   @IsString({ message: 'description phải là 1 chuỗi' })
   @IsOptional()
-  description: string;
+  description?: string;
   @IsEnum(ImportStatus, {
     message: 'status phải là PENDING,  COMPLETED, hoặc CANCELED',
   })
   status?: ImportStatus;
   @IsBoolean({ message: 'isDeleted phải là boolean' })
   @IsOptional()
-  isDeleted: boolean;
+  isDeleted?: boolean;
 }

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProductImagesService } from './product-images.service';
 import { CreateProductImageDto } from './dto/create-product-image.dto';
@@ -25,7 +26,16 @@ export class ProductImagesController {
 
   @Get()
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
-    return this._productImagesService.findAll(Number(page), Number(limit));
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    if (page && limit) {
+      if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
+        throw new BadRequestException(
+          'Page and limit must be positive numbers.',
+        );
+      }
+    }
+    return this._productImagesService.findAll(pageNum, limitNum);
   }
 
   @Get(':id')

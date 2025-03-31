@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { RolePermissionsService } from './role-permissions.service';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
@@ -28,7 +29,16 @@ export class RolePermissionsController {
 
   @Get()
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
-    return this._rolePermissionsService.findAll(Number(page), Number(limit));
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    if (page && limit) {
+      if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
+        throw new BadRequestException(
+          'Page and limit must be positive numbers.',
+        );
+      }
+    }
+    return this._rolePermissionsService.findAll(pageNum, limitNum);
   }
 
   @Get(':id')

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { OrderDetailsService } from './order-details.service';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
@@ -26,7 +27,16 @@ export class OrderDetailsController {
 
   @Get()
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
-    return this._orderDetailsService.findAll(Number(page), Number(limit));
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    if (page && limit) {
+      if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
+        throw new BadRequestException(
+          'Page and limit must be positive numbers.',
+        );
+      }
+    }
+    return this._orderDetailsService.findAll(pageNum, limitNum);
   }
 
   @Get(':id')

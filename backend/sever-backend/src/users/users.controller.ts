@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -24,7 +25,16 @@ export class UsersController {
 
   @Get()
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
-    return this._usersService.findAll(Number(page), Number(limit));
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    if (page && limit) {
+      if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
+        throw new BadRequestException(
+          'Page and limit must be positive numbers.',
+        );
+      }
+    }
+    return this._usersService.findAll(pageNum, limitNum);
   }
 
   @Get(':id')

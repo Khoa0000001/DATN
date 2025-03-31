@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ValidationModule } from '@/validators/validation.module';
 import { UsersModule } from './users/users.module';
-import { CartModule } from './cart/cart.module';
 import { LogsModule } from './logs/logs.module';
 import { ShippingMethodsModule } from './shipping-methods/shipping-methods.module';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
@@ -23,6 +22,7 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { RolePermissionsModule } from './role-permissions/role-permissions.module';
 import { RolesModule } from './roles/roles.module';
 import { UserRolesModule } from './user-roles/user-roles.module';
+import { CartsModule } from './carts/carts.module';
 
 @Module({
   imports: [
@@ -49,7 +49,7 @@ import { UserRolesModule } from './user-roles/user-roles.module';
     PaymentMethodsModule,
     ShippingMethodsModule,
     LogsModule,
-    CartModule,
+    CartsModule,
   ],
 })
 export class AppModule {}

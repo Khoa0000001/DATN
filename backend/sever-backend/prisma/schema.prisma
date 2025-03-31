@@ -37,7 +37,7 @@ model Users {
   Reviews        Reviews[]
   Wishlists      Wishlists[]
   Logs           Logs[]
-  Cart           Cart[]
+  Carts          Carts[]
 
   @@index([isDeleted, id])
   @@index([email])
@@ -104,7 +104,7 @@ model Products {
   OrderDetails    OrderDetails[]
   Reviews         Reviews[]
   Wishlists       Wishlists[]
-  Cart            Cart[]
+  Carts           Carts[]
 
   @@index([isDeleted, id])
   @@index([nameProduct])
@@ -309,7 +309,7 @@ model Logs {
   @@index([userId])
 }
 
-model Cart {
+model Carts {
   id         String   @id @default(uuid()) // ID của giỏ hàng
   createDate DateTime @default(now()) // Ngày thêm vào giỏ hàng
   updateDate DateTime @updatedAt // Ngày cập nhật

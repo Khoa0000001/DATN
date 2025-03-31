@@ -15,8 +15,8 @@ export class CreateSupplierDto {
   email: string;
   @IsString({ message: 'Description thuế nhà cung cấp phải là 1 chuỗi' })
   @IsOptional()
-  description: string;
+  description?: string;
   @IsBoolean({ message: 'isDeleted phải là boolean' })
   @IsOptional()
-  isDeleted: boolean;
+  isDeleted?: boolean;
 }

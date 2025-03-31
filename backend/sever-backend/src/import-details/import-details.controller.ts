@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { ImportDetailsService } from './import-details.service';
 import { CreateImportDetailDto } from './dto/create-import-detail.dto';
@@ -26,7 +27,16 @@ export class ImportDetailsController {
 
   @Get()
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
-    return this._importDetailsService.findAll(Number(page), Number(limit));
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    if (page && limit) {
+      if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
+        throw new BadRequestException(
+          'Page and limit must be positive numbers.',
+        );
+      }
+    }
+    return this._importDetailsService.findAll(pageNum, limitNum);
   }
 
   @Get(':id')

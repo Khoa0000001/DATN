@@ -6,7 +6,7 @@ import { GlobalExceptionFilter } from '@/common/filters/global-exception.filter'
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 import { TrimPipe } from '@/common/pipes/trim.pipe';
 import { ValidationPipe as ValidationPipeCtm } from '@/common/pipes/validation.pipe';
-import { LoggerMiddleware } from '@/common/middleware/logger.middleware';
+// import { LoggerMiddleware } from '@/common/middleware/logger.middleware';
 import { ExecutionTimeMiddleware } from '@/common/middleware/execution-time.middleware';
 import { useContainer } from 'class-validator';
 

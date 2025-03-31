@@ -1,26 +1,57 @@
 import { Injectable } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { formatResponse } from '@/utils/response.util';
 
 @Injectable()
 export class ReviewsService {
-  create(createReviewDto: CreateReviewDto) {
-    return 'This action adds a new review';
+  constructor(private readonly _prisma: PrismaService) {}
+  async create(createReviewDto: CreateReviewDto) {
+    const review = await this._prisma.reviews.create({
+      data: createReviewDto,
+    });
+    return formatResponse('review created successfully', review);
   }
 
-  findAll() {
-    return `This action returns all reviews`;
+  async findAll(page?: number, limit?: number) {
+    const queryOptions: any = {
+      where: { isDeleted: false },
+    };
+    if (page && limit) {
+      queryOptions.skip = (page - 1) * limit;
+    }
+    const reviews = await this._prisma.reviews.findMany(queryOptions);
+    const totalReviews = await this._prisma.reviews.count({
+      where: { isDeleted: false },
+    });
+    return formatResponse('This action returns all reviews', reviews, {
+      page,
+      limit,
+      total: totalReviews,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} review`;
+  async findOne(id: string) {
+    const review = await this._prisma.reviews.findUnique({
+      where: { isDeleted: false, id },
+    });
+    return formatResponse('This action returns a product', review);
   }
 
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
+  async update(id: string, updateReviewDto: UpdateReviewDto) {
+    const review = await this._prisma.reviews.update({
+      where: { isDeleted: false, id },
+      data: updateReviewDto,
+    });
+    return formatResponse('review updated successfully', review);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
+  async remove(id: string) {
+    const review = await this._prisma.reviews.update({
+      where: { isDeleted: false, id },
+      data: { isDeleted: true },
+    });
+    return formatResponse('This action removes a review', review);
   }
 }

@@ -8,19 +8,18 @@ import {
 
 export class CreateProductDto {
   @IsNotEmpty({ message: 'Tên sản phẩm không được để trống' })
-  @IsString({ message: 'Tên sản phẩm phải là 1 chu��i' })
+  @IsString({ message: 'Tên sản phẩm phải là 1 chuỗi' })
   nameProduct: string;
   @IsNotEmpty({ message: 'Giá sản phẩm không được để trống' })
   @IsNumber({}, { message: 'price phải là 1 số' })
   price: number;
-  @IsNotEmpty({ message: 'Giá sản phẩm không được để trống' })
-  @IsString({ message: 'Mô tả sản phẩm phải là 1 chu��i' })
+  @IsString({ message: 'Mô tả sản phẩm phải là 1 chuỗi' })
   @IsOptional()
-  descriptionProduct: string;
-  @IsNotEmpty({ message: 'Giá sản phẩm không được để trống' })
+  description?: string;
+  @IsNotEmpty({ message: 'categoryId không được để trống' })
+  @IsString({ message: 'categoryId phải là 1 chuỗi' })
+  categoryId: string;
   @IsBoolean({ message: 'isDeleted phải là boolean' })
   @IsOptional()
-  isDeleted: boolean;
-  @IsNotEmpty({ message: 'Giá sản phẩm không được để trống' })
-  categoryId: string;
+  isDeleted?: boolean;
 }

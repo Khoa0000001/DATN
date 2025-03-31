@@ -9,5 +9,5 @@ export class CreateUserRoleDto {
   roleId: string;
   @IsBoolean({ message: 'isDeleted phải là boolean' })
   @IsOptional()
-  isDeleted: boolean;
+  isDeleted?: boolean;
 }
