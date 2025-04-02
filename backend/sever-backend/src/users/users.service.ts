@@ -3,13 +3,19 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { formatResponse } from '@/utils/response.util';
+import { hashPassword } from '@/utils/auths.util';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly _prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
+    const newCreateUserDto: CreateUserDto = {
+      ...createUserDto,
+      password: hashPassword(createUserDto.password),
+    };
+    console.log(newCreateUserDto);
     const user = await this._prisma.users.create({
-      data: createUserDto,
+      data: newCreateUserDto,
     });
     return formatResponse('User created successfully', user);
   }
@@ -52,10 +58,22 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    const user = await this._prisma.users.update({
-      where: { id },
-      data: { isDeleted: true },
-    });
-    return formatResponse(`This action removes user`, user);
+    const [hasRelatedOrders] = await Promise.all([
+      this._prisma.orders.count({
+        where: { userId: id },
+      }),
+    ]);
+    if (hasRelatedOrders > 0) {
+      const user = await this._prisma.users.update({
+        where: { id },
+        data: { isDeleted: true },
+      });
+      return formatResponse(`This action removes user`, user);
+    } else {
+      const user = await this._prisma.users.delete({
+        where: { id },
+      });
+      return formatResponse(`This action removes user`, user);
+    }
   }
 }
