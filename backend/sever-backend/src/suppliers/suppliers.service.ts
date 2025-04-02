@@ -53,10 +53,24 @@ export class SuppliersService {
   }
 
   async remove(id: string) {
-    const supplier = await this._prisma.suppliers.update({
-      where: { isDeleted: false, id },
-      data: { isDeleted: true },
-    });
-    return formatResponse(`This action removes supplier`, supplier);
+    const [hasRelatedImportInvoices] = await Promise.all([
+      this._prisma.importInvoices.count({
+        where: {
+          supplierId: id,
+        },
+      }),
+    ]);
+    if (hasRelatedImportInvoices > 0) {
+      const supplier = await this._prisma.suppliers.update({
+        where: { isDeleted: false, id },
+        data: { isDeleted: true },
+      });
+      return formatResponse(`This action removes supplier`, supplier);
+    } else {
+      const supplier = await this._prisma.suppliers.delete({
+        where: { id },
+      });
+      return formatResponse(`This action removes supplier`, supplier);
+    }
   }
 }

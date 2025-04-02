@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsBoolean,
   IsOptional,
+  IsPhoneNumber,
 } from 'class-validator';
 import { IsUnique } from '@/common/Decorators/is-unique.decorator';
 export class CreateUserDto {
@@ -12,7 +13,10 @@ export class CreateUserDto {
   nameUser: string;
 
   @IsNotEmpty({ message: 'Email không được để trống' })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
+  @IsEmail(
+    { require_tld: true },
+    { message: 'Email nhà cung cấp phải đúng đạnh dạng email' },
+  )
   @IsUnique('users', {
     message: 'Email đã tồn tại trong hệ thống',
   })
@@ -23,6 +27,9 @@ export class CreateUserDto {
   password: string;
 
   @IsString({ message: 'phone không được để trống' })
+  @IsPhoneNumber('VN', {
+    message: 'phone nhà cung cấp phải đúng đạnh dạng phone VN',
+  })
   @IsOptional()
   phone?: string;
 

@@ -43,7 +43,7 @@ export class ProductsController {
     return this._productsService.findOne(id);
   }
 
-  @Get('/categories/:categoryId')
+  @Get('/category/:categoryId')
   @CheckId('categories', 'categoryId')
   findByCategory(
     @Param('categoryId') categoryId: string,

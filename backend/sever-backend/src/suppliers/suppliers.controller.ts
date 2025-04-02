@@ -38,13 +38,13 @@ export class SuppliersController {
   }
 
   @Get(':id')
-  @CheckId('supplies', 'id')
+  @CheckId('suppliers', 'id')
   findOne(@Param('id') id: string) {
     return this._suppliersService.findOne(id);
   }
 
   @Patch(':id')
-  @CheckId('supplies', 'id')
+  @CheckId('suppliers', 'id')
   update(
     @Param('id') id: string,
     @Body() updateSupplierDto: UpdateSupplierDto,
@@ -53,7 +53,7 @@ export class SuppliersController {
   }
 
   @Delete(':id')
-  @CheckId('supplies', 'id')
+  @CheckId('suppliers', 'id')
   remove(@Param('id') id: string) {
     return this._suppliersService.remove(id);
   }

@@ -25,7 +25,6 @@ export class AttributesController {
   }
 
   @Get()
-  @CheckId('attributes', 'id')
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
     const pageNum = Number(page);
     const limitNum = Number(limit);

@@ -53,10 +53,35 @@ export class CategoriesService {
   }
 
   async remove(id: string) {
-    const category = await this._prisma.categories.update({
-      where: { isDeleted: false, id },
-      data: { isDeleted: true },
-    });
-    return formatResponse(`This action removes a category`, category);
+    const [hasRelatedProducts, hasRelatedAttributes] = await Promise.all([
+      this._prisma.products.count({
+        where: { categoryId: id },
+      }),
+      this._prisma.attributes.count({
+        where: { categoryId: id },
+      }),
+    ]);
+
+    if (hasRelatedProducts > 0 && hasRelatedAttributes > 0) {
+      const [category, ,] = await Promise.all([
+        this._prisma.categories.update({
+          where: { isDeleted: false, id },
+          data: { isDeleted: true },
+        }),
+        this._prisma.attributes.deleteMany({
+          where: { categoryId: id },
+        }),
+        this._prisma.products.updateMany({
+          where: { categoryId: id },
+          data: { isDeleted: true },
+        }),
+      ]);
+      return formatResponse(`This action removes a category`, category);
+    } else {
+      const category = await this._prisma.categories.delete({
+        where: { isDeleted: false, id },
+      });
+      return formatResponse(`This action removes a category`, category);
+    }
   }
 }

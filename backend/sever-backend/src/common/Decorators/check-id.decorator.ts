@@ -56,13 +56,14 @@ export class CheckIdGuard implements CanActivate {
 
     // Kiểm tra xem bảng có cột `isDeleted` không
     const hasIsDeleted = await this._prisma.$queryRawUnsafe<boolean>(
-      `SELECT COUNT(*) > 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = 'isDeleted'`,
+      `SELECT COUNT(*) > 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = 'isDeleted' AND TABLE_SCHEMA = DATABASE()`,
       table,
     );
+    const isDeletedColumnExists = hasIsDeleted[0]['COUNT(*) > 0'] === 1n;
 
     // Điều kiện tìm kiếm
     const whereCondition: any = { id };
-    if (hasIsDeleted) {
+    if (isDeletedColumnExists) {
       whereCondition.isDeleted = false;
     }
 

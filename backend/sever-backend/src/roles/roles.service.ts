@@ -59,13 +59,22 @@ export class RolesService {
   }
 
   async remove(id: string) {
-    const role = await this._prisma.roles.update({
-      where: {
-        isDeleted: false,
-        id,
-      },
-      data: { isDeleted: true },
-    });
+    const [role] = await Promise.all([
+      this._prisma.roles.update({
+        where: {
+          isDeleted: false,
+          id,
+        },
+        data: { isDeleted: true },
+      }),
+      this._prisma.userRoles.updateMany({
+        where: {
+          roleId: id,
+        },
+        data: { isDeleted: true },
+      }),
+    ]);
+
     return formatResponse(`This action removes a role`, role);
   }
 }

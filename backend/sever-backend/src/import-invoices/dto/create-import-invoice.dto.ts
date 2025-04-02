@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsDate,
   IsEnum,
+  IsDateString,
 } from 'class-validator';
 import { ImportStatus } from '@prisma/client';
 
@@ -17,7 +18,7 @@ export class CreateImportInvoiceDto {
   @IsNumber({}, { message: 'totalAmount phải là 1 số' })
   totalAmount: number;
   @IsNotEmpty({ message: 'importDate không được để trống' })
-  @IsDate({ message: 'importDate phải là 1 ngày' })
+  @IsDateString({}, { message: 'importDate phải là 1 ngày' })
   importDate: Date;
   @IsString({ message: 'description phải là 1 chuỗi' })
   @IsOptional()
@@ -25,6 +26,7 @@ export class CreateImportInvoiceDto {
   @IsEnum(ImportStatus, {
     message: 'status phải là PENDING,  COMPLETED, hoặc CANCELED',
   })
+  @IsOptional()
   status?: ImportStatus;
   @IsBoolean({ message: 'isDeleted phải là boolean' })
   @IsOptional()

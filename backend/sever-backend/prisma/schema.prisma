@@ -76,7 +76,7 @@ model RolePermissions {
   roleId       String
   permissionId String
   role         Roles       @relation(fields: [roleId], references: [id])
-  permission   Permissions @relation(fields: [permissionId], references: [id])
+  permission   Permissions @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 }
 
 model Permissions {
@@ -129,7 +129,7 @@ model ProductImages {
   updateDate DateTime @updatedAt
   productId  String
   imageUrl   String
-  product    Products @relation(fields: [productId], references: [id])
+  product    Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
 }
@@ -141,7 +141,7 @@ model Attributes {
   nameAttribute   String            @unique
   description     String?
   attributeValues AttributeValues[]
-  category        Categories        @relation(fields: [categoryId], references: [id])
+  category        Categories        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId      String
 
   @@index([categoryId])
@@ -154,8 +154,8 @@ model AttributeValues {
   productId      String
   attributeId    String
   attributeValue String
-  product        Products   @relation(fields: [productId], references: [id])
-  attribute      Attributes @relation(fields: [attributeId], references: [id])
+  product        Products   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attribute      Attributes @relation(fields: [attributeId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([attributeId])
@@ -249,8 +249,8 @@ model Reviews {
   rating     Int // Đánh giá (1-5 sao)
   comment    String // Bình luận
   isDeleted  Boolean  @default(false)
-  user       Users    @relation(fields: [userId], references: [id])
-  product    Products @relation(fields: [productId], references: [id])
+  user       Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product    Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([isDeleted, id])
 }
@@ -273,8 +273,8 @@ model Wishlists {
   updateDate DateTime @updatedAt
   userId     String
   productId  String
-  user       Users    @relation(fields: [userId], references: [id])
-  product    Products @relation(fields: [productId], references: [id])
+  user       Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product    Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 //Phương thức thanh toán
@@ -317,8 +317,8 @@ model Carts {
   productId  String // ID sản phẩm
   quantity   Int      @default(1) // Số lượng sản phẩm
   isDeleted  Boolean  @default(false) // Soft delete (nếu cần)
-  user       Users    @relation(fields: [userId], references: [id]) // Quan hệ với bảng Users
-  product    Products @relation(fields: [productId], references: [id]) // Quan hệ với bảng Products
+  user       Users    @relation(fields: [userId], references: [id], onDelete: Cascade) // Quan hệ với bảng Users
+  product    Products @relation(fields: [productId], references: [id], onDelete: Cascade) // Quan hệ với bảng Products
 
   @@index([isDeleted, userId])
   @@index([isDeleted, productId])
