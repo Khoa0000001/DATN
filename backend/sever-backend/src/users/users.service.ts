@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -13,11 +18,13 @@ export class UsersService {
       ...createUserDto,
       password: hashPassword(createUserDto.password),
     };
-    console.log(newCreateUserDto);
     const user = await this._prisma.users.create({
       data: newCreateUserDto,
     });
-    return formatResponse('User created successfully', user);
+    return formatResponse(
+      'User created successfully with isVerified is false',
+      user,
+    );
   }
 
   async findAll(page?: number, limit?: number) {
@@ -45,8 +52,54 @@ export class UsersService {
     const user = await this._prisma.users.findUnique({
       where: { isDeleted: false, id },
     });
+    return formatResponse(`This action returns user`, user);
+  }
+
+  async findByEmail(email: string) {
+    const user = await this._prisma.users.findUnique({
+      where: { isDeleted: false, email },
+    });
     if (!user) throw new NotFoundException('User not found');
     return formatResponse(`This action returns user`, user);
+  }
+
+  async getValidPayLoadToken(email: string) {
+    const user = await this._prisma.users.findFirst({
+      where: { email, isDeleted: false },
+      include: {
+        userRoles: {
+          where: { isDeleted: false },
+          include: {
+            role: {
+              include: {
+                rolePermissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!user) {
+      throw new UnauthorizedException(
+        'Email không chính xác hoặc tài khoản đã bị khóa!',
+      );
+    }
+    return formatResponse(`This action getValidPayLoadToken user`, user);
+  }
+
+  async checkIsVerified(email: string) {
+    const user = await this._prisma.users.findUnique({
+      where: { email, isDeleted: false },
+    });
+
+    if (!user?.isVerified) {
+      throw new ForbiddenException('Email chưa được xác thực!');
+    }
+    return formatResponse(`This action checkIsVerified user`, user);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

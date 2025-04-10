@@ -32,6 +32,8 @@ model Users {
   profilePicture String?
   address        String?
   isDeleted      Boolean     @default(false)
+  isVerified    Boolean     @default(false) // Trạng thái xác thực email
+  verificationCode String? // Mã xác thực email
   userRoles      UserRoles[]
   Orders         Orders[]
   Reviews        Reviews[]

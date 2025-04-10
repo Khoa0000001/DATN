@@ -1,13 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from './jwt/jwt.service';
-import { Users } from '@prisma/client';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { isValidPassword } from '@/utils/auths.util';
 import { UsersService } from '@/users/users.service';
+import { MailService } from '@/mail/mail.service';
 import { formatResponse } from '@/utils/response.util';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+import * as ms from 'ms';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -15,26 +19,36 @@ export class AuthService {
     private readonly _prisma: PrismaService,
     private readonly _jwtService: JwtService,
     private readonly _userService: UsersService,
+    private readonly _configService: ConfigService,
+    private readonly _mailService: MailService, // Giả sử bạn có một service gửi mail
   ) {}
 
-  async validateUser(email: string, password: string): Promise<Users | null> {
-    const user = await this._prisma.users.findUnique({
-      where: { email },
-    });
-    if (!user) throw new UnauthorizedException('Email không chính xác !');
+  async validateUser(email: string, password: string): Promise<any> {
+    await this._userService.checkIsVerified(email);
+    const user = (await this._userService.getValidPayLoadToken(email)).data;
 
-    if (user && isValidPassword(password, user.password)) {
-      return user;
+    if (!isValidPassword(password, user.password)) {
+      throw new UnauthorizedException('Mật khẩu không chính xác!');
     }
-    return null;
+
+    // ✅ Lọc role đã bị xoá (nếu có)
+    const validRoles = user.userRoles.filter((ur) => !ur.role.isDeleted);
+
+    const permissions = validRoles.flatMap((ur) =>
+      ur.role.rolePermissions.map((rp) => rp.permission.permissionName),
+    );
+
+    const roles = validRoles.map((ur) => ur.role.nameRole);
+
+    return {
+      ...user,
+      permissions,
+      roles,
+    };
   }
 
-  async login(loginDto: LoginDto): Promise<any> {
+  async login(loginDto: LoginDto, res: Response): Promise<any> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
-
-    if (!user) {
-      throw new UnauthorizedException('Password không chính xác!');
-    }
 
     const payload: JwtPayload = {
       email: user.email,
@@ -42,24 +56,45 @@ export class AuthService {
       phone: user.phone,
       address: user.address,
       profilePicture: user.profilePicture,
+      roles: user.roles,
+      permissions: user.permissions,
     };
     const accessToken = this._jwtService.generateAccessToken(payload);
     const refreshToken = this._jwtService.generateRefreshToken(payload);
 
+    const expiresRefeshStr = this._configService.get<string>(
+      'JWT_REFRESH_EXPIRES',
+    );
+    const expiresRefresh = ms(expiresRefeshStr);
+    // Lưu refresh token vào cookie với HTTP-only để tăng bảo mật
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, // Không thể truy cập bằng JavaScript (bảo mật hơn)
+      secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS nếu chạy production
+      sameSite: 'strict', // Ngăn chặn tấn công CSRF
+      maxAge: expiresRefresh,
+    });
+
     return formatResponse('Login successfully', {
       access_token: accessToken,
-      refresh_token: refreshToken,
-      email: user.email,
-      nameUser: user.nameUser,
-      phone: user.phone,
-      address: user.address,
-      profilePicture: user.profilePicture,
+      user_info: {
+        email: user.email,
+        nameUser: user.nameUser,
+        phone: user.phone,
+        address: user.address,
+        profilePicture: user.profilePicture,
+        roles: user.roles,
+      },
     });
   }
   async register(registerDto: RegisterDto) {
-    const user = await this._userService.create(registerDto);
+    const code = randomBytes(3).toString('hex');
+    const user = await this._userService.create({
+      ...registerDto,
+      verificationCode: code,
+    });
+    await this._mailService.sendVerificationLink(user.data.email, code);
     return user
-      ? formatResponse('Register successfully', {
+      ? formatResponse('Vui lòng kiểm tra email để xác thực tài khoản', {
           email: registerDto.email,
           nameUser: registerDto.nameUser,
         })
@@ -68,15 +103,56 @@ export class AuthService {
           nameUser: registerDto.nameUser,
         });
   }
-  refreshToken(oldRefreshToken: string) {
+
+  async verifyEmail(email: string, code: string, res: Response) {
+    const user = (await this._userService.findByEmail(email)).data;
+    let redirectUrl = '';
+    const frontendUrl =
+      this._configService.get<string>('FRONTEND_URL') ||
+      'http://localhost:3000';
+
+    if (!user || user.verificationCode !== code) {
+      redirectUrl = `${frontendUrl}/login?verified=false`;
+      res.redirect(redirectUrl);
+      return formatResponse('Xác thực thất bại', { success: false });
+    }
+
+    await this._userService.update(user?.id, {
+      isVerified: true,
+      verificationCode: '',
+    });
+
+    redirectUrl = `${frontendUrl}/login?verified=true`;
+    res.redirect(redirectUrl);
+    return formatResponse('Tài khoản đã được xác thực', { success: true });
+  }
+
+  refreshToken(req: Request, res: Response) {
     try {
+      const oldRefreshToken = req.cookies['refreshToken'];
       const payload = this._jwtService.verifyRefreshToken(oldRefreshToken);
+      delete payload.exp;
+      delete payload.iat;
       const newAccessToken = this._jwtService.generateAccessToken(payload);
       const newRefreshToken = this._jwtService.generateRefreshToken(payload);
 
-      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+      const expiresRefeshStr = this._configService.get<string>(
+        'JWT_REFRESH_EXPIRES',
+      );
+      const expiresRefresh = ms(expiresRefeshStr);
+      // Lưu refresh token vào cookie với HTTP-only để tăng bảo mật
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true, // Không thể truy cập bằng JavaScript (bảo mật hơn)
+        secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS nếu chạy production
+        sameSite: 'strict', // Ngăn chặn tấn công CSRF
+        maxAge: expiresRefresh,
+      });
+
+      return formatResponse('RefreshToken successfully', {
+        accessToken: newAccessToken,
+      });
     } catch (error) {
-      console.log(error);
+      Logger.error('Error refreshing token:', error);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }

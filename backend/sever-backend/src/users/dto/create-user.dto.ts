@@ -33,15 +33,21 @@ export class CreateUserDto {
   @IsOptional()
   phone?: string;
 
-  @IsString({ message: 'address không được để trống' })
+  @IsString({ message: 'address phải là 1 chuỗi' })
   @IsOptional()
   address?: string;
 
-  @IsString({ message: 'profilePicture không được để trống' })
+  @IsString({ message: 'profilePicture phải là 1 chuỗi' })
   @IsOptional()
   profilePicture?: string;
 
   @IsBoolean({ message: 'isDeleted phải là boolean' })
   @IsOptional()
   isDeleted?: boolean;
+  @IsBoolean({ message: 'isVerified phải là boolean' })
+  @IsOptional()
+  isVerified?: boolean;
+  @IsString({ message: 'verificationCode phải là 1 chuỗi' })
+  @IsOptional()
+  verificationCode?: string;
 }

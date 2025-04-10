@@ -6,10 +6,11 @@ import { JwtService } from './jwt/jwt.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '@/users/users.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './jwt/jwt.strategy';
+import { MailModule } from '@/mail/mail.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // Đọc các biến môi trường từ .env
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -20,8 +21,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         },
       }),
     }),
+    MailModule,
   ],
-  providers: [AuthService, JwtService, PrismaService, UsersService],
+  providers: [
+    AuthService,
+    JwtService,
+    PrismaService,
+    UsersService,
+    JwtStrategy,
+  ],
   controllers: [AuthController],
   exports: [JwtService], // Để sử dụng ở nơi khác nếu cần
 })

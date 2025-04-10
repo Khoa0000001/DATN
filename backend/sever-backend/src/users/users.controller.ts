@@ -1,29 +1,38 @@
 import {
   Controller,
   Get,
-  Post,
+  // Post,
   Body,
   Patch,
   Param,
   Delete,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+// import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CheckId } from '@/common/Decorators/check-id.decorator';
+import { Roles } from '@/common/Decorators/roles.decorator';
+import { Permissions } from '@/common/Decorators/permissions.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { PermissionsGuard } from '@/common/guards/permissions.guard';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly _usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this._usersService.create(createUserDto);
-  }
+  // @Post()
+  // create(@Body() createUserDto: CreateUserDto) {
+  //   return this._usersService.create(createUserDto);
+  // }
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  @Roles('admin')
+  @Permissions('view_users')
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
     const pageNum = Number(page);
     const limitNum = Number(limit);

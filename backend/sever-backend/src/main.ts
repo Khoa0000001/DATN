@@ -9,10 +9,11 @@ import { ValidationPipe as ValidationPipeCtm } from '@/common/pipes/validation.p
 // import { LoggerMiddleware } from '@/common/middleware/logger.middleware';
 import { ExecutionTimeMiddleware } from '@/common/middleware/execution-time.middleware';
 import { useContainer } from 'class-validator';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn'], // Chỉ hiển thị lỗi và cảnh báo
+    logger: ['error', 'warn', 'verbose'], // Chỉ hiển thị lỗi và cảnh báo
   });
 
   // Bật CORS
@@ -34,7 +35,7 @@ async function bootstrap() {
 
   const host = process.env.HOST || '0.0.0.0';
   const port = process.env.PORT || 5000;
-
+  app.use(cookieParser());
   await app.listen(port, host);
   // Lấy địa chỉ IP của máy trong mạng LAN
   const networkInterfaces = os.networkInterfaces();

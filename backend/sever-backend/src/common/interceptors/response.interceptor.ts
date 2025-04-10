@@ -14,15 +14,22 @@ export class ResponseInterceptor implements NestInterceptor {
     const response = ctx.getResponse(); // Lấy đối tượng Response
     return next.handle().pipe(
       tap(() => console.log(`⏱️ Execution time: ${Date.now() - now}ms`)), // Đo thời gian
-      map((data) => ({
-        success: true,
-        statusCode: response.statusCode,
-        ...data,
-        path: ctx.getRequest().url,
-        timestamp: new Date().toISOString(),
-        executionTime: `${Date.now() - now}ms`,
-        api_version: process.env.API_VERSION,
-      })),
+
+      map((data) => {
+        console.log('Message:', data.message);
+        console.log(
+          '-------------------------------------------------------------------------------------',
+        );
+        return {
+          success: true,
+          statusCode: response.statusCode,
+          ...data,
+          path: ctx.getRequest().url,
+          timestamp: new Date().toISOString(),
+          executionTime: `${Date.now() - now}ms`,
+          api_version: process.env.API_VERSION,
+        };
+      }),
     );
   }
 }
