@@ -1,5 +1,4 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from './jwt/jwt.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { isValidPassword } from '@/utils/auths.util';
@@ -9,17 +8,14 @@ import { formatResponse } from '@/utils/response.util';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { Request, Response } from 'express';
-import { ConfigService } from '@nestjs/config';
 import * as ms from 'ms';
 import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly _prisma: PrismaService,
     private readonly _jwtService: JwtService,
     private readonly _userService: UsersService,
-    private readonly _configService: ConfigService,
     private readonly _mailService: MailService, // Giả sử bạn có một service gửi mail
   ) {}
 
@@ -62,9 +58,7 @@ export class AuthService {
     const accessToken = this._jwtService.generateAccessToken(payload);
     const refreshToken = this._jwtService.generateRefreshToken(payload);
 
-    const expiresRefeshStr = this._configService.get<string>(
-      'JWT_REFRESH_EXPIRES',
-    );
+    const expiresRefeshStr = process.env.JWT_REFRESH_EXPIRES;
     const expiresRefresh = ms(expiresRefeshStr);
     // Lưu refresh token vào cookie với HTTP-only để tăng bảo mật
     res.cookie('refreshToken', refreshToken, {
@@ -107,9 +101,7 @@ export class AuthService {
   async verifyEmail(email: string, code: string, res: Response) {
     const user = (await this._userService.findByEmail(email)).data;
     let redirectUrl = '';
-    const frontendUrl =
-      this._configService.get<string>('FRONTEND_URL') ||
-      'http://localhost:3000';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
     if (!user || user.verificationCode !== code) {
       redirectUrl = `${frontendUrl}/login?verified=false`;
@@ -136,9 +128,7 @@ export class AuthService {
       const newAccessToken = this._jwtService.generateAccessToken(payload);
       const newRefreshToken = this._jwtService.generateRefreshToken(payload);
 
-      const expiresRefeshStr = this._configService.get<string>(
-        'JWT_REFRESH_EXPIRES',
-      );
+      const expiresRefeshStr = process.env.JWT_REFRESH_EXPIRES;
       const expiresRefresh = ms(expiresRefeshStr);
       // Lưu refresh token vào cookie với HTTP-only để tăng bảo mật
       res.cookie('refreshToken', newRefreshToken, {

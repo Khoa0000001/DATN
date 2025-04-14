@@ -9,7 +9,7 @@ export default function Cart() {
         <div className="bg-white">
           <div className="p-[8px]">
             <div className="px-[14px] bg-[#FFEDED]">
-              <CheckoutSteps currentStep={-1} />
+              <CheckoutSteps currentStep={1} />
             </div>
           </div>
           {true ? (

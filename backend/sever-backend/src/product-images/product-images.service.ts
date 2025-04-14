@@ -11,7 +11,8 @@ export class ProductImagesService {
     const productImage = await this._prisma.productImages.create({
       data: createProductImageDto,
     });
-    return formatResponse('productImage created successfully', productImage);
+
+    return formatResponse('Product image uploaded successfully', productImage);
   }
 
   async findAll(page?: number, limit?: number) {
@@ -22,13 +23,14 @@ export class ProductImagesService {
     }
     const productImages =
       await this._prisma.productImages.findMany(queryOptions);
+    const total = await this._prisma.productImages.count();
     return formatResponse(
       `This action returns all productImages`,
       productImages,
       {
         page,
         limit,
-        total: productImages,
+        total: total,
       },
     );
   }

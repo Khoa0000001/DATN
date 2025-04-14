@@ -20,7 +20,10 @@ export class ProductImagesController {
 
   @Post()
   @CheckId('products', 'productId')
-  create(@Body() createProductImageDto: CreateProductImageDto) {
+  create(
+    @Body()
+    createProductImageDto: CreateProductImageDto,
+  ) {
     return this._productImagesService.create(createProductImageDto);
   }
 

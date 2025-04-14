@@ -5,12 +5,14 @@ import {
   IsBoolean,
   IsNumber,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateProductDto {
   @IsNotEmpty({ message: 'Tên sản phẩm không được để trống' })
   @IsString({ message: 'Tên sản phẩm phải là 1 chuỗi' })
   nameProduct: string;
   @IsNotEmpty({ message: 'Giá sản phẩm không được để trống' })
+  @Type(() => Number)
   @IsNumber({}, { message: 'price phải là 1 số' })
   price: number;
   @IsString({ message: 'Mô tả sản phẩm phải là 1 chuỗi' })

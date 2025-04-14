@@ -8,19 +8,27 @@ import {
   Delete,
   Query,
   BadRequestException,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CheckId } from '@/common/Decorators/check-id.decorator';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly _productsService: ProductsService) {}
 
   @Post()
-  @CheckId('categories', 'categoryId')
-  create(@Body() createProductDto: CreateProductDto) {
-    return this._productsService.create(createProductDto);
+  // @CheckId('categories', 'categoryId')
+  @UseInterceptors(AnyFilesInterceptor())
+  create(
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this._productsService.create(createProductDto, files);
   }
 
   @Get()
@@ -63,10 +71,15 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @CheckId('products', 'id')
-  @CheckId('products', 'categoryId')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this._productsService.update(id, updateProductDto);
+  // @CheckId('products', 'id')
+  // @CheckId('products', 'categoryId')
+  @UseInterceptors(AnyFilesInterceptor())
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this._productsService.update(id, updateProductDto, files);
   }
 
   @Delete(':id')

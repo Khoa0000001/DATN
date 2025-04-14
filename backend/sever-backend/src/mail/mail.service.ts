@@ -1,7 +1,6 @@
 // 📁 mail/mail.service.ts
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { ConfigService } from '@nestjs/config';
 import * as os from 'os';
 import { formatResponse } from '@/utils/response.util';
 
@@ -9,19 +8,19 @@ import { formatResponse } from '@/utils/response.util';
 export class MailService {
   private transporter: nodemailer.Transporter;
 
-  constructor(private _configService: ConfigService) {
+  constructor() {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: this._configService.get<string>('EMAIL_SENT'),
-        pass: this._configService.get<string>('EMAIL_PASSWORD'),
+        user: process.env.EMAIL_SENT,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
   }
 
   async sendVerificationLink(to: string, code: string) {
-    const port = this._configService.get<number>('PORT') || 5000;
-    const apiPrefix = `api/${this._configService.get<number>('API_VERSION') || 'v1'}`;
+    const port = process.env.PORT || 5000;
+    const apiPrefix = `api/${process.env.API_VERSION || 'v1'}`;
     // Lấy địa chỉ IP của máy trong mạng LAN
     const networkInterfaces = os.networkInterfaces();
     const localIP =
@@ -31,7 +30,7 @@ export class MailService {
         ?.address || 'localhost';
     const link = `http://${localIP}:${port}/${apiPrefix}/auth/verify?email=${to}&code=${code}`;
     const mailOptions = {
-      from: `"Sell PC" <${this._configService.get<string>('EMAIL_SENT')}>`,
+      from: `"Sell PC" <${process.env.EMAIL_SENT}>`,
       to,
       subject: 'Xác thực tài khoản',
       html: `

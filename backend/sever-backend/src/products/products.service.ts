@@ -1,13 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { formatResponse } from '@/utils/response.util';
 import { ProductDto } from './dto/product.dto';
+import { ImageUploadService } from '@/upload/image-upload.service';
+import { ProductImagesService } from '@/product-images/product-images.service';
+import { Express } from 'express';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly _prisma: PrismaService) {}
+  constructor(
+    private readonly _prisma: PrismaService,
+    private readonly _cloudinary: ImageUploadService,
+    private readonly _productImagesService: ProductImagesService,
+  ) {}
 
   formattedProduct(product: ProductDto | null) {
     return {
@@ -20,10 +27,36 @@ export class ProductsService {
     };
   }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(
+    createProductDto: CreateProductDto,
+    files: Express.Multer.File[],
+  ) {
+    const category = await this._prisma.categories.findUnique({
+      where: { isDeleted: false, id: createProductDto.categoryId },
+    });
+    if (!category) {
+      throw new BadRequestException(
+        `ID ${createProductDto.categoryId} không tồn tại hoặc đã bị xóa trong bảng categories`,
+      );
+    }
+
+    // 1. Tạo sản phẩm
     const product = await this._prisma.products.create({
       data: createProductDto,
     });
+
+    // 2. Upload ảnh và tạo bản ghi ProductImages
+    for (const file of files) {
+      const imageUrl = await this._cloudinary.uploadImage(
+        file.buffer,
+        file.originalname,
+      );
+
+      await this._productImagesService.create({
+        productId: product.id,
+        imageUrl,
+      });
+    }
     return formatResponse('product created successfully', product);
   }
 
@@ -130,11 +163,51 @@ export class ProductsService {
     );
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+    files: Express.Multer.File[],
+  ) {
+    const productExists = await this._prisma.products.findUnique({
+      where: { isDeleted: false, id },
+    });
+    if (!productExists) {
+      throw new BadRequestException(
+        `ID ${id} không tồn tại hoặc đã bị xóa trong bảng products`,
+      );
+    }
+
+    if (updateProductDto.categoryId) {
+      const category = await this._prisma.categories.findUnique({
+        where: { isDeleted: false, id: updateProductDto.categoryId },
+      });
+      if (!category) {
+        throw new BadRequestException(
+          `ID ${updateProductDto.categoryId} không tồn tại hoặc đã bị xóa trong bảng categories`,
+        );
+      }
+    }
+
     const product = await this._prisma.products.update({
       where: { id },
       data: updateProductDto,
     });
+
+    // Nếu có ảnh mới => upload và thêm vào ProductImages
+    if (files && files.length > 0) {
+      for (const file of files) {
+        const imageUrl = await this._cloudinary.uploadImage(
+          file.buffer,
+          file.originalname,
+        );
+
+        await this._productImagesService.create({
+          productId: product.id,
+          imageUrl,
+        });
+      }
+    }
+
     return formatResponse('product updated successfully', product);
   }
 
