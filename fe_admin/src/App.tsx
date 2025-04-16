@@ -1,12 +1,8 @@
-import { Button } from "antd";
+// src/App.tsx
+import AppRoutes from "@/routes/routes";
 
-function App() {
-  return (
-    <div className="text-red-500">
-      <h1>Hello Vite + React + TS + Ant Design</h1>
-      <Button type="primary">AntD Button</Button>
-    </div>
-  );
-}
+const App = () => {
+  return <AppRoutes />;
+};
 
 export default App;

@@ -30,6 +30,28 @@ export class UsersService {
   async findAll(page?: number, limit?: number) {
     const queryOptions: any = {
       where: { isDeleted: false },
+      select: {
+        id: true,
+        email: true,
+        nameUser: true,
+        phone: true,
+        address: true,
+        profilePicture: true,
+        userRoles: {
+          select: {
+            id: true,
+            createDate: true,
+            updateDate: true,
+            userId: true,
+            roleId: true,
+          },
+        },
+        Orders: true,
+        Wishlists: true,
+        Carts: true,
+        createDate: true,
+        updateDate: true,
+      },
     };
 
     if (page && limit) {
@@ -41,6 +63,7 @@ export class UsersService {
     const totalUsers = await this._prisma.users.count({
       where: { isDeleted: false },
     });
+
     return formatResponse(`This action returns all users`, users, {
       page,
       limit,

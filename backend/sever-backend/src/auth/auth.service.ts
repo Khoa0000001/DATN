@@ -76,8 +76,9 @@ export class AuthService {
         phone: user.phone,
         address: user.address,
         profilePicture: user.profilePicture,
-        roles: user.roles,
       },
+      roles: user.roles,
+      permissions: user.permissions,
     });
   }
   async register(registerDto: RegisterDto) {
