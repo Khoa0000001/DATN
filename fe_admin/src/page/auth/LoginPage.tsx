@@ -4,8 +4,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaLogin, LoginFormData } from "./constant";
 import { CustomInput } from "@/components/customAnt";
 import { useAppDispatch } from "@/store/hooks";
-import { loginUser } from "@/store/slice/authSlice";
-import { notification } from "antd";
+import { loginUser, logout } from "@/store/slice/authSlice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const { Title } = Typography;
 
@@ -20,27 +22,31 @@ const LoginPage = () => {
 
   const dispatch = useAppDispatch();
 
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      await dispatch(loginUser(data)).unwrap();
-      // Nếu unwrap() không throw => login thành công
-      notification.success({
-        message: "Đăng nhập thành công",
-        description: "Chào mừng bạn quay trở lại hệ thống.",
-        placement: "topRight",
-      });
+  const navigate = useNavigate();
 
-      // Redirect nếu cần ở đây
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      notification.error({
-        message: "Đăng nhập thất bại",
-        description: error || "Vui lòng kiểm tra lại thông tin đăng nhập.",
-        placement: "topRight",
-      });
+  const onSubmit = async (data: LoginFormData) => {
+    const loginPromise = dispatch(loginUser(data)).unwrap();
+
+    toast.promise(loginPromise, {
+      pending: "Đang đăng nhập...",
+      success: "Đăng nhập thành công 🎉",
+      error: {
+        render({ data }) {
+          return <span>😢 {String(data) || "Đăng nhập thất bại!"}</span>;
+        },
+      },
+    });
+
+    try {
+      await loginPromise;
+      navigate("/"); // ✅ Điều hướng khi login thành công
+    } catch (err) {
+      console.log(err);
     }
   };
-
+  useEffect(() => {
+    dispatch(logout());
+  }, []);
   return (
     <div className="max-w-[400px] mx-auto pt-16">
       <Title level={2}>Đăng nhập</Title>

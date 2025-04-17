@@ -44,6 +44,24 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (
+    credentials: { email: string; password: string; nameUser: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_URL}/auth/register`, // Đường dẫn API đăng nhập
+        credentials
+      );
+      return response.data.data; // Dữ liệu trả về từ API
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      return rejectWithValue(err?.response?.data?.message || "Register failed");
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -60,6 +78,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // login
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -73,6 +92,19 @@ const authSlice = createSlice({
         state.loading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // register
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

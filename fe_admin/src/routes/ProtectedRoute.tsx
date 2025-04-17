@@ -14,11 +14,9 @@ const ProtectedRoute = ({
   requiredRoles = [],
   requiredPermissions = [],
 }: ProtectedRouteProps) => {
-  console.log(requiredRoles);
   const { accessToken, roles, permissions } = useSelector(
     (state: RootState) => state.auth
   );
-  console.log({ accessToken, roles, permissions });
 
   if (!accessToken) {
     return <Navigate to="/login" replace />;

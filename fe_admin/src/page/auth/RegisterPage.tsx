@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaRegister, RegisterFormData } from "./constant";
 import { CustomInput } from "@/components/customAnt";
+import { toast } from "react-toastify";
+import { registerUser } from "@/store/slice/authSlice";
+import { useAppDispatch } from "@/store/hooks";
 
 const { Title } = Typography;
 
@@ -14,9 +17,25 @@ const RegisterPage = () => {
   } = useForm({
     resolver: yupResolver(schemaRegister),
   });
-
+  const dispatch = useAppDispatch();
   const onSubmit = (data: RegisterFormData) => {
-    console.log("Đăng ký với:", data);
+    const newData = {
+      email: data.email,
+      password: data.confirmPassword,
+      nameUser: data.name,
+    };
+    toast.promise(
+      dispatch(registerUser(newData)).unwrap(), // unwrap() sẽ giúp bắt lỗi reject với action đã được xử lý
+      {
+        pending: "Đang đăng ký ...", // Trạng thái đang đợi
+        success: "Vui long kiểm tra email.", // Trạng thái thành công
+        error: {
+          render({ data }) {
+            return <span>😢 {String(data) || "Đăng nhập thất bại"}</span>; // Hiển thị lỗi nếu có
+          },
+        },
+      }
+    );
   };
 
   return (

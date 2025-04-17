@@ -5,6 +5,8 @@ import ResultPage from "@/page/result/ResultPage";
 import LoginPage from "@/page/auth/LoginPage";
 import RegisterPage from "@/page/auth/RegisterPage";
 import Dashboard from "@/page/dashboard/Dashboard";
+import Setting from "@/page/setting/Setting";
+import Role from "@/page/role/Role";
 
 const AppRoutes = () =>
   useRoutes([
@@ -23,8 +25,24 @@ const AppRoutes = () =>
         {
           path: "",
           element: (
-            <ProtectedRoute requiredRoles={["user"]}>
+            <ProtectedRoute requiredRoles={["admin"]}>
               <Dashboard />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "settings",
+          element: (
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <Setting />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "roles",
+          element: (
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <Role />
             </ProtectedRoute>
           ),
         },

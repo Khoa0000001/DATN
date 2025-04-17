@@ -4,6 +4,7 @@ import axiosInstance from "@/utils/axiosInstance";
 
 const initialState: any = {
   users: [],
+  meta: {},
   loading: false,
   error: null,
 };
@@ -18,7 +19,7 @@ export const fetchUsers = createAsyncThunk(
       const response = await axiosInstance.get(`/users`, {
         params: credentials,
       });
-      return response.data.data;
+      return response.data;
     } catch (err: any) {
       return rejectWithValue(
         err?.response?.data?.message || "Fetch users failed"
@@ -39,7 +40,8 @@ const userSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload;
+        state.users = action.payload.data;
+        state.meta = action.payload.meta;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
