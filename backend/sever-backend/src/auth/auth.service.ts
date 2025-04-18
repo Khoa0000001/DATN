@@ -63,9 +63,10 @@ export class AuthService {
     // Lưu refresh token vào cookie với HTTP-only để tăng bảo mật
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true, // Không thể truy cập bằng JavaScript (bảo mật hơn)
-      secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS nếu chạy production
-      sameSite: 'strict', // Ngăn chặn tấn công CSRF
+      secure: false,
+      sameSite: 'lax',
       maxAge: expiresRefresh,
+      path: '/',
     });
 
     return formatResponse('Login successfully', {
@@ -120,24 +121,13 @@ export class AuthService {
     return formatResponse('Tài khoản đã được xác thực', { success: true });
   }
 
-  refreshToken(req: Request, res: Response) {
+  refreshToken(req: Request) {
     try {
       const oldRefreshToken = req.cookies['refreshToken'];
       const payload = this._jwtService.verifyRefreshToken(oldRefreshToken);
       delete payload.exp;
       delete payload.iat;
       const newAccessToken = this._jwtService.generateAccessToken(payload);
-      const newRefreshToken = this._jwtService.generateRefreshToken(payload);
-
-      const expiresRefeshStr = process.env.JWT_REFRESH_EXPIRES;
-      const expiresRefresh = ms(expiresRefeshStr);
-      // Lưu refresh token vào cookie với HTTP-only để tăng bảo mật
-      res.cookie('refreshToken', newRefreshToken, {
-        httpOnly: true, // Không thể truy cập bằng JavaScript (bảo mật hơn)
-        secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS nếu chạy production
-        sameSite: 'strict', // Ngăn chặn tấn công CSRF
-        maxAge: expiresRefresh,
-      });
 
       return formatResponse('RefreshToken successfully', {
         accessToken: newAccessToken,

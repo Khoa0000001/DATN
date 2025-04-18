@@ -27,9 +27,23 @@ export class UsersService {
     );
   }
 
-  async findAll(page?: number, limit?: number) {
+  async findAll(page?: number, limit?: number, search?: string) {
+    const whereCondition: any = {
+      isDeleted: false,
+    };
+
+    // Nếu có từ khóa search, thêm điều kiện OR
+    if (search) {
+      whereCondition.OR = [
+        { email: { contains: search } },
+        { nameUser: { contains: search } },
+        { phone: { contains: search } },
+      ];
+    }
+
+    // Cấu hình query chính
     const queryOptions: any = {
-      where: { isDeleted: false },
+      where: whereCondition,
       select: {
         id: true,
         email: true,
@@ -37,6 +51,7 @@ export class UsersService {
         phone: true,
         address: true,
         profilePicture: true,
+        isVerified: true,
         userRoles: {
           select: {
             id: true,
@@ -52,19 +67,26 @@ export class UsersService {
         createDate: true,
         updateDate: true,
       },
+      orderBy: {
+        createDate: 'desc',
+      },
     };
 
+    // Thêm phân trang nếu có
     if (page && limit) {
       queryOptions.skip = (page - 1) * limit;
       queryOptions.take = limit;
     }
 
-    const users = await this._prisma.users.findMany(queryOptions);
-    const totalUsers = await this._prisma.users.count({
-      where: { isDeleted: false },
-    });
+    // Truy vấn dữ liệu
+    const [users, totalUsers] = await Promise.all([
+      this._prisma.users.findMany(queryOptions),
+      this._prisma.users.count({
+        where: whereCondition, // Đếm số người dùng thỏa mãn điều kiện 'isDeleted' và 'search'
+      }),
+    ]);
 
-    return formatResponse(`This action returns all users`, users, {
+    return formatResponse(`Danh sách người dùng`, users, {
       page,
       limit,
       total: totalUsers,

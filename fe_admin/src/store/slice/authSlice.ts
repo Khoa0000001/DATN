@@ -35,7 +35,10 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_URL}/auth/login`, // Đường dẫn API đăng nhập
-        credentials
+        credentials,
+        {
+          withCredentials: true,
+        }
       );
       return response.data.data; // Dữ liệu trả về từ API
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,12 +56,34 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_URL}/auth/register`, // Đường dẫn API đăng nhập
-        credentials
+        credentials,
+        {
+          withCredentials: true,
+        }
       );
       return response.data.data; // Dữ liệu trả về từ API
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       return rejectWithValue(err?.response?.data?.message || "Register failed");
+    }
+  }
+);
+
+export const refreshToken = createAsyncThunk(
+  "auth/refresh-token",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_URL}/auth/refresh-token`,
+        null,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data.data; // Dữ liệu trả về từ API
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      return rejectWithValue(err?.response?.data?.message || "Login failed");
     }
   }
 );
@@ -73,7 +98,7 @@ const authSlice = createSlice({
       state.roles = [];
       state.permissions = [];
       state.error = null;
-      localStorage.removeItem("persist:root"); // Xóa dữ liệu redux-persist
+      localStorage.removeItem("persist:auth"); // Xóa dữ liệu redux-persist
     },
   },
   extraReducers: (builder) => {
@@ -105,6 +130,19 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // refresh-token
+      .addCase(refreshToken.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        const { accessToken } = action.payload;
+        state.accessToken = accessToken;
+      })
+      .addCase(refreshToken.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

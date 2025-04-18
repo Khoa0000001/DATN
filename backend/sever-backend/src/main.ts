@@ -17,12 +17,19 @@ async function bootstrap() {
     logger: ['error', 'warn', 'verbose'], // Chỉ hiển thị lỗi và cảnh báo
   });
 
-  // Bật CORS
+  const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000'];
+
   app.enableCors({
-    origin: '*', // Cho phép tất cả domain (không an toàn)
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Các phương thức được phép
-    allowedHeaders: 'Content-Type, Authorization', // Các header được phép
-    credentials: true, // Nếu cần gửi cookies hoặc xác thực
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true,
   });
 
   const apiPrefix = `api/${process.env.API_VERSION || 'v1'}`;

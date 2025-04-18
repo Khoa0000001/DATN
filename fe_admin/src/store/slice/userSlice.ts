@@ -12,7 +12,7 @@ const initialState: any = {
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (
-    credentials: { page?: number; limit?: number },
+    credentials: { page?: number; limit?: number; search?: string },
     { rejectWithValue }
   ) => {
     try {

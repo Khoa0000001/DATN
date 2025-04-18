@@ -33,9 +33,15 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles('admin')
   @Permissions('view_users')
-  findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+  ) {
     const pageNum = Number(page);
     const limitNum = Number(limit);
+    const newSearch =
+      search && search.trim().length > 0 ? search.trim() : undefined;
     if (page && limit) {
       if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
         throw new BadRequestException(
@@ -43,7 +49,7 @@ export class UsersController {
         );
       }
     }
-    return this._usersService.findAll(pageNum, limitNum);
+    return this._usersService.findAll(pageNum, limitNum, newSearch);
   }
 
   @Get(':id')

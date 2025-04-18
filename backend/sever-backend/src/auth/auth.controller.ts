@@ -24,8 +24,8 @@ export class AuthController {
     return this._authService.register(registerDto);
   }
   @Post('refresh-token')
-  refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return this._authService.refreshToken(req, res);
+  refresh(@Req() req: Request) {
+    return this._authService.refreshToken(req);
   }
   @Get('verify')
   async verifyEmail(
