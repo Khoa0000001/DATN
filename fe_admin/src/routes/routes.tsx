@@ -6,7 +6,7 @@ import LoginPage from "@/page/auth/LoginPage";
 import RegisterPage from "@/page/auth/RegisterPage";
 import Dashboard from "@/page/dashboard/Dashboard";
 import Setting from "@/page/setting/Setting";
-import Role from "@/page/role/Role";
+import Role from "@/page/role/RolePage";
 
 const AppRoutes = () =>
   useRoutes([

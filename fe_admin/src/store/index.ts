@@ -5,6 +5,7 @@ import storage from "redux-persist/lib/storage";
 import { injectStore } from "@/utils/axiosInstance";
 import authReducer from "@/store/slice/authSlice";
 import userReducer from "@/store/slice/userSlice";
+import roleReducer from "@/store/slice/roleSlice";
 
 const persistConfig = {
   key: "auth",
@@ -14,6 +15,7 @@ const persistConfig = {
 const rootReducer = {
   auth: persistReducer(persistConfig, authReducer),
   users: userReducer,
+  roles: roleReducer,
 };
 
 export const store = configureStore({

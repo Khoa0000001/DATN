@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
+import { useDebounce } from "@/hook/useDebounce";
 import { Table, Button, Space, Popconfirm, Input, Row, Col } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -9,7 +10,7 @@ import {
   SearchOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { useDebounce } from "@/hook/useDebounce"; // Giả sử bạn đã tạo hook useDebounce như trước
+import { useHasAccess } from "@/hook/useHasAccess";
 
 interface CustomTableProps {
   columns: ColumnsType<any>;
@@ -26,6 +27,12 @@ interface CustomTableProps {
   onEdit?: (record: any) => void;
   initialPageSize?: number;
   initialCurrentPage?: number;
+  permissions?: {
+    add?: { roles?: string[]; permissions?: string[] };
+    edit?: { roles?: string[]; permissions?: string[] };
+    delete?: { roles?: string[]; permissions?: string[] };
+    view?: { roles?: string[]; permissions?: string[] };
+  };
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
@@ -39,6 +46,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
   onEdit,
   initialPageSize = 10,
   initialCurrentPage = 1,
+  permissions,
 }) => {
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -59,6 +67,11 @@ const CustomTable: React.FC<CustomTableProps> = ({
     setSearchText(value.replace(/^\s+/, ""));
   };
 
+  const canAdd = useHasAccess();
+  const canView = useHasAccess();
+  const canEdit = useHasAccess();
+  const canDelete = useHasAccess();
+
   const actionColumn = {
     title: "Hành động",
     key: "action",
@@ -67,21 +80,21 @@ const CustomTable: React.FC<CustomTableProps> = ({
     align: "center" as const,
     render: (_: any, record: any) => (
       <Space>
-        {onView && (
+        {canView(permissions?.view) && onView && (
           <Button
             icon={<EyeOutlined />}
             type="link"
             onClick={() => onView(record)}
           />
         )}
-        {onEdit && (
+        {canEdit(permissions?.edit) && onEdit && (
           <Button
             icon={<EditOutlined />}
             type="link"
             onClick={() => onEdit(record)}
           />
         )}
-        {onDelete && (
+        {canDelete(permissions?.delete) && onDelete && (
           <Popconfirm
             title="Bạn có chắc muốn xóa?"
             onConfirm={() => onDelete([record])}
@@ -121,19 +134,21 @@ const CustomTable: React.FC<CustomTableProps> = ({
 
         <Col>
           <Space>
-            {selectedRows.length > 0 && onDelete && (
-              <Popconfirm
-                title="Bạn có chắc muốn xóa tất cả các mục đã chọn?"
-                onConfirm={() => onDelete(selectedRows)}
-                okText="Xóa tất cả"
-                cancelText="Hủy"
-              >
-                <Button danger icon={<DeleteOutlined />}>
-                  Xóa tất cả ({selectedRows.length})
-                </Button>
-              </Popconfirm>
-            )}
-            {onAdd && (
+            {selectedRows.length > 0 &&
+              canDelete(permissions?.delete) &&
+              onDelete && (
+                <Popconfirm
+                  title="Bạn có chắc muốn xóa tất cả các mục đã chọn?"
+                  onConfirm={() => onDelete(selectedRows)}
+                  okText="Xóa tất cả"
+                  cancelText="Hủy"
+                >
+                  <Button danger icon={<DeleteOutlined />}>
+                    Xóa tất cả ({selectedRows.length})
+                  </Button>
+                </Popconfirm>
+              )}
+            {canAdd(permissions?.add) && onAdd && (
               <Button type="primary" onClick={onAdd} icon={<PlusOutlined />}>
                 Thêm mới
               </Button>

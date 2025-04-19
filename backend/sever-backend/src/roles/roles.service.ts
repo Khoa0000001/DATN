@@ -12,22 +12,29 @@ export class RolesService {
     return formatResponse('This action adds a new role', role);
   }
 
-  async findAll(page?: number, limit?: number) {
-    const queryOptions: any = {
-      where: {
-        isDeleted: false,
-      },
+  async findAll(page?: number, limit?: number, search?: string) {
+    const where: any = {
+      isDeleted: false,
     };
+
+    if (search) {
+      where.OR = [{ nameRole: { contains: search } }];
+    }
+
+    const queryOptions: any = {
+      where,
+    };
+
     if (page && limit) {
       queryOptions.skip = (page - 1) * limit;
       queryOptions.take = limit;
     }
-    const roles = await this._prisma.roles.findMany(queryOptions);
-    const totalRoles = await this._prisma.roles.count({
-      where: {
-        isDeleted: false,
-      },
-    });
+
+    const [roles, totalRoles] = await Promise.all([
+      this._prisma.roles.findMany(queryOptions),
+      this._prisma.roles.count({ where }),
+    ]);
+
     return formatResponse(`This action returns all roles`, roles, {
       page,
       limit,
