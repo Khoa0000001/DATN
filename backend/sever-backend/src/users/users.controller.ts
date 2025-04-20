@@ -32,7 +32,7 @@ export class UsersController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
   @Roles('admin')
-  @Permissions('view_users')
+  // @Permissions('view_users')
   findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,

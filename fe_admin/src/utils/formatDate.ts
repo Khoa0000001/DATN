@@ -1,5 +1,5 @@
 // utils/formatDate.ts
-export const formatDate = (isoString: string): string => {
+export const formatDate = (isoString: string | Date): string => {
   if (!isoString) return "";
 
   const date = new Date(isoString);

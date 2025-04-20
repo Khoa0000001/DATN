@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GetIconType from "@/unit/GetIconTypeProduct";
 export default function Product({ data }: { data: any }) {

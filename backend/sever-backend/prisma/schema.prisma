@@ -22,24 +22,24 @@ enum OrderStatus {
 }
 
 model Users {
-  id             String      @id @default(uuid())
-  createDate     DateTime    @default(now())
-  updateDate     DateTime    @updatedAt
-  email          String      @unique
-  password       String
-  phone          String?
-  nameUser       String
-  profilePicture String?
-  address        String?
-  isDeleted      Boolean     @default(false)
-  isVerified    Boolean     @default(false) // Trạng thái xác thực email
+  id               String      @id @default(uuid())
+  createDate       DateTime    @default(now())
+  updateDate       DateTime    @updatedAt
+  email            String      @unique
+  password         String
+  phone            String?
+  nameUser         String
+  profilePicture   String?
+  address          String?
+  isDeleted        Boolean     @default(false)
+  isVerified       Boolean     @default(false) // Trạng thái xác thực email
   verificationCode String? // Mã xác thực email
-  userRoles      UserRoles[]
-  Orders         Orders[]
-  Reviews        Reviews[]
-  Wishlists      Wishlists[]
-  Logs           Logs[]
-  Carts          Carts[]
+  userRoles        UserRoles[]
+  Orders           Orders[]
+  Reviews          Reviews[]
+  Wishlists        Wishlists[]
+  Logs             Logs[]
+  Carts            Carts[]
 
   @@index([isDeleted, id])
   @@index([email])
@@ -62,6 +62,7 @@ model Roles {
   id              String            @id @default(uuid())
   createDate      DateTime          @default(now())
   updateDate      DateTime          @default(now())
+  codeRole        String
   nameRole        String
   description     String?
   isDeleted       Boolean           @default(false)

@@ -21,7 +21,7 @@ export const sidebarItems: SidebarItem[] = [
     label: "Dashboard",
     icon: <UserOutlined />,
     path: "/",
-    roles: ["admin"],
+    // roles: ["admin"],
   },
   {
     key: "orders",
@@ -45,12 +45,22 @@ export const sidebarItems: SidebarItem[] = [
     key: "roles",
     label: "Phân quyền",
     icon: <CrownOutlined />,
-    roles: ["admin"],
+    // roles: ["admin"],
     children: [
       {
         key: "role-list",
         label: "Danh sách chức vụ",
         path: "/roles",
+      },
+      {
+        key: "role-permission",
+        label: "Danh sách quyền",
+        path: "/roles/permission",
+      },
+      {
+        key: "role-user",
+        label: "Danh sách người dùng",
+        path: "/roles/user",
       },
     ],
   },

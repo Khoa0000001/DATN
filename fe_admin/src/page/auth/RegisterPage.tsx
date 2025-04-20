@@ -30,8 +30,8 @@ const RegisterPage = () => {
         pending: "Đang đăng ký ...", // Trạng thái đang đợi
         success: "Vui long kiểm tra email.", // Trạng thái thành công
         error: {
-          render({ data }) {
-            return <span>😢 {String(data) || "Đăng nhập thất bại"}</span>; // Hiển thị lỗi nếu có
+          render() {
+            return <span>😢 {"Đăng nhập thất bại"}</span>; // Hiển thị lỗi nếu có
           },
         },
       }

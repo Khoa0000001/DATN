@@ -4,6 +4,7 @@ import { formatDate } from "@/utils/formatDate";
 
 export interface DataType {
   id: string;
+  codeRole: string;
   nameRole: string;
   description: string;
   isDeleted: boolean;
@@ -11,7 +12,15 @@ export interface DataType {
   updateDate: Date;
 }
 
+export type Mode = "add" | "edit" | "view" | null;
+
 export const columns: ColumnsType<DataType> = [
+  {
+    title: "Mã quyền",
+    dataIndex: "codeRole",
+    key: "codeRole",
+    sorter: (a, b) => a.codeRole.localeCompare(b.codeRole),
+  },
   {
     title: "Tên",
     dataIndex: "nameRole",
@@ -24,16 +33,16 @@ export const columns: ColumnsType<DataType> = [
     key: "description",
     sorter: (a, b) => a.description.localeCompare(b.description),
   },
+
   {
     title: "Đã xóa",
     dataIndex: "isDeleted",
     key: "isDeleted",
-    width: 180,
     align: "center" as const,
     sorter: (a, b) => Number(b.isDeleted) - Number(a.isDeleted), // true > false
     render: (isDeleted: boolean) => (
-      <Tag color={isDeleted ? "green" : "volcano"}>
-        {isDeleted ? "Đã xóa" : "Chưa xóa"}
+      <Tag color={isDeleted ? "volcano" : "green"}>
+        {isDeleted ? "Chưa xóa" : "Đã xóa"}
       </Tag>
     ),
   },

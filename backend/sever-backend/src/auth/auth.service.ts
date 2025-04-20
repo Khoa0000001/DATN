@@ -34,7 +34,7 @@ export class AuthService {
       ur.role.rolePermissions.map((rp) => rp.permission.permissionName),
     );
 
-    const roles = validRoles.map((ur) => ur.role.nameRole);
+    const roles = validRoles.map((ur) => ur.role.codeRole);
 
     return {
       ...user,

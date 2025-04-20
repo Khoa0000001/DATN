@@ -6,6 +6,7 @@ import { injectStore } from "@/utils/axiosInstance";
 import authReducer from "@/store/slice/authSlice";
 import userReducer from "@/store/slice/userSlice";
 import roleReducer from "@/store/slice/roleSlice";
+import permissionReducer from "@/store/slice/permissionSlice";
 
 const persistConfig = {
   key: "auth",
@@ -16,6 +17,7 @@ const rootReducer = {
   auth: persistReducer(persistConfig, authReducer),
   users: userReducer,
   roles: roleReducer,
+  permissions: permissionReducer,
 };
 
 export const store = configureStore({

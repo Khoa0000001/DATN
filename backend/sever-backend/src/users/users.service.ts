@@ -54,11 +54,11 @@ export class UsersService {
         isVerified: true,
         userRoles: {
           select: {
-            id: true,
-            createDate: true,
-            updateDate: true,
-            userId: true,
-            roleId: true,
+            role: {
+              select: {
+                nameRole: true, // 👈 Thêm dòng này để lấy tên role
+              },
+            },
           },
         },
         Orders: true,
@@ -94,9 +94,37 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user = await this._prisma.users.findUnique({
-      where: { isDeleted: false, id },
-    });
+    const whereCondition: any = {
+      isDeleted: false,
+      id,
+    };
+    const queryOptions: any = {
+      where: whereCondition,
+      select: {
+        id: true,
+        email: true,
+        nameUser: true,
+        phone: true,
+        address: true,
+        profilePicture: true,
+        isVerified: true,
+        userRoles: {
+          select: {
+            role: {
+              select: {
+                nameRole: true, // 👈 Thêm dòng này để lấy tên role
+              },
+            },
+          },
+        },
+        Orders: true,
+        Wishlists: true,
+        Carts: true,
+        createDate: true,
+        updateDate: true,
+      },
+    };
+    const user = await this._prisma.users.findUnique(queryOptions);
     return formatResponse(`This action returns user`, user);
   }
 

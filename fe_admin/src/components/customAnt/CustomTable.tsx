@@ -22,7 +22,7 @@ interface CustomTableProps {
     searchText: string
   ) => void;
   onAdd?: () => void;
-  onDelete?: (records: any[]) => void;
+  onDelete?: (records: any[], callback?: () => void) => void;
   onView?: (record: any) => void;
   onEdit?: (record: any) => void;
   initialPageSize?: number;
@@ -97,7 +97,9 @@ const CustomTable: React.FC<CustomTableProps> = ({
         {canDelete(permissions?.delete) && onDelete && (
           <Popconfirm
             title="Bạn có chắc muốn xóa?"
-            onConfirm={() => onDelete([record])}
+            onConfirm={() => {
+              onDelete([record], () => setSelectedRows([]));
+            }}
             okText="Xóa"
             cancelText="Hủy"
           >
@@ -109,7 +111,18 @@ const CustomTable: React.FC<CustomTableProps> = ({
   };
 
   const newColumns =
-    onDelete || onView || onEdit ? [...columns, actionColumn] : columns;
+    onDelete || onView || onEdit
+      ? [
+          ...columns.map((col) => ({
+            ...col,
+            width: col.width || 160, // Gán width 160 nếu chưa có
+          })),
+          actionColumn,
+        ]
+      : columns.map((col) => ({
+          ...col,
+          width: col.width || 160,
+        }));
 
   // Sử dụng useEffect để gọi dataFetch khi debouncedSearchText thay đổi
   useEffect(() => {
@@ -139,7 +152,9 @@ const CustomTable: React.FC<CustomTableProps> = ({
               onDelete && (
                 <Popconfirm
                   title="Bạn có chắc muốn xóa tất cả các mục đã chọn?"
-                  onConfirm={() => onDelete(selectedRows)}
+                  onConfirm={() => {
+                    onDelete(selectedRows, () => setSelectedRows([]));
+                  }}
                   okText="Xóa tất cả"
                   cancelText="Hủy"
                 >
@@ -162,7 +177,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
         columns={newColumns}
         dataSource={dataSource}
         rowKey="id"
-        scroll={{ x: "max-content", y: 500 }}
+        scroll={{ x: "max-content", y: 400 }}
         pagination={{
           current: currentPage,
           total: total || 0,

@@ -8,16 +8,16 @@ import {
   Delete,
   Query,
   BadRequestException,
-  UseGuards,
+  // UseGuards,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { CheckId } from '@/common/Decorators/check-id.decorator';
-import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
-import { PermissionsGuard } from '@/common/guards/permissions.guard';
-import { Roles } from '@/common/Decorators/roles.decorator';
+// import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+// import { RolesGuard } from '@/common/guards/roles.guard';
+// import { PermissionsGuard } from '@/common/guards/permissions.guard';
+// import { Roles } from '@/common/Decorators/roles.decorator';
 
 @Controller('roles')
 export class RolesController {
@@ -29,8 +29,8 @@ export class RolesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
-  @Roles('admin')
+  // @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
+  // @Roles('admin')
   findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -62,9 +62,9 @@ export class RolesController {
     return this._rolesService.update(id, updateRoleDto);
   }
 
-  @Delete(':id')
-  @CheckId('roles', 'id')
-  remove(@Param('id') id: string) {
-    return this._rolesService.remove(id);
+  @Delete()
+  // @CheckId('roles', 'id')
+  removeMany(@Body('ids') ids: string[]) {
+    return this._rolesService.removeMany(ids);
   }
 }

@@ -14,14 +14,23 @@ export class PermissionsService {
     return formatResponse('Permission created successfully', permission);
   }
 
-  async findAll(page?: number, limit?: number) {
-    const queryOptions: any = {};
+  async findAll(page?: number, limit?: number, search?: string) {
+    const where: any = {};
+    if (search) {
+      where.OR = [
+        { permissionName: { contains: search } },
+        { description: { contains: search } },
+      ];
+    }
+    const queryOptions: any = {
+      where,
+    };
     if (page && limit) {
       queryOptions.skip = (page - 1) * limit;
       queryOptions.take = limit;
     }
     const permissions = await this._prisma.permissions.findMany(queryOptions);
-    const totalPermissions = await this._prisma.permissions.count();
+    const totalPermissions = await this._prisma.permissions.count({ where });
     return formatResponse(`This action returns all permissions`, permissions, {
       page,
       limit,
@@ -45,10 +54,18 @@ export class PermissionsService {
     return formatResponse(`This action updates permission`, permission);
   }
 
-  async remove(id: string) {
-    const permission = await this._prisma.permissions.delete({
-      where: { id },
+  async removeMany(ids: string[]) {
+    const permissions = await this._prisma.permissions.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
     });
-    return formatResponse(`This action removes a permission`, permission);
+
+    return formatResponse(
+      `Removed ${permissions.count} permissions`,
+      permissions,
+    );
   }
 }

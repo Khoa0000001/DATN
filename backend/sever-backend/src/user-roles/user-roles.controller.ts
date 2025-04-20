@@ -19,6 +19,8 @@ export class UserRolesController {
   constructor(private readonly _userRolesService: UserRolesService) {}
 
   @Post()
+  @CheckId('users', 'userId')
+  @CheckId('roles', 'roleId')
   create(@Body() createUserRoleDto: CreateUserRoleDto) {
     return this._userRolesService.create(createUserRoleDto);
   }

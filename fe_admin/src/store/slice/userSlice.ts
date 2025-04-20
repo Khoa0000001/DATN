@@ -5,6 +5,7 @@ import axiosInstance from "@/utils/axiosInstance";
 const initialState: any = {
   users: [],
   meta: {},
+  user: {},
   loading: false,
   error: null,
 };
@@ -19,6 +20,20 @@ export const fetchUsers = createAsyncThunk(
       const response = await axiosInstance.get(`/users`, {
         params: credentials,
       });
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Fetch users failed"
+      );
+    }
+  }
+);
+
+export const fetchDetailUser = createAsyncThunk(
+  "users/fetchDetailUser",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/users/${id}`);
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
@@ -44,6 +59,19 @@ const userSlice = createSlice({
         state.meta = action.payload.meta;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      //get detail
+      .addCase(fetchDetailUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchDetailUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.data;
+      })
+      .addCase(fetchDetailUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

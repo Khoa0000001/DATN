@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -13,7 +14,7 @@ interface AuthState {
   roles: string[];
   permissions: string[];
   loading: boolean;
-  error: string | null;
+  error: any;
 }
 
 const initialState: AuthState = {
@@ -41,9 +42,8 @@ export const loginUser = createAsyncThunk(
         }
       );
       return response.data.data; // Dữ liệu trả về từ API
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      return rejectWithValue(err?.response?.data?.message || "Login failed");
+      return rejectWithValue(err?.response?.data || "Login failed");
     }
   }
 );
@@ -62,9 +62,8 @@ export const registerUser = createAsyncThunk(
         }
       );
       return response.data.data; // Dữ liệu trả về từ API
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      return rejectWithValue(err?.response?.data?.message || "Register failed");
+      return rejectWithValue(err?.response?.data || "Register failed");
     }
   }
 );
@@ -81,9 +80,8 @@ export const refreshToken = createAsyncThunk(
         }
       );
       return response.data.data; // Dữ liệu trả về từ API
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      return rejectWithValue(err?.response?.data?.message || "Login failed");
+      return rejectWithValue(err?.response?.data || "Login failed");
     }
   }
 );
@@ -131,7 +129,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload;
       })
       // refresh-token
       .addCase(refreshToken.pending, (state) => {

@@ -18,7 +18,10 @@ export class RolesService {
     };
 
     if (search) {
-      where.OR = [{ nameRole: { contains: search } }];
+      where.OR = [
+        { nameRole: { contains: search } },
+        { codeRole: { contains: search } },
+      ];
     }
 
     const queryOptions: any = {
@@ -65,23 +68,23 @@ export class RolesService {
     return formatResponse(`This action updates a role`, role);
   }
 
-  async remove(id: string) {
-    const [role] = await Promise.all([
-      this._prisma.roles.update({
+  async removeMany(ids: string[]) {
+    const [roles] = await Promise.all([
+      this._prisma.roles.updateMany({
         where: {
+          id: { in: ids },
           isDeleted: false,
-          id,
         },
         data: { isDeleted: true },
       }),
       this._prisma.userRoles.updateMany({
         where: {
-          roleId: id,
+          roleId: { in: ids },
         },
         data: { isDeleted: true },
       }),
     ]);
 
-    return formatResponse(`This action removes a role`, role);
+    return formatResponse('Xóa nhiều vai trò thành công', roles);
   }
 }
