@@ -43,7 +43,10 @@ export class CategoriesService {
 
   async findOne(id: string) {
     const category = await this._prisma.categories.findUnique({
-      where: { isDeleted: false, id },
+      where: { id },
+      include: {
+        attributes: true,
+      },
     });
     return formatResponse(`This action returns a category`, category);
   }

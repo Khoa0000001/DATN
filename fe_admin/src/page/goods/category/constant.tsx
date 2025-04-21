@@ -4,10 +4,19 @@ import { formatDate } from "@/utils/formatDate";
 
 export interface DataType {
   id: string;
-  codeRole: string;
-  nameRole: string;
+  nameCategory: string;
   description: string;
   isDeleted: boolean;
+  attributes: [
+    {
+      id: string;
+      createDate: Date;
+      updateDate: Date;
+      nameAttribute: string;
+      description: string;
+      categoryId: string;
+    }
+  ];
   createDate: Date;
   updateDate: Date;
 }
@@ -16,16 +25,10 @@ export type Mode = "add" | "edit" | "view" | null;
 
 export const columns: ColumnsType<DataType> = [
   {
-    title: "Mã quyền",
-    dataIndex: "codeRole",
-    key: "codeRole",
-    sorter: (a, b) => a.codeRole.localeCompare(b.codeRole),
-  },
-  {
-    title: "Tên",
-    dataIndex: "nameRole",
-    key: "nameRole",
-    sorter: (a, b) => a.nameRole.localeCompare(b.nameRole),
+    title: "Tên Loại",
+    dataIndex: "nameCategory",
+    key: "nameCategory",
+    sorter: (a, b) => a.nameCategory.localeCompare(b.nameCategory),
   },
   {
     title: "Mô tả",

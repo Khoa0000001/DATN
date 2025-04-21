@@ -1,29 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useState } from "react";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { CustomTable } from "@/components/customAnt";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchCategories } from "@/store/slice/categorySlice";
+import {
+  fetchCategories,
+  fetchCategoryDetail,
+} from "@/store/slice/categorySlice";
 import DynamicModal from "@/components/DynamicModal";
 import { columns } from "./constant";
 import type { Mode } from "./constant";
-// import Add from "./components/Add";
-// import View from "./components/View";
+import Add from "./components/Add";
+import View from "./components/View";
 // import Update from "./components/Update";
 
 const RolePage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { roles, meta } = useAppSelector((status) => status.categories);
+  const { categories, meta } = useAppSelector((status) => status.categories);
 
-  //   const [modalMode, setModalMode] = useState<Mode>(null);
-  //   const [modalOpen, setModalOpen] = useState(false);
-  //   const [selectedData, setSelectedData] = useState<any>(null);
+  const [modalMode, setModalMode] = useState<Mode>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState<any>(null);
 
-  //   const openModal = (mode: Mode, data?: any) => {
-  //     setModalMode(mode);
-  //     setSelectedData(data || null);
-  //     setModalOpen(true);
-  //   };
+  const openModal = (mode: Mode, data?: any) => {
+    setModalMode(mode);
+    setSelectedData(data || null);
+    setModalOpen(true);
+  };
 
   const closeModal = () => setModalOpen(false);
 
@@ -31,18 +34,18 @@ const RolePage: React.FC = () => {
     console.log(data);
   };
 
-  const handleEditSubmit = async (data: any) => {
-    console.log(data);
+  // const handleEditSubmit = async (data: any) => {
+  //   console.log(data);
+  // };
+
+  const handleAdd = () => {
+    openModal("add");
   };
 
-  //   const handleAdd = () => {
-  //     openModal("add");
-  //   };
-
-  //   const handleView = async (record: any) => {
-  //     const { data } = await dispatch(fetchRoleDetail(record.id)).unwrap();
-  //     openModal("view", data);
-  //   };
+  const handleView = async (record: any) => {
+    const { data } = await dispatch(fetchCategoryDetail(record.id)).unwrap();
+    openModal("view", data);
+  };
 
   //   const handleEdit = async (record: any) => {
   //     const { data } = await dispatch(fetchRoleDetail(record.id)).unwrap();
@@ -68,7 +71,7 @@ const RolePage: React.FC = () => {
     <>
       <CustomTable
         columns={columns}
-        dataSource={roles}
+        dataSource={categories}
         total={meta?.total}
         dataFetch={(
           currentPage: number,
@@ -77,8 +80,8 @@ const RolePage: React.FC = () => {
         ) => {
           dataFetch(currentPage, pageSize, searchText);
         }}
-        // onAdd={handleAdd}
-        // onView={handleView}
+        onAdd={handleAdd}
+        onView={handleView}
         // onDelete={handleDelete}
         // onEdit={handleEdit}
         permissions={{
@@ -88,7 +91,7 @@ const RolePage: React.FC = () => {
           view: { roles: ["admin"] },
         }}
       />
-      {/* <DynamicModal
+      <DynamicModal
         open={modalOpen}
         onCancel={closeModal}
         title={
@@ -100,13 +103,13 @@ const RolePage: React.FC = () => {
         }
       >
         {modalMode === "add" && <Add onSubmit={handleAddSubmit} />}
-        {modalMode === "edit" && selectedData && (
+        {/* {modalMode === "edit" && selectedData && (
           <Update onSubmit={handleEditSubmit} data={selectedData} />
-        )}
+        )} */}
         {modalMode === "view" && selectedData && (
           <View data={selectedData} onClose={closeModal} />
         )}
-      </DynamicModal> */}
+      </DynamicModal>
     </>
   );
 };

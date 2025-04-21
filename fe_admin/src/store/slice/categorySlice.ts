@@ -28,11 +28,11 @@ export const fetchCategories = createAsyncThunk(
     }
   }
 );
-export const fetchRoleDetail = createAsyncThunk(
-  "roles/fetchRoleDetail",
+export const fetchCategoryDetail = createAsyncThunk(
+  "roles/fetchCategoryDetail",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/roles/${id}`);
+      const response = await axiosInstance.get(`/categories/${id}`);
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
@@ -104,16 +104,16 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // get detail role
-      .addCase(fetchRoleDetail.pending, (state) => {
+      // get detail
+      .addCase(fetchCategoryDetail.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchRoleDetail.fulfilled, (state, action) => {
+      .addCase(fetchCategoryDetail.fulfilled, (state, action) => {
         state.loading = false;
-        state.role = action.payload.data;
+        state.category = action.payload.data;
       })
-      .addCase(fetchRoleDetail.rejected, (state, action) => {
+      .addCase(fetchCategoryDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
