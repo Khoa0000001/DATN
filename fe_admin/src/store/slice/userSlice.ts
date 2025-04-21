@@ -43,6 +43,23 @@ export const fetchDetailUser = createAsyncThunk(
   }
 );
 
+export const editRoleUser = createAsyncThunk(
+  "users/editRoleUser",
+  async (data: { userId: string; roleIds: string[] }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        `/user-roles/edit-roles-of-user`,
+        data
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Fetch users failed"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "users",
   initialState,
@@ -72,6 +89,18 @@ const userSlice = createSlice({
         state.user = action.payload.data;
       })
       .addCase(fetchDetailUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      //edit roles of user
+      .addCase(editRoleUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(editRoleUser.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(editRoleUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

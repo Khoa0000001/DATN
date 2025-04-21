@@ -12,6 +12,7 @@ import {
 import { UserRolesService } from './user-roles.service';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { EditRolesDto } from './dto/edit-roles.dto';
 import { CheckId } from '@/common/Decorators/check-id.decorator';
 
 @Controller('user-roles')
@@ -20,9 +21,13 @@ export class UserRolesController {
 
   @Post()
   @CheckId('users', 'userId')
-  @CheckId('roles', 'roleId')
-  create(@Body() createUserRoleDto: CreateUserRoleDto) {
-    return this._userRolesService.create(createUserRoleDto);
+  create(@Body() editRolesDto: CreateUserRoleDto) {
+    return this._userRolesService.create(editRolesDto);
+  }
+  @Post('edit-roles-of-user')
+  @CheckId('users', 'userId')
+  EditRoles(@Body() editRolesDto: EditRolesDto) {
+    return this._userRolesService.editRoles(editRolesDto);
   }
 
   @Get()

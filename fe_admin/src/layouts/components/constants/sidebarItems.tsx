@@ -1,8 +1,8 @@
 import {
   UserOutlined,
-  ShoppingCartOutlined,
   SettingOutlined,
   CrownOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 
 export interface SidebarItem {
@@ -24,20 +24,25 @@ export const sidebarItems: SidebarItem[] = [
     // roles: ["admin"],
   },
   {
-    key: "orders",
-    label: "Đơn hàng",
-    icon: <ShoppingCartOutlined />,
+    key: "goods",
+    label: "Hàng hóa",
+    icon: <AppstoreOutlined />,
     roles: ["admin"],
     children: [
       {
-        key: "order-list",
-        label: "Danh sách đơn hàng",
-        path: "/orders",
+        key: "goods-list",
+        label: "Danh sách sản phẩm",
+        path: "/products",
       },
       {
-        key: "order-report",
-        label: "Báo cáo đơn hàng",
-        path: "/orders/report",
+        key: "goods-history",
+        label: "Lịch sử bán",
+        path: "/products/history",
+      },
+      {
+        key: "categories",
+        label: "Danh sách loại sản phẩm",
+        path: "/categories",
       },
     ],
   },

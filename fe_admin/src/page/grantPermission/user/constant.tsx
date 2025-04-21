@@ -8,9 +8,11 @@ export interface DataType {
   email: string;
   phone: string;
   address: string;
+  profilePicture: string;
   userRoles: [
     {
       role: {
+        id: string;
         nameRole: string;
       };
     }
@@ -21,7 +23,7 @@ export interface DataType {
   updateDate: Date;
 }
 
-export type Mode = "add-permission" | "view" | null;
+export type Mode = "edit-permission" | "view" | null;
 
 export const columns: ColumnsType<DataType> = [
   {
@@ -53,13 +55,13 @@ export const columns: ColumnsType<DataType> = [
     dataIndex: "userRoles",
     key: "userRoles",
     render: (roles: DataType["userRoles"]) => (
-      <>
+      <div className="flex flex-wrap gap-2">
         {roles.map((roleObj, index) => (
           <Tag color="blue" key={index}>
             {roleObj.role.nameRole}
           </Tag>
         ))}
-      </>
+      </div>
     ),
   },
   {
@@ -69,7 +71,7 @@ export const columns: ColumnsType<DataType> = [
     align: "center" as const,
     sorter: (a, b) => Number(b.isDeleted) - Number(a.isDeleted), // true > false
     render: (isDeleted: boolean) => (
-      <Tag color={isDeleted ? "green" : "volcano"}>
+      <Tag color={isDeleted ? "volcano" : "green"}>
         {isDeleted ? "Đã xóa" : "Chưa xóa"}
       </Tag>
     ),

@@ -14,11 +14,17 @@ export class CategoriesService {
     return formatResponse('category created successfully', category);
   }
 
-  async findAll(page?: number, limit?: number) {
+  async findAll(page?: number, limit?: number, search?: string) {
+    const where: any = {
+      isDeleted: false,
+    };
+
+    if (search) {
+      where.OR = [{ nameCategory: { contains: search } }];
+    }
+
     const queryOptions: any = {
-      where: {
-        isDeleted: false,
-      },
+      where,
     };
     if (page && limit) {
       queryOptions.skip = (page - 1) * limit;
@@ -26,9 +32,7 @@ export class CategoriesService {
     }
     const categories = await this._prisma.categories.findMany(queryOptions);
     const totalCategories = await this._prisma.categories.count({
-      where: {
-        isDeleted: false,
-      },
+      where,
     });
     return formatResponse(`This action returns all categories`, categories, {
       page,

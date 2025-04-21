@@ -1,13 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useState } from "react";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { CustomTable } from "@/components/customAnt";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchUsers, fetchDetailUser } from "@/store/slice/userSlice";
+import {
+  fetchUsers,
+  fetchDetailUser,
+  editRoleUser,
+} from "@/store/slice/userSlice";
 import DynamicModal from "@/components/DynamicModal";
 import { columns } from "./constant";
 import type { Mode } from "./constant";
 import View from "./components/View";
+import EditPermission from "./components/EditPermission";
 
 const RolePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -30,17 +35,22 @@ const RolePage: React.FC = () => {
     openModal("view", data);
   };
 
-  //   const handleDelete = async (records: any[], callback?: () => void) => {
-  //     const ids = records.map((_: any) => _.id);
-  //     const { success } = await dispatch(deleteRole(ids)).unwrap();
-  //     if (success) {
-  //       toast.success("Xóa thành công.");
-  //       dataFetch(1, meta?.limit || 10, "");
-  //       callback?.(); // Gọi callback để clear selection
-  //     } else {
-  //       toast.error("Xóa thất bại.");
-  //     }
-  //   };
+  const handleEditSubmit = async (data: any) => {
+    console.log(data);
+    try {
+      await dispatch(editRoleUser(data)).unwrap();
+      toast.success("Tạo thành công.");
+      dataFetch(1, meta?.limit || 10, "");
+      closeModal();
+    } catch (err) {
+      toast.error("Cập nhật thất bại.");
+      console.log(err);
+    }
+  };
+
+  const handleEdit = async (record: any) => {
+    openModal("edit-permission", record);
+  };
 
   const dataFetch = useCallback(
     (currentPage: number, pageSize: number, searchText: string) => {
@@ -65,7 +75,7 @@ const RolePage: React.FC = () => {
           dataFetch(currentPage, pageSize, searchText);
         }}
         onView={handleView}
-        // onDelete={handleDelete}
+        onEdit={handleEdit}
         permissions={{
           delete: { roles: ["admin"] },
           view: { roles: ["admin"] },
@@ -75,11 +85,14 @@ const RolePage: React.FC = () => {
         open={modalOpen}
         onCancel={closeModal}
         title={
-          modalMode === "add-permission" ? "Cấp quyền" : "Chi tiết vai trò"
+          modalMode === "edit-permission" ? "Cấp quyền" : "Chi tiết vai trò"
         }
       >
         {modalMode === "view" && selectedData && (
           <View data={selectedData} onClose={closeModal} />
+        )}
+        {modalMode === "edit-permission" && selectedData && (
+          <EditPermission onSubmit={handleEditSubmit} data={selectedData} />
         )}
       </DynamicModal>
     </>

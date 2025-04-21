@@ -6,6 +6,7 @@ import { CustomInput } from "@/components/customAnt";
 import { toast } from "react-toastify";
 import { registerUser } from "@/store/slice/authSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
@@ -18,24 +19,29 @@ const RegisterPage = () => {
     resolver: yupResolver(schemaRegister),
   });
   const dispatch = useAppDispatch();
-  const onSubmit = (data: RegisterFormData) => {
+  const navigate = useNavigate();
+  const onSubmit = async (data: RegisterFormData) => {
     const newData = {
       email: data.email,
       password: data.confirmPassword,
       nameUser: data.name,
     };
-    toast.promise(
-      dispatch(registerUser(newData)).unwrap(), // unwrap() sẽ giúp bắt lỗi reject với action đã được xử lý
-      {
-        pending: "Đang đăng ký ...", // Trạng thái đang đợi
-        success: "Vui long kiểm tra email.", // Trạng thái thành công
-        error: {
-          render() {
-            return <span>😢 {"Đăng nhập thất bại"}</span>; // Hiển thị lỗi nếu có
-          },
+    const registerPromise = dispatch(registerUser(newData)).unwrap(); // unwrap() sẽ giúp bắt lỗi reject với action đã được xử lý
+    toast.promise(registerPromise, {
+      pending: "Đang đăng ký ...", // Trạng thái đang đợi
+      success: "Vui long kiểm tra email.", // Trạng thái thành công
+      error: {
+        render() {
+          return <span>😢 {"Đăng nhập thất bại"}</span>; // Hiển thị lỗi nếu có
         },
-      }
-    );
+      },
+    });
+    try {
+      await registerPromise;
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (

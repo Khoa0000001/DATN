@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { EditRolesDto } from './dto/edit-roles.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { formatResponse } from '@/utils/response.util';
 
@@ -13,6 +14,38 @@ export class UserRolesService {
       data: createUserRoleDto,
     });
     return formatResponse('UserRolers created successfully ', userRoles);
+  }
+
+  async editRoles(editRolesDto: EditRolesDto) {
+    // Kiểm tra các roleId có tồn tại trong bảng roles hay không
+    const roles = await this._prisma.roles.findMany({
+      where: {
+        id: {
+          in: editRolesDto.roleIds, // Lọc theo danh sách các roleId
+        },
+      },
+    });
+
+    if (roles.length !== editRolesDto.roleIds.length) {
+      throw new BadRequestException('Một hoặc nhiều roleId không tồn tại');
+    }
+    // Xóa tất cả userRoles hiện tại của userId để đảm bảo chỉ có 1 userRole duy nhất
+    await this._prisma.userRoles.deleteMany({
+      where: { userId: editRolesDto.userId },
+    });
+
+    // Tạo mảng các đối tượng cho phép tạo nhiều bản ghi userRoles
+    const userRolesData = editRolesDto.roleIds.map((roleId) => ({
+      userId: editRolesDto.userId,
+      roleId,
+    }));
+
+    // Tạo mới userRoles với các roleId đã chọn
+    const userRoles = await this._prisma.userRoles.createMany({
+      data: userRolesData,
+    });
+
+    return formatResponse('UserRoles updated successfully', userRoles);
   }
 
   async findAll(page?: number, limit?: number) {

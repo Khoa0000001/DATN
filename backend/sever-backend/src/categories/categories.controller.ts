@@ -24,9 +24,15 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+  ) {
     const pageNum = Number(page);
     const limitNum = Number(limit);
+    const newSearch =
+      search && search.trim().length > 0 ? search.trim() : undefined;
     if (page && limit) {
       if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
         throw new BadRequestException(
@@ -34,7 +40,7 @@ export class CategoriesController {
         );
       }
     }
-    return this._categoriesService.findAll(pageNum, limitNum);
+    return this._categoriesService.findAll(pageNum, limitNum, newSearch);
   }
 
   @Get(':id')
