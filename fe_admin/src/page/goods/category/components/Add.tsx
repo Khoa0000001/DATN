@@ -1,17 +1,14 @@
 import React from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { Button, Form, Input, Space, Typography, Divider } from "antd";
+import { Button, Form, Input, Divider, Card, Row, Col, Space } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { InferType } from "yup";
 
-const { Title } = Typography;
-
-// Cập nhật schema để bỏ qua validation cho description và attributes
 const schema = yup.object({
   nameCategory: yup.string().required("Tên danh mục không được để trống"),
-  description: yup.string().default(""), // ✅ fix chỗ này
+  description: yup.string().default(""),
   attributes: yup
     .array()
     .of(
@@ -19,11 +16,12 @@ const schema = yup.object({
         nameAttribute: yup
           .string()
           .required("Tên thuộc tính không được để trống"),
-        description: yup.string().default(""), // ✅ và ở đây luôn
+        description: yup.string().default(""),
       })
     )
     .required(),
 });
+
 type CategoryInput = InferType<typeof schema>;
 
 interface Props {
@@ -36,12 +34,13 @@ const Add: React.FC<Props> = ({ onSubmit, loading }) => {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<CategoryInput>({
     resolver: yupResolver(schema),
     defaultValues: {
       nameCategory: "",
-      description: "", // description có thể là chuỗi rỗng hoặc không có giá trị
-      attributes: [], // Không có thuộc tính nào lúc đầu
+      description: "",
+      attributes: [],
     },
   });
 
@@ -52,98 +51,130 @@ const Add: React.FC<Props> = ({ onSubmit, loading }) => {
 
   return (
     <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
-      <Title level={4}>Thông tin danh mục</Title>
+      <Row gutter={24}>
+        {/* BÊN TRÁI - TẠO DANH MỤC */}
+        <Col span={12}>
+          <Card title="Tạo danh mục mới" variant="borderless">
+            <Form.Item
+              label="Tên danh mục"
+              validateStatus={errors.nameCategory ? "error" : ""}
+              help={errors.nameCategory?.message}
+            >
+              <Controller
+                name="nameCategory"
+                control={control}
+                render={({ field }) => (
+                  <Input placeholder="Nhập tên danh mục" {...field} />
+                )}
+              />
+            </Form.Item>
 
-      <Form.Item
-        label="Tên danh mục"
-        validateStatus={errors.nameCategory ? "error" : ""}
-        help={errors.nameCategory?.message}
-      >
-        <Controller
-          name="nameCategory"
-          control={control}
-          render={({ field }) => <Input {...field} />}
-        />
-      </Form.Item>
+            <Form.Item
+              label="Mô tả danh mục"
+              validateStatus={errors.description ? "error" : ""}
+              help={errors.description?.message}
+            >
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <Input.TextArea
+                    rows={3}
+                    placeholder="Nhập mô tả"
+                    {...field}
+                  />
+                )}
+              />
+            </Form.Item>
+          </Card>
+        </Col>
 
-      <Form.Item
-        label="Mô tả"
-        validateStatus={errors.description ? "error" : ""}
-        help={errors.description?.message}
-      >
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => <Input.TextArea rows={4} {...field} />}
-        />
-      </Form.Item>
+        {/* BÊN PHẢI - THUỘC TÍNH */}
+        <Col span={12}>
+          <Card title="Danh sách thuộc tính" variant="borderless">
+            <div style={{ maxHeight: 400, overflowY: "auto", paddingRight: 8 }}>
+              {fields.map((field, index) => (
+                <Card
+                  key={field.id}
+                  type="inner"
+                  size="small"
+                  title={`Thuộc tính #${index + 1}`}
+                  style={{ marginBottom: 16 }}
+                  extra={
+                    <Button
+                      size="small"
+                      danger
+                      icon={<MinusCircleOutlined />}
+                      onClick={() => remove(index)}
+                    >
+                      Xóa
+                    </Button>
+                  }
+                >
+                  <Form.Item
+                    label="Tên thuộc tính"
+                    validateStatus={
+                      errors.attributes?.[index]?.nameAttribute ? "error" : ""
+                    }
+                    help={errors.attributes?.[index]?.nameAttribute?.message}
+                  >
+                    <Controller
+                      name={`attributes.${index}.nameAttribute`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input placeholder="Tên thuộc tính" {...field} />
+                      )}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Mô tả thuộc tính"
+                    validateStatus={
+                      errors.attributes?.[index]?.description ? "error" : ""
+                    }
+                    help={errors.attributes?.[index]?.description?.message}
+                  >
+                    <Controller
+                      name={`attributes.${index}.description`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input.TextArea
+                          rows={2}
+                          placeholder="Mô tả"
+                          {...field}
+                        />
+                      )}
+                    />
+                  </Form.Item>
+                </Card>
+              ))}
+            </div>
+
+            <Form.Item>
+              <Button
+                type="dashed"
+                onClick={() => append({ nameAttribute: "", description: "" })}
+                block
+                icon={<PlusOutlined />}
+              >
+                Thêm thuộc tính
+              </Button>
+            </Form.Item>
+          </Card>
+        </Col>
+      </Row>
 
       <Divider />
 
-      <Title level={4}>Danh sách thuộc tính</Title>
-
-      {fields.map((field, index) => (
-        <Space
-          key={field.id}
-          direction="vertical"
-          style={{ display: "flex", marginBottom: 16 }}
-        >
-          <Form.Item
-            label={`Tên thuộc tính #${index + 1}`}
-            validateStatus={
-              errors.attributes?.[index]?.nameAttribute ? "error" : ""
-            }
-            help={errors.attributes?.[index]?.nameAttribute?.message}
-          >
-            <Controller
-              name={`attributes.${index}.nameAttribute`}
-              control={control}
-              render={({ field }) => <Input {...field} />}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Mô tả thuộc tính"
-            validateStatus={
-              errors.attributes?.[index]?.description ? "error" : ""
-            }
-            help={errors.attributes?.[index]?.description?.message}
-          >
-            <Controller
-              name={`attributes.${index}.description`}
-              control={control}
-              render={({ field }) => <Input.TextArea rows={3} {...field} />}
-            />
-          </Form.Item>
-
-          {fields.length > 0 && (
-            <Button
-              danger
-              onClick={() => remove(index)}
-              icon={<MinusCircleOutlined />}
-            >
-              Xóa thuộc tính
-            </Button>
-          )}
-          <Divider />
-        </Space>
-      ))}
-
-      <Form.Item>
-        <Button
-          type="dashed"
-          onClick={() => append({ nameAttribute: "", description: "" })}
-          block
-          icon={<PlusOutlined />}
-        >
-          Thêm thuộc tính
-        </Button>
-      </Form.Item>
-
       <Form.Item style={{ textAlign: "right" }}>
-        <Button type="primary" htmlType="submit" loading={loading}>
-          Tạo danh mục
-        </Button>
+        <Space>
+          <Button htmlType="button" onClick={() => reset()}>
+            Reset
+          </Button>
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Tạo danh mục
+          </Button>
+        </Space>
       </Form.Item>
     </Form>
   );

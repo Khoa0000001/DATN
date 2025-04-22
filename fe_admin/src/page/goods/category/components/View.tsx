@@ -26,13 +26,13 @@ const View: React.FC<Props> = ({ data, onClose }) => {
         <Col xs={24} md={12}>
           <Card
             title={<Title level={5}>📁 Thông tin loại sản phẩm</Title>}
-            bordered
+            variant="borderless"
             size="small"
           >
             <Descriptions
               column={1}
               size="middle"
-              labelStyle={{ width: "120px", fontWeight: 500 }}
+              styles={{ label: { width: "120px", fontWeight: 500 } }}
             >
               <Descriptions.Item label="Tên danh mục">
                 {data.nameCategory || <Text type="secondary">Không có</Text>}
@@ -54,9 +54,11 @@ const View: React.FC<Props> = ({ data, onClose }) => {
         <Col xs={24} md={12}>
           <Card
             title={<Title level={5}>📌 Danh sách thuộc tính</Title>}
-            bordered
+            variant="borderless"
             size="small"
-            bodyStyle={{ maxHeight: 400, overflowY: "auto", paddingRight: 12 }}
+            styles={{
+              body: { maxHeight: 400, overflowY: "auto", paddingRight: 12 },
+            }}
           >
             {data.attributes.length > 0 ? (
               data.attributes.map((attr, index) => (
@@ -66,7 +68,7 @@ const View: React.FC<Props> = ({ data, onClose }) => {
                     column={1}
                     size="small"
                     bordered
-                    labelStyle={{ width: "130px", fontWeight: 500 }}
+                    styles={{ label: { width: "130px", fontWeight: 500 } }}
                   >
                     <Descriptions.Item label="Tên thuộc tính">
                       {attr.nameAttribute || "—"}

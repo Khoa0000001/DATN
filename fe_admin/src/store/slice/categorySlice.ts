@@ -41,28 +41,28 @@ export const fetchCategoryDetail = createAsyncThunk(
     }
   }
 );
-export const createRole = createAsyncThunk(
-  "roles/createRole",
+export const createCategory = createAsyncThunk(
+  "roles/createCategory",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/roles`, data);
+      const response = await axiosInstance.post(`/categories`, data);
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
-        err?.response?.data?.message || "Fetch roles failed"
+        err?.response?.data?.message || "Fetch categories failed"
       );
     }
   }
 );
 
-export const updateRole = createAsyncThunk(
-  "roles/updateRole",
+export const updateCategory = createAsyncThunk(
+  "roles/updateCategory",
   async (data: any, { rejectWithValue }) => {
     try {
       delete data.createDate;
       delete data.updateDate;
       const { id, ...rest } = data;
-      const response = await axiosInstance.patch(`/roles/${id}`, rest);
+      const response = await axiosInstance.patch(`/categories/${id}`, rest);
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
@@ -117,27 +117,27 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // add role
-      .addCase(createRole.pending, (state) => {
+      // add
+      .addCase(createCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createRole.fulfilled, (state) => {
+      .addCase(createCategory.fulfilled, (state) => {
         state.loading = false;
       })
-      .addCase(createRole.rejected, (state, action) => {
+      .addCase(createCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // update role
-      .addCase(updateRole.pending, (state) => {
+      // update
+      .addCase(updateCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateRole.fulfilled, (state) => {
+      .addCase(updateCategory.fulfilled, (state) => {
         state.loading = false;
       })
-      .addCase(updateRole.rejected, (state, action) => {
+      .addCase(updateCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

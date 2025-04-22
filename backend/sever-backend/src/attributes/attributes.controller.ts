@@ -3,15 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Query,
   BadRequestException,
 } from '@nestjs/common';
 import { AttributesService } from './attributes.service';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
-import { UpdateAttributeDto } from './dto/update-attribute.dto';
+// import { UpdateAttributeDto } from './dto/update-attribute.dto';
 import { CheckId } from '@/common/Decorators/check-id.decorator';
 
 @Controller('attributes')
@@ -20,8 +18,8 @@ export class AttributesController {
 
   @Post()
   @CheckId('categories', 'categoryId')
-  create(@Body() createAttributeDto: CreateAttributeDto) {
-    return this._attributesService.create(createAttributeDto);
+  create(@Body() createAttributeDto: CreateAttributeDto[]) {
+    return this._attributesService.createMany(createAttributeDto);
   }
 
   @Get()
@@ -44,19 +42,19 @@ export class AttributesController {
     return this._attributesService.findOne(id);
   }
 
-  @Patch(':id')
-  @CheckId('attributes', 'id')
-  @CheckId('categories', 'categoryId')
-  update(
-    @Param('id') id: string,
-    @Body() updateAttributeDto: UpdateAttributeDto,
-  ) {
-    return this._attributesService.update(id, updateAttributeDto);
-  }
+  // @Patch(':id')
+  // @CheckId('attributes', 'id')
+  // @CheckId('categories', 'categoryId')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateAttributeDto: UpdateAttributeDto,
+  // ) {
+  //   return this._attributesService.update(id, updateAttributeDto);
+  // }
 
-  @Delete(':id')
-  @CheckId('attributes', 'id')
-  remove(@Param('id') id: string) {
-    return this._attributesService.remove(id);
-  }
+  // @Delete(':id')
+  // @CheckId('attributes', 'id')
+  // remove(@Param('id') id: string) {
+  //   return this._attributesService.remove(id);
+  // }
 }

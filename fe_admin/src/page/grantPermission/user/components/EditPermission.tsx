@@ -9,6 +9,7 @@ import CustomSelect from "@/components/customAnt/CustomSelect";
 interface Role {
   id: string;
   nameRole: string;
+  codeRole: string;
 }
 
 interface DataType {
@@ -69,7 +70,7 @@ const EditPermission: React.FC<Props> = ({ onSubmit, loading, data }) => {
   }, [data, reset]);
 
   return (
-    <Card bordered={false} className=" mx-auto p-6">
+    <Card variant="borderless" className=" mx-auto p-6">
       <Row gutter={16}>
         {/* User Profile Section */}
         <Col span={8} className="text-center mb-5">
@@ -123,7 +124,13 @@ const EditPermission: React.FC<Props> = ({ onSubmit, loading, data }) => {
                     fetchData={fetchRoles}
                     dataType="roles"
                     itemField="nameRole"
-                    limit={3}
+                    limit={10}
+                    defaultValues={data.userRoles.map((_) => _.role)}
+                    renderItem={(item) => (
+                      <div>
+                        <strong>{item.codeRole}</strong> -{item.nameRole}
+                      </div>
+                    )}
                   />
                 )}
               />

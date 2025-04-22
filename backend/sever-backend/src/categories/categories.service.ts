@@ -1,17 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { UpdateCategoryDto, Attributes } from './dto/update-category.dto';
+import { UpdateAttributeDto } from '@/attributes/dto/update-attribute.dto';
+import { CreateAttributeDto } from '@/attributes/dto/create-attribute.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { formatResponse } from '@/utils/response.util';
+import { AttributesService } from '@/attributes/attributes.service';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly _prisma: PrismaService) {}
+  constructor(
+    private readonly _prisma: PrismaService,
+    private readonly _attribute: AttributesService,
+  ) {}
   async create(createCategoryDto: CreateCategoryDto) {
+    const { attributes, ...dataCategory } = createCategoryDto;
     const category = await this._prisma.categories.create({
-      data: createCategoryDto,
+      data: dataCategory,
     });
-    return formatResponse('category created successfully', category);
+    const newAttributes = attributes.map((attribute) => ({
+      ...attribute,
+      categoryId: category.id,
+    }));
+    if (attributes && attributes.length > 0) {
+      await this._attribute.createMany(newAttributes);
+    }
+    return formatResponse('category created successfully', {
+      category,
+    });
   }
 
   async findAll(page?: number, limit?: number, search?: string) {
@@ -52,11 +68,32 @@ export class CategoriesService {
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    const category = await this._prisma.categories.update({
-      where: { isDeleted: false, id },
-      data: updateCategoryDto,
+    const { attributes, deletedAttributeIds, ...dataCategory } =
+      updateCategoryDto;
+    const editAttributes: UpdateAttributeDto[] = [];
+    const addAttributes: CreateAttributeDto[] = [];
+    attributes.forEach((_) => {
+      if (_.id) {
+        editAttributes.push(_);
+      } else {
+        addAttributes.push(_);
+      }
     });
-    return formatResponse(`This action updates a category`, category);
+    try {
+      const category = await this._prisma.categories.update({
+        where: { isDeleted: false, id },
+        data: dataCategory,
+      });
+      if (deletedAttributeIds)
+        await this._attribute.removeMany(deletedAttributeIds);
+
+      if (editAttributes) await this._attribute.updateMany(editAttributes);
+      if (addAttributes) await this._attribute.createMany(addAttributes);
+
+      return formatResponse(`This action updates a category`, category);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async remove(id: string) {

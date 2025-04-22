@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
 import { UpdateAttributeDto } from './dto/update-attribute.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -7,11 +7,11 @@ import { formatResponse } from '@/utils/response.util';
 @Injectable()
 export class AttributesService {
   constructor(private readonly _prisma: PrismaService) {}
-  async create(createAttributeDto: CreateAttributeDto) {
-    const attribute = await this._prisma.attributes.create({
-      data: createAttributeDto,
+  async createMany(attributes: CreateAttributeDto[]) {
+    await this._prisma.attributes.createMany({
+      data: attributes,
     });
-    return formatResponse('Attribute created successfully', attribute);
+    return formatResponse('Attributes created successfully');
   }
 
   async findAll(page?: number, limit?: number) {
@@ -36,18 +36,48 @@ export class AttributesService {
     return formatResponse(`This action returns a attribute`, attribute);
   }
 
-  async update(id: string, updateAttributeDto: UpdateAttributeDto) {
-    const attribute = await this._prisma.attributes.update({
-      where: { id },
-      data: updateAttributeDto,
-    });
-    return formatResponse(`This action updates attribute`, attribute);
+  async updateMany(attributes: UpdateAttributeDto[]) {
+    const updatedAttributes: {
+      id: string;
+      nameAttribute: string;
+      description: string | null;
+      createDate: Date;
+      updateDate: Date;
+      categoryId: string;
+    }[] = [];
+
+    for (const attr of attributes) {
+      const updated = await this._prisma.attributes.update({
+        where: { id: attr.id },
+        data: {
+          nameAttribute: attr.nameAttribute,
+          description: attr.description,
+        },
+      });
+      updatedAttributes.push(updated);
+    }
+
+    return formatResponse(
+      `${updatedAttributes.length} attributes đã được cập nhật.`,
+      updatedAttributes,
+    );
   }
 
-  async remove(id: string) {
-    const attribute = await this._prisma.attributes.delete({
-      where: { id },
+  async removeMany(ids: string[]) {
+    const attributes = await this._prisma.attributes.findMany({
+      where: { id: { in: ids } },
     });
-    return formatResponse(`This action removes a attribute`, attribute);
+
+    if (attributes.length !== ids.length) {
+      throw new BadRequestException('Một số ID không tồn tại trong hệ thống');
+    }
+
+    const result = await this._prisma.attributes.deleteMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+
+    return formatResponse(`${result.count} attributes đã được xoá.`, result);
   }
 }

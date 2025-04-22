@@ -14,6 +14,8 @@ interface CustomSelectProps {
   dataType: string;
   itemField: string;
   limit: number;
+  defaultValues: any[];
+  renderItem?: (item: any) => React.ReactNode;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -25,6 +27,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   dataType,
   itemField,
   limit,
+  defaultValues,
+  renderItem,
 }) => {
   const dispatch = useAppDispatch();
   const data = useAppSelector(
@@ -33,12 +37,13 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const items = data[dataType];
   const { loading, meta } = data;
 
-  const [localItems, setLocalItems] = useState<any[]>([]);
+  const [localItems, setLocalItems] = useState<any[]>(defaultValues);
 
   // Fetch initial data
   useEffect(() => {
+    console.log(defaultValues);
     dispatch(fetchData({ page: 1, limit }));
-    setLocalItems([]); // Reset localItems
+    setLocalItems([]);
   }, [dispatch, fetchData, limit]);
 
   // Infinite scroll
@@ -82,7 +87,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     >
       {localItems.map((item: any) => (
         <Option key={item.id} value={item.id}>
-          {item[itemField]}
+          {renderItem ? renderItem(item) : item[itemField]}
         </Option>
       ))}
     </Select>

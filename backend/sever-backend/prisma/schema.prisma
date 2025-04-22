@@ -141,7 +141,7 @@ model Attributes {
   id              String            @id @default(uuid())
   createDate      DateTime          @default(now())
   updateDate      DateTime          @updatedAt
-  nameAttribute   String            @unique
+  nameAttribute   String            
   description     String?
   attributeValues AttributeValues[]
   category        Categories        @relation(fields: [categoryId], references: [id], onDelete: Cascade)

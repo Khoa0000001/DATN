@@ -57,7 +57,8 @@ export class UsersService {
             role: {
               select: {
                 id: true,
-                nameRole: true, // 👈 Thêm dòng này để lấy tên role
+                nameRole: true,
+                codeRole: true, // 👈 Thêm dòng này để lấy tên role
               },
             },
           },
@@ -114,7 +115,8 @@ export class UsersService {
             role: {
               select: {
                 id: true,
-                nameRole: true, // 👈 Thêm dòng này để lấy tên role
+                nameRole: true,
+                codeRole: true, // 👈 Thêm dòng này để lấy tên role
               },
             },
           },

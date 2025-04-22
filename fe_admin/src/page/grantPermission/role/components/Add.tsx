@@ -13,7 +13,7 @@ interface FormData {
 const schema = yup.object({
   codeRole: yup.string().required("Mã quyền không được để trống"),
   nameRole: yup.string().required("Tên vai trò không được để trống"),
-  description: yup.string().required("Mô tả không được để trống"),
+  description: yup.string().default(""),
 });
 
 interface Props {
