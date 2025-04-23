@@ -28,6 +28,35 @@ export class AttributesService {
       total: totalAttributes,
     });
   }
+  async getListAttributeByCategoryId(
+    categoryId: string,
+    page?: number,
+    limit?: number,
+  ) {
+    const queryOptions: any = {
+      where: {
+        categoryId: categoryId, // lọc theo categoryId
+      },
+    };
+
+    if (page && limit) {
+      queryOptions.skip = (page - 1) * limit;
+      queryOptions.take = limit;
+    }
+
+    const attributes = await this._prisma.attributes.findMany(queryOptions);
+    const totalAttributes = await this._prisma.attributes.count({
+      where: {
+        categoryId: categoryId, // cũng cần đếm theo điều kiện này
+      },
+    });
+
+    return formatResponse(`Danh sách thuộc tính theo categoryId`, attributes, {
+      page,
+      limit,
+      total: totalAttributes,
+    });
+  }
 
   async findOne(id: string) {
     const attribute = await this._prisma.attributes.findUnique({
@@ -64,12 +93,15 @@ export class AttributesService {
   }
 
   async removeMany(ids: string[]) {
+    console.log('ids', ids);
     const attributes = await this._prisma.attributes.findMany({
       where: { id: { in: ids } },
     });
 
     if (attributes.length !== ids.length) {
-      throw new BadRequestException('Một số ID không tồn tại trong hệ thống');
+      throw new BadRequestException(
+        'Một số ID attributes xóa không tồn tại trong hệ thống',
+      );
     }
 
     const result = await this._prisma.attributes.deleteMany({

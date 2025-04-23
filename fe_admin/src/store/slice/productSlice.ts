@@ -3,46 +3,46 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axiosInstance";
 
 const initialState: any = {
-  categories: [],
+  products: [],
   meta: {},
-  category: {},
+  product: {},
   loading: false,
   error: null,
 };
 
-export const fetchCategories = createAsyncThunk(
-  "categories/fetchCategories",
+export const fetchProducts = createAsyncThunk(
+  "products/fetchProducts",
   async (
     credentials: { page?: number; limit?: number; search?: string },
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.get(`/categories`, {
+      const response = await axiosInstance.get(`/products`, {
         params: credentials,
       });
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
-        err?.response?.data?.message || "Fetch categories failed"
+        err?.response?.data?.message || "Fetch products failed"
       );
     }
   }
 );
-export const fetchCategoryDetail = createAsyncThunk(
-  "categories/fetchCategoryDetail",
+export const fetchProductDetail = createAsyncThunk(
+  "products/fetchProductDetail",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/categories/${id}`);
+      const response = await axiosInstance.get(`/products/${id}`);
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
-        err?.response?.data?.message || "Fetch categories failed"
+        err?.response?.data?.message || "Fetch products failed"
       );
     }
   }
 );
 export const createCategory = createAsyncThunk(
-  "categories/createCategory",
+  "products/createCategory",
   async (data, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(`/categories`, data);
@@ -56,7 +56,7 @@ export const createCategory = createAsyncThunk(
 );
 
 export const updateCategory = createAsyncThunk(
-  "categories/updateCategory",
+  "products/updateCategory",
   async (data: any, { rejectWithValue }) => {
     try {
       delete data.createDate;
@@ -72,7 +72,7 @@ export const updateCategory = createAsyncThunk(
   }
 );
 export const deleteCategory = createAsyncThunk(
-  "categories/deleteCategory",
+  "products/deleteCategory",
   async (ids: string[], { rejectWithValue }) => {
     try {
       const response = await axiosInstance.delete(`/categories`, {
@@ -86,36 +86,51 @@ export const deleteCategory = createAsyncThunk(
     }
   }
 );
+export const fetchAttributeByCategoryId = createAsyncThunk(
+  "attributes/fetchAttributeByCategoryId",
+  async (CategoryId, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `/attributes/getList-attribute-by-categoryId/${CategoryId}`
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Fetch AttributeByCategoryId failed"
+      );
+    }
+  }
+);
 
 const userSlice = createSlice({
-  name: "categories",
+  name: "products",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCategories.pending, (state) => {
+      .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchCategories.fulfilled, (state, action) => {
+      .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.categories = action.payload.data;
+        state.products = action.payload.data;
         state.meta = action.payload.meta;
       })
-      .addCase(fetchCategories.rejected, (state, action) => {
+      .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
       // get detail
-      .addCase(fetchCategoryDetail.pending, (state) => {
+      .addCase(fetchProductDetail.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchCategoryDetail.fulfilled, (state, action) => {
+      .addCase(fetchProductDetail.fulfilled, (state, action) => {
         state.loading = false;
-        state.category = action.payload.data;
+        state.product = action.payload.data;
       })
-      .addCase(fetchCategoryDetail.rejected, (state, action) => {
+      .addCase(fetchProductDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -152,6 +167,18 @@ const userSlice = createSlice({
         state.loading = false;
       })
       .addCase(deleteCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetchAttributeByCategoryId
+      .addCase(fetchAttributeByCategoryId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAttributeByCategoryId.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(fetchAttributeByCategoryId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

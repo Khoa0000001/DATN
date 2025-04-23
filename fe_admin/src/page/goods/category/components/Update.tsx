@@ -7,6 +7,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { InferType } from "yup";
 
+// 👉 Chuẩn hóa dữ liệu đầu vào trước khi đưa vào form
+const mapInitialData = (data: any): CategoryInput => ({
+  id: data.id,
+  nameCategory: data.nameCategory,
+  description: data.description || "",
+  attributes:
+    data.attributes?.map((attr: any) => ({
+      id: attr.id,
+      nameAttribute: attr.nameAttribute,
+      description: attr.description || "",
+    })) || [],
+});
+
 const schema = yup.object({
   id: yup.string().default(""),
   nameCategory: yup.string().required("Tên danh mục không được để trống"),
@@ -33,19 +46,6 @@ interface Props {
   data: CategoryInput;
 }
 
-// 👉 Clean data trước khi set vào defaultValues
-const mapInitialData = (data: any): CategoryInput => ({
-  id: data.id,
-  nameCategory: data.nameCategory,
-  description: data.description || "",
-  attributes:
-    data.attributes?.map((attr: any) => ({
-      id: attr.id,
-      nameAttribute: attr.nameAttribute,
-      description: attr.description || "",
-    })) || [],
-});
-
 const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
   const [deletedAttributeIds, setDeletedAttributeIds] = useState<string[]>([]);
 
@@ -57,17 +57,19 @@ const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
   } = useForm<CategoryInput>({
     resolver: yupResolver(schema),
     defaultValues: mapInitialData(data),
+    shouldUnregister: true,
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "attributes",
+    keyName: "_id",
   });
 
   useEffect(() => {
     if (data) {
-      reset(data);
-      setDeletedAttributeIds([]); // reset danh sách xóa khi nhận data mới
+      reset(mapInitialData(data));
+      setDeletedAttributeIds([]);
     }
   }, [data, reset]);
 
@@ -122,7 +124,7 @@ const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
             <div style={{ maxHeight: 400, overflowY: "auto", paddingRight: 8 }}>
               {fields.map((field, index) => (
                 <Card
-                  key={field.id}
+                  key={field._id}
                   type="inner"
                   size="small"
                   title={`Thuộc tính #${index + 1}`}
@@ -139,7 +141,7 @@ const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
                           );
                         const attrId = field.id;
                         if (attrId && isUUID(attrId)) {
-                          setDeletedAttributeIds((prev) => [...prev, field.id]);
+                          setDeletedAttributeIds((prev) => [...prev, attrId]);
                         }
                         remove(index);
                       }}
@@ -207,7 +209,7 @@ const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
           <Button
             htmlType="button"
             onClick={() => {
-              reset(data);
+              reset(mapInitialData(data));
               setDeletedAttributeIds([]);
             }}
           >

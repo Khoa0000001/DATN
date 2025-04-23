@@ -58,9 +58,8 @@ export class CategoriesController {
     return this._categoriesService.update(id, updateCategoryDto);
   }
 
-  @Delete(':id')
-  @CheckId('categories', 'id')
-  remove(@Param('id') id: string) {
-    return this._categoriesService.remove(id);
+  @Delete()
+  removeMany(@Body('ids') ids: string[]) {
+    return this._categoriesService.removeManyCategories(ids);
   }
 }

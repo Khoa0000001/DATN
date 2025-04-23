@@ -3,23 +3,18 @@ import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { CustomTable } from "@/components/customAnt";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  fetchCategories,
-  fetchCategoryDetail,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} from "@/store/slice/categorySlice";
+import { fetchProducts, fetchProductDetail } from "@/store/slice/productSlice";
 import DynamicModal from "@/components/DynamicModal";
 import { columns } from "./constant";
 import type { Mode } from "./constant";
 import Add from "./components/Add";
 import View from "./components/View";
-import Update from "./components/Update";
+// import Update from "./components/Update";
 
-const RolePage: React.FC = () => {
+const ProductPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { categories, meta } = useAppSelector((status) => status.categories);
+  const { products, meta } = useAppSelector((status) => status.products);
+
   const [modalMode, setModalMode] = useState<Mode>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
@@ -33,61 +28,50 @@ const RolePage: React.FC = () => {
   const closeModal = () => setModalOpen(false);
 
   const handleAddSubmit = async (data: any) => {
-    console.log(data);
-    try {
-      await dispatch(createCategory(data)).unwrap();
-      toast.success("Tạo thành công.");
-      dataFetch(1, meta?.limit || 10, "");
-      closeModal();
-    } catch (err) {
-      toast.error("Tạo thất bại.");
-      console.log(err);
-    }
+    console.log("Submit thêm:", data);
   };
 
-  const handleEditSubmit = async (data: any) => {
-    try {
-      console.log(data);
-      await dispatch(updateCategory(data)).unwrap();
-      toast.success("Cập nhất thành công.");
-      dataFetch(1, meta?.limit || 10, "");
-      closeModal();
-    } catch (err) {
-      toast.error("Cập nhất thất bại.");
-      console.log(err);
-    }
-  };
+  //   const handleEditSubmit = async (data: any) => {
+  //     const { success } = await dispatch(updateRole(data)).unwrap();
+  //     if (success) {
+  //       toast.success("Cập nhật thành công.");
+  //       dataFetch(1, meta?.limit || 10, "");
+  //       closeModal();
+  //     } else {
+  //       toast.error("Cập nhật thất bại.");
+  //     }
+  //   };
 
   const handleAdd = () => {
     openModal("add");
   };
 
   const handleView = async (record: any) => {
-    const { data } = await dispatch(fetchCategoryDetail(record.id)).unwrap();
+    const { data } = await dispatch(fetchProductDetail(record.id)).unwrap();
     openModal("view", data);
   };
 
-  const handleEdit = async (record: any) => {
-    const { data } = await dispatch(fetchCategoryDetail(record.id)).unwrap();
-    openModal("edit", data);
-  };
+  //   const handleEdit = async (record: any) => {
+  //     const { data } = await dispatch(fetchRoleDetail(record.id)).unwrap();
+  //     openModal("edit", data);
+  //   };
 
-  const handleDelete = async (records: any[], callback?: () => void) => {
-    const ids = records.map((_: any) => _.id);
-    const { success } = await dispatch(deleteCategory(ids)).unwrap();
-    if (success) {
-      toast.success("Xóa thành công.");
-      dataFetch(1, meta?.limit || 10, "");
-      callback?.(); // Gọi callback để clear selection
-    } else {
-      toast.error("Xóa thất bại.");
-    }
-  };
+  //   const handleDelete = async (records: any[], callback?: () => void) => {
+  //     const ids = records.map((_: any) => _.id);
+  //     const { success } = await dispatch(deleteRole(ids)).unwrap();
+  //     if (success) {
+  //       toast.success("Xóa thành công.");
+  //       dataFetch(1, meta?.limit || 10, "");
+  //       callback?.(); // Gọi callback để clear selection
+  //     } else {
+  //       toast.error("Xóa thất bại.");
+  //     }
+  //   };
 
   const dataFetch = useCallback(
     (currentPage: number, pageSize: number, searchText: string) => {
       dispatch(
-        fetchCategories({
+        fetchProducts({
           page: currentPage,
           limit: pageSize,
           search: searchText,
@@ -101,7 +85,7 @@ const RolePage: React.FC = () => {
     <>
       <CustomTable
         columns={columns}
-        dataSource={categories}
+        dataSource={products}
         total={meta?.total}
         dataFetch={(
           currentPage: number,
@@ -112,8 +96,8 @@ const RolePage: React.FC = () => {
         }}
         onAdd={handleAdd}
         onView={handleView}
-        onDelete={handleDelete}
-        onEdit={handleEdit}
+        // onDelete={handleDelete}
+        // onEdit={handleEdit}
         permissions={{
           add: { roles: ["admin", "editor"] },
           edit: { roles: ["admin", "editor"], permissions: [] },
@@ -133,9 +117,9 @@ const RolePage: React.FC = () => {
         }
       >
         {modalMode === "add" && <Add onSubmit={handleAddSubmit} />}
-        {modalMode === "edit" && selectedData && (
+        {/* {modalMode === "edit" && selectedData && (
           <Update onSubmit={handleEditSubmit} data={selectedData} />
-        )}
+        )} */}
         {modalMode === "view" && selectedData && (
           <View data={selectedData} onClose={closeModal} />
         )}
@@ -144,4 +128,4 @@ const RolePage: React.FC = () => {
   );
 };
 
-export default RolePage;
+export default ProductPage;

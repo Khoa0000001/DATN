@@ -4,7 +4,7 @@ import { Button, Form, Input, Avatar, Col, Row, Card, Tag } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { fetchRoles } from "@/store/slice/roleSlice";
-import CustomSelect from "@/components/customAnt/CustomSelect";
+import { CustomSelect } from "@/components/customAnt";
 
 interface Role {
   id: string;

@@ -8,7 +8,7 @@ import {
 
 export class Attributes {
   @IsOptional()
-  id?: string | undefined;
+  id: string | undefined;
   @IsNotEmpty({ message: 'nameAttribute không được để trống' })
   @IsString({ message: 'nameAttribute phải là 1 chuỗi' })
   nameAttribute: string;

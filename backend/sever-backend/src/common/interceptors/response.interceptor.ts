@@ -16,7 +16,7 @@ export class ResponseInterceptor implements NestInterceptor {
       tap(() => console.log(`⏱️ Execution time: ${Date.now() - now}ms`)), // Đo thời gian
 
       map((data) => {
-        console.log('Message:', data.message);
+        // console.log('Message:', data);
         console.log(
           '-------------------------------------------------------------------------------------',
         );

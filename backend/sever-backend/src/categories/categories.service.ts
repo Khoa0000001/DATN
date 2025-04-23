@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto, Attributes } from './dto/update-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import { UpdateAttributeDto } from '@/attributes/dto/update-attribute.dto';
 import { CreateAttributeDto } from '@/attributes/dto/create-attribute.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -74,58 +74,83 @@ export class CategoriesService {
     const addAttributes: CreateAttributeDto[] = [];
     attributes.forEach((_) => {
       if (_.id) {
-        editAttributes.push(_);
+        const _new: UpdateAttributeDto = {
+          id: _.id,
+          nameAttribute: _.nameAttribute,
+          description: _.description ?? undefined,
+        };
+        editAttributes.push(_new);
       } else {
-        addAttributes.push(_);
+        const _new: CreateAttributeDto = {
+          nameAttribute: _.nameAttribute,
+          description: _.description ?? undefined,
+          categoryId: id,
+        };
+        addAttributes.push(_new);
       }
     });
     try {
-      const category = await this._prisma.categories.update({
-        where: { isDeleted: false, id },
-        data: dataCategory,
-      });
-      if (deletedAttributeIds)
-        await this._attribute.removeMany(deletedAttributeIds);
-
-      if (editAttributes) await this._attribute.updateMany(editAttributes);
-      if (addAttributes) await this._attribute.createMany(addAttributes);
+      const [category] = await Promise.all([
+        this._prisma.categories.update({
+          where: { isDeleted: false, id },
+          data: dataCategory,
+        }),
+        deletedAttributeIds?.length
+          ? this._attribute.removeMany(deletedAttributeIds)
+          : Promise.resolve(),
+        editAttributes.length
+          ? this._attribute.updateMany(editAttributes)
+          : Promise.resolve(),
+        addAttributes.length
+          ? this._attribute.createMany(addAttributes)
+          : Promise.resolve(),
+      ]);
 
       return formatResponse(`This action updates a category`, category);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
+      throw new BadRequestException(
+        error.message || 'Lỗi khi cập nhật danh mục',
+      );
     }
   }
 
-  async remove(id: string) {
-    const [hasRelatedProducts, hasRelatedAttributes] = await Promise.all([
-      this._prisma.products.count({
-        where: { categoryId: id },
-      }),
-      this._prisma.attributes.count({
-        where: { categoryId: id },
-      }),
-    ]);
+  async removeManyCategories(ids: string[]) {
+    const result = await Promise.all(
+      ids.map(async (id) => {
+        const [hasRelatedProducts, hasRelatedAttributes] = await Promise.all([
+          this._prisma.products.count({ where: { categoryId: id } }),
+          this._prisma.attributes.count({ where: { categoryId: id } }),
+        ]);
 
-    if (hasRelatedProducts > 0 && hasRelatedAttributes > 0) {
-      const [category, ,] = await Promise.all([
-        this._prisma.categories.update({
-          where: { isDeleted: false, id },
-          data: { isDeleted: true },
-        }),
-        this._prisma.attributes.deleteMany({
-          where: { categoryId: id },
-        }),
-        this._prisma.products.updateMany({
-          where: { categoryId: id },
-          data: { isDeleted: true },
-        }),
-      ]);
-      return formatResponse(`This action removes a category`, category);
-    } else {
-      const category = await this._prisma.categories.delete({
-        where: { isDeleted: false, id },
-      });
-      return formatResponse(`This action removes a category`, category);
-    }
+        // Nếu có liên kết → soft delete category, xóa attributes, soft delete products
+        if (hasRelatedProducts > 0 || hasRelatedAttributes > 0) {
+          const [category] = await Promise.all([
+            this._prisma.categories.update({
+              where: { id },
+              data: { isDeleted: true },
+            }),
+            this._prisma.attributes.deleteMany({
+              where: { categoryId: id },
+            }),
+            this._prisma.products.updateMany({
+              where: { categoryId: id },
+              data: { isDeleted: true },
+            }),
+          ]);
+
+          return { id, action: 'soft-deleted', category };
+        }
+
+        // Nếu không có liên kết → hard delete category
+        const category = await this._prisma.categories.delete({
+          where: { id },
+        });
+
+        return { id, action: 'deleted', category };
+      }),
+    );
+
+    return formatResponse('Danh sách danh mục đã được xử lý', result);
   }
 }

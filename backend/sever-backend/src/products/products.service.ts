@@ -60,11 +60,30 @@ export class ProductsService {
     return formatResponse('product created successfully', product);
   }
 
-  async findAll(page?: number, limit?: number) {
+  async findAll(page?: number, limit?: number, search?: string) {
+    const where: any = {
+      isDeleted: false,
+    };
+
+    if (search) {
+      where.OR = [
+        { nameProduct: { contains: search } },
+        {
+          category: { nameCategory: { contains: search } },
+        },
+        { description: { contains: search } },
+      ];
+    }
+
     const queryOptions: any = {
-      where: { isDeleted: false },
+      where,
       include: {
-        productImages: true,
+        productImages: {
+          select: {
+            id: true,
+            imageUrl: true,
+          },
+        },
         attributeValues: {
           include: {
             attribute: true,
@@ -78,17 +97,21 @@ export class ProductsService {
         },
       },
     };
+
     if (page && limit) {
       queryOptions.skip = (page - 1) * limit;
       queryOptions.take = limit;
     }
+
     const [products, totalProducts] = await Promise.all([
       this._prisma.products.findMany(queryOptions),
-      this._prisma.products.count({ where: { isDeleted: false } }),
+      this._prisma.products.count({ where }),
     ]);
+
     const resultProducts = products.map((product: ProductDto) =>
       this.formattedProduct(product),
     );
+
     return formatResponse(`This action returns all products`, resultProducts, {
       page,
       limit,
@@ -100,7 +123,12 @@ export class ProductsService {
     const product: ProductDto | null = await this._prisma.products.findUnique({
       where: { isDeleted: false, id },
       include: {
-        productImages: true,
+        productImages: {
+          select: {
+            id: true,
+            imageUrl: true,
+          },
+        },
         attributeValues: {
           include: {
             attribute: true,

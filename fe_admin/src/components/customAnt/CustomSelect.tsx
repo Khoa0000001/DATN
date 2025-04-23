@@ -8,26 +8,26 @@ const { Option } = Select;
 interface CustomSelectProps {
   value: string[];
   onChange: (value: string[]) => void;
-  mode: "multiple" | "tags" | undefined;
+  mode?: "multiple" | "tags" | undefined;
   placeholder: string;
   fetchData: (params: any) => any;
   dataType: string;
   itemField: string;
   limit: number;
-  defaultValues: any[];
+  defaultValues?: any[];
   renderItem?: (item: any) => React.ReactNode;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
   value,
   onChange,
-  mode,
+  mode = undefined,
   placeholder,
   fetchData,
   dataType,
   itemField,
   limit,
-  defaultValues,
+  defaultValues = [],
   renderItem,
 }) => {
   const dispatch = useAppDispatch();
@@ -41,7 +41,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
   // Fetch initial data
   useEffect(() => {
-    console.log(defaultValues);
     dispatch(fetchData({ page: 1, limit }));
     setLocalItems([]);
   }, [dispatch, fetchData, limit]);
