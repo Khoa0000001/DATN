@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAttributeValueDto } from './dto/create-attribute-value.dto';
-import { UpdateAttributeValueDto } from './dto/update-attribute-value.dto';
+import {
+  UpdateAttributeValueDto,
+  UpdateAttributeValueByIdDto,
+} from './dto/update-attribute-value.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { formatResponse } from '@/utils/response.util';
 
@@ -15,6 +18,15 @@ export class AttributeValuesService {
       'AttributeValue created successfully',
       attributeValue,
     );
+  }
+
+  async createMany(createAttributeValueDtos: CreateAttributeValueDto[]) {
+    const result = await this._prisma.attributeValues.createMany({
+      data: createAttributeValueDtos,
+      skipDuplicates: true, // nếu bạn muốn bỏ qua những bản ghi trùng
+    });
+
+    return formatResponse('AttributeValues created successfully', result);
   }
 
   async findAll(page?: number, limit?: number) {
@@ -56,6 +68,20 @@ export class AttributeValuesService {
       `This action updates attributeValue #${id}`,
       attributeValue,
     );
+  }
+  async updateMany(attributeValues: UpdateAttributeValueByIdDto[]) {
+    const updated = await Promise.all(
+      attributeValues.map((attr) =>
+        this._prisma.attributeValues.update({
+          where: { id: attr.id },
+          data: {
+            attributeValue: attr.attributeValue,
+          },
+        }),
+      ),
+    );
+
+    return formatResponse('Cập nhật thành công', updated);
   }
 
   async remove(id: string) {

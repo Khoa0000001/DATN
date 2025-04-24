@@ -25,6 +25,8 @@ const PermissionPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
 
+  const [submitLoading, setSubmitLoading] = useState(false);
+
   const openModal = (mode: Mode, data?: any) => {
     setModalMode(mode);
     setSelectedData(data || null);
@@ -34,25 +36,32 @@ const PermissionPage: React.FC = () => {
   const closeModal = () => setModalOpen(false);
 
   const handleAddSubmit = async (data: any) => {
-    console.log("Submit thêm:", data);
-    const { success } = await dispatch(createPermission(data)).unwrap();
-    if (success) {
+    try {
+      setSubmitLoading(true); // Bắt đầu loading
+      await dispatch(createPermission(data)).unwrap();
       toast.success("Tạo thành công.");
       dataFetch(1, meta?.limit || 10, "");
       closeModal();
-    } else {
+    } catch (err) {
       toast.error("Tạo thất bại.");
+      console.log(err);
+    } finally {
+      setSubmitLoading(false); // Kết thúc loading
     }
   };
 
   const handleEditSubmit = async (data: any) => {
-    const { success } = await dispatch(updatePermission(data)).unwrap();
-    if (success) {
-      toast.success("Cập nhật thành công.");
+    try {
+      setSubmitLoading(true); // Bắt đầu loading
+      await dispatch(updatePermission(data)).unwrap();
+      toast.success("Cập nhất thành công.");
       dataFetch(1, meta?.limit || 10, "");
       closeModal();
-    } else {
-      toast.error("Cập nhật thất bại.");
+    } catch (err) {
+      toast.error("Cập nhất thất bại.");
+      console.log(err);
+    } finally {
+      setSubmitLoading(false); // Kết thúc loading
     }
   };
 
@@ -130,9 +139,15 @@ const PermissionPage: React.FC = () => {
             : "Chi tiết vai trò"
         }
       >
-        {modalMode === "add" && <Add onSubmit={handleAddSubmit} />}
+        {modalMode === "add" && (
+          <Add onSubmit={handleAddSubmit} loading={submitLoading} />
+        )}
         {modalMode === "edit" && selectedData && (
-          <Update onSubmit={handleEditSubmit} data={selectedData} />
+          <Update
+            onSubmit={handleEditSubmit}
+            data={selectedData}
+            loading={submitLoading}
+          />
         )}
         {modalMode === "view" && selectedData && (
           <View data={selectedData} onClose={closeModal} />

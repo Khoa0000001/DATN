@@ -57,9 +57,8 @@ export class ProductImagesController {
     return this._productImagesService.update(id, updateProductImageDto);
   }
 
-  @Delete(':id')
-  @CheckId('productImages', 'id')
-  remove(@Param('id') id: string) {
-    return this._productImagesService.remove(id);
+  @Delete()
+  removeMany(@Body('ids') ids: string[]) {
+    return this._productImagesService.removeMany(ids);
   }
 }

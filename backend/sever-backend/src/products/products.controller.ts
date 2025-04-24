@@ -22,7 +22,6 @@ export class ProductsController {
   constructor(private readonly _productsService: ProductsService) {}
 
   @Post()
-  // @CheckId('categories', 'categoryId')
   @UseInterceptors(AnyFilesInterceptor())
   create(
     @Body() createProductDto: CreateProductDto,
@@ -77,8 +76,6 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  // @CheckId('products', 'id')
-  // @CheckId('products', 'categoryId')
   @UseInterceptors(AnyFilesInterceptor())
   update(
     @Param('id') id: string,
@@ -88,9 +85,8 @@ export class ProductsController {
     return this._productsService.update(id, updateProductDto, files);
   }
 
-  @Delete(':id')
-  @CheckId('products', 'id')
-  remove(@Param('id') id: string) {
-    return this._productsService.remove(id);
+  @Delete()
+  removeMany(@Body() dto: { ids: string[] }) {
+    return this._productsService.removeMany(dto.ids);
   }
 }

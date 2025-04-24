@@ -50,10 +50,15 @@ export class ProductImagesService {
     return formatResponse(`This action updates productImage`, productImage);
   }
 
-  async remove(id: string) {
-    const productImage = await this._prisma.productImages.delete({
-      where: { id },
+  async removeMany(ids: string[]) {
+    const deleted = await this._prisma.productImages.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
     });
-    return formatResponse(`This action removes a productImage`, productImage);
+
+    return formatResponse(`Đã xóa ${deleted.count} ảnh sản phẩm`, deleted);
   }
 }

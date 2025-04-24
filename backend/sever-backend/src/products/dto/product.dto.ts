@@ -11,14 +11,14 @@ class AttributeDto {
 }
 
 class AttributeValueDto {
+  id: string;
+  attributeId: string;
   attributeValue: string;
-
   attribute: AttributeDto;
 }
 
 class CategoryDto {
   nameCategory: string;
-
   description: string | null;
 }
 

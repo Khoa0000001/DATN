@@ -41,42 +41,67 @@ export const fetchProductDetail = createAsyncThunk(
     }
   }
 );
-export const createCategory = createAsyncThunk(
-  "products/createCategory",
-  async (data, { rejectWithValue }) => {
+export const createProduct = createAsyncThunk(
+  "products/createProduct",
+  async (data: any, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/categories`, data);
+      const formData = new FormData();
+
+      formData.append("nameProduct", data.nameProduct);
+      formData.append("price", String(data.price));
+      formData.append("categoryId", data.categoryId);
+      formData.append("description", data.description || "");
+
+      // Append ảnh
+      data.productImages.forEach((file: File) => {
+        formData.append("productImages", file);
+      });
+
+      // Append thuộc tính dạng JSON
+      formData.append("attributeValues", JSON.stringify(data.attributeValues));
+
+      const response = await axiosInstance.post(`/products`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
-        err?.response?.data?.message || "Fetch categories failed"
+        err?.response?.data?.message || "Tạo sản phẩm thất bại"
       );
     }
   }
 );
 
-export const updateCategory = createAsyncThunk(
-  "products/updateCategory",
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
   async (data: any, { rejectWithValue }) => {
     try {
-      delete data.createDate;
-      delete data.updateDate;
       const { id, ...rest } = data;
-      const response = await axiosInstance.patch(`/categories/${id}`, rest);
-      return response.data;
-    } catch (err: any) {
-      return rejectWithValue(
-        err?.response?.data?.message || "Cập nhật vai trò thất bại"
+      const formData = new FormData();
+
+      formData.append("nameProduct", rest.nameProduct);
+      formData.append("price", String(rest.price));
+      formData.append("categoryId", rest.categoryId);
+      formData.append("description", rest.description || "");
+
+      // Append ảnh
+      rest.productImages.forEach((file: File) => {
+        formData.append("productImages", file);
+      });
+
+      // Append thuộc tính dạng JSON
+      formData.append("attributeValues", JSON.stringify(rest.attributeValues));
+      formData.append(
+        "keepProductImages",
+        JSON.stringify(rest.keepProductImages)
       );
-    }
-  }
-);
-export const deleteCategory = createAsyncThunk(
-  "products/deleteCategory",
-  async (ids: string[], { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.delete(`/categories`, {
-        data: { ids },
+      const response = await axiosInstance.patch(`/products/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
       return response.data;
     } catch (err: any) {
@@ -86,9 +111,24 @@ export const deleteCategory = createAsyncThunk(
     }
   }
 );
+export const deleteProduct = createAsyncThunk(
+  "products/deleteProduct",
+  async (ids: string[], { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete(`/products`, {
+        data: { ids },
+      });
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Cập nhật sản phẩm thất bại"
+      );
+    }
+  }
+);
 export const fetchAttributeByCategoryId = createAsyncThunk(
   "attributes/fetchAttributeByCategoryId",
-  async (CategoryId, { rejectWithValue }) => {
+  async (CategoryId: string, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
         `/attributes/getList-attribute-by-categoryId/${CategoryId}`
@@ -135,38 +175,38 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
       // add
-      .addCase(createCategory.pending, (state) => {
+      .addCase(createProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createCategory.fulfilled, (state) => {
+      .addCase(createProduct.fulfilled, (state) => {
         state.loading = false;
       })
-      .addCase(createCategory.rejected, (state, action) => {
+      .addCase(createProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
       // update
-      .addCase(updateCategory.pending, (state) => {
+      .addCase(updateProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateCategory.fulfilled, (state) => {
+      .addCase(updateProduct.fulfilled, (state) => {
         state.loading = false;
       })
-      .addCase(updateCategory.rejected, (state, action) => {
+      .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
       // delete
-      .addCase(deleteCategory.pending, (state) => {
+      .addCase(deleteProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deleteCategory.fulfilled, (state) => {
+      .addCase(deleteProduct.fulfilled, (state) => {
         state.loading = false;
       })
-      .addCase(deleteCategory.rejected, (state, action) => {
+      .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

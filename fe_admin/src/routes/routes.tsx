@@ -24,7 +24,11 @@ const AppRoutes = () =>
     },
     {
       path: "/",
-      element: <MainLayout />,
+      element: (
+        <ProtectedRoute>
+          <MainLayout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           path: "",

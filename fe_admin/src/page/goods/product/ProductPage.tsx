@@ -3,13 +3,19 @@ import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { CustomTable } from "@/components/customAnt";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchProducts, fetchProductDetail } from "@/store/slice/productSlice";
+import {
+  fetchProducts,
+  fetchProductDetail,
+  createProduct,
+  deleteProduct,
+  updateProduct,
+} from "@/store/slice/productSlice";
 import DynamicModal from "@/components/DynamicModal";
 import { columns } from "./constant";
 import type { Mode } from "./constant";
 import Add from "./components/Add";
 import View from "./components/View";
-// import Update from "./components/Update";
+import Update from "./components/Update";
 
 const ProductPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +24,8 @@ const ProductPage: React.FC = () => {
   const [modalMode, setModalMode] = useState<Mode>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
+
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const openModal = (mode: Mode, data?: any) => {
     setModalMode(mode);
@@ -28,19 +36,44 @@ const ProductPage: React.FC = () => {
   const closeModal = () => setModalOpen(false);
 
   const handleAddSubmit = async (data: any) => {
-    console.log("Submit thêm:", data);
+    console.log("submit", data);
+    try {
+      setSubmitLoading(true); // Bắt đầu loading
+      await dispatch(createProduct(data)).unwrap();
+      toast.success("Tạo thành công.");
+      dataFetch(1, meta?.limit || 10, "");
+      closeModal();
+    } catch (err) {
+      toast.error("Tạo thất bại.");
+      console.log(err);
+    } finally {
+      setSubmitLoading(false); // Kết thúc loading
+    }
   };
 
-  //   const handleEditSubmit = async (data: any) => {
-  //     const { success } = await dispatch(updateRole(data)).unwrap();
-  //     if (success) {
-  //       toast.success("Cập nhật thành công.");
-  //       dataFetch(1, meta?.limit || 10, "");
-  //       closeModal();
-  //     } else {
-  //       toast.error("Cập nhật thất bại.");
-  //     }
-  //   };
+  const handleEditSubmit = async (data: any) => {
+    const newDate = {
+      ...data,
+      productImages: data.productImages.filter((_: any) => _ instanceof File),
+      keepProductImages: data.productImages
+        .filter((_: any) => !(_ instanceof File))
+        .map((_: any) => _.id),
+    };
+    console.log(data);
+    console.log(newDate);
+    try {
+      setSubmitLoading(true); // Bắt đầu loading
+      await dispatch(updateProduct(newDate)).unwrap();
+      toast.success("Cập nhất thành công.");
+      dataFetch(1, meta?.limit || 10, "");
+      closeModal();
+    } catch (err) {
+      toast.error("Cập nhất thất bại.");
+      console.log(err);
+    } finally {
+      setSubmitLoading(false); // Kết thúc loading
+    }
+  };
 
   const handleAdd = () => {
     openModal("add");
@@ -51,22 +84,22 @@ const ProductPage: React.FC = () => {
     openModal("view", data);
   };
 
-  //   const handleEdit = async (record: any) => {
-  //     const { data } = await dispatch(fetchRoleDetail(record.id)).unwrap();
-  //     openModal("edit", data);
-  //   };
+  const handleEdit = async (record: any) => {
+    const { data } = await dispatch(fetchProductDetail(record.id)).unwrap();
+    openModal("edit", data);
+  };
 
-  //   const handleDelete = async (records: any[], callback?: () => void) => {
-  //     const ids = records.map((_: any) => _.id);
-  //     const { success } = await dispatch(deleteRole(ids)).unwrap();
-  //     if (success) {
-  //       toast.success("Xóa thành công.");
-  //       dataFetch(1, meta?.limit || 10, "");
-  //       callback?.(); // Gọi callback để clear selection
-  //     } else {
-  //       toast.error("Xóa thất bại.");
-  //     }
-  //   };
+  const handleDelete = async (records: any[], callback?: () => void) => {
+    const ids = records.map((_: any) => _.id);
+    const { success } = await dispatch(deleteProduct(ids)).unwrap();
+    if (success) {
+      toast.success("Xóa thành công.");
+      dataFetch(1, meta?.limit || 10, "");
+      callback?.(); // Gọi callback để clear selection
+    } else {
+      toast.error("Xóa thất bại.");
+    }
+  };
 
   const dataFetch = useCallback(
     (currentPage: number, pageSize: number, searchText: string) => {
@@ -96,8 +129,8 @@ const ProductPage: React.FC = () => {
         }}
         onAdd={handleAdd}
         onView={handleView}
-        // onDelete={handleDelete}
-        // onEdit={handleEdit}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
         permissions={{
           add: { roles: ["admin", "editor"] },
           edit: { roles: ["admin", "editor"], permissions: [] },
@@ -116,10 +149,16 @@ const ProductPage: React.FC = () => {
             : "Chi tiết vai trò"
         }
       >
-        {modalMode === "add" && <Add onSubmit={handleAddSubmit} />}
-        {/* {modalMode === "edit" && selectedData && (
-          <Update onSubmit={handleEditSubmit} data={selectedData} />
-        )} */}
+        {modalMode === "add" && (
+          <Add onSubmit={handleAddSubmit} loading={submitLoading} />
+        )}
+        {modalMode === "edit" && selectedData && (
+          <Update
+            onSubmit={handleEditSubmit}
+            data={selectedData}
+            loading={submitLoading}
+          />
+        )}
         {modalMode === "view" && selectedData && (
           <View data={selectedData} onClose={closeModal} />
         )}

@@ -3,60 +3,86 @@ import { Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { UploadFile, RcFile } from "antd/es/upload/interface";
 
+type ImageValue = File | { id?: string; imageUrl: string };
+
 interface Props {
-  value?: File[];
-  onChange?: (value: File[]) => void;
+  value?: ImageValue[];
+  onChange?: (value: ImageValue[]) => void;
+  maxCount?: number;
 }
 
-const UploadMultipleImages: React.FC<Props> = ({ value = [], onChange }) => {
+const UploadMultipleImages: React.FC<Props> = ({
+  value = [],
+  onChange,
+  maxCount = 8,
+}) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   useEffect(() => {
-    // Tạo danh sách UploadFile từ File[]
-    const newFileList: UploadFile[] = value.map((file, idx) => {
-      const objectUrl = URL.createObjectURL(file);
-      return {
-        uid: `${idx}`,
-        name: file.name,
-        status: "done",
-        url: objectUrl,
-        originFileObj: file as RcFile,
-      };
-    });
+    const hasOnlyBlob = fileList.every(
+      (file) => file.originFileObj instanceof File
+    );
+    if (value.length !== fileList.length || hasOnlyBlob) {
+      const newFileList: UploadFile[] = value.map((item, index) => {
+        if (item instanceof File) {
+          return {
+            uid: `file-${index}-${item.name}`,
+            name: item.name,
+            status: "done",
+            url: URL.createObjectURL(item),
+            originFileObj: item as RcFile,
+          };
+        } else {
+          return {
+            uid: item.id || `remote-${index}`,
+            name: `image-${index}`,
+            status: "done",
+            url: item.imageUrl,
+          };
+        }
+      });
 
-    setFileList(newFileList);
+      setFileList(newFileList);
+    }
 
-    // Cleanup các object URL khi component unmount hoặc value thay đổi
     return () => {
-      newFileList.forEach((file) => {
-        if (file.url) {
+      fileList.forEach((file) => {
+        if (
+          file.originFileObj instanceof File &&
+          file.url?.startsWith("blob:")
+        ) {
           URL.revokeObjectURL(file.url);
         }
       });
     };
   }, [value]);
 
-  const handleChange = (info: { fileList: UploadFile[] }) => {
-    setFileList(info.fileList);
+  const handleChange = ({ fileList }: { fileList: UploadFile[] }) => {
+    setFileList(fileList);
 
-    const files: File[] = info.fileList
-      .filter((file) => file.originFileObj instanceof File)
-      .map((file) => file.originFileObj as File);
+    const newValue: ImageValue[] = fileList.map((file) => {
+      if (file.originFileObj instanceof File) {
+        return file.originFileObj;
+      } else {
+        return {
+          id: file.uid.startsWith("remote") ? undefined : file.uid,
+          imageUrl: file.url!,
+        };
+      }
+    });
 
-    if (onChange) {
-      onChange(files);
-    }
+    onChange?.(newValue);
   };
 
   return (
     <Upload
       listType="picture-card"
-      multiple
       fileList={fileList}
       onChange={handleChange}
-      beforeUpload={() => false} // Ngăn không cho AntD tự upload
+      beforeUpload={() => false}
+      multiple
     >
-      {fileList.length >= 8 ? null : (
+      {fileList.length >= maxCount ? null : (
         <div>
           <PlusOutlined />
           <div style={{ marginTop: 8 }}>Tải ảnh</div>

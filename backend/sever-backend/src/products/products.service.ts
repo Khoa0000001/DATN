@@ -7,6 +7,7 @@ import { ProductDto } from './dto/product.dto';
 import { ImageUploadService } from '@/upload/image-upload.service';
 import { ProductImagesService } from '@/product-images/product-images.service';
 import { Express } from 'express';
+import { AttributeValuesService } from '@/attribute-values/attribute-values.service';
 
 @Injectable()
 export class ProductsService {
@@ -14,12 +15,15 @@ export class ProductsService {
     private readonly _prisma: PrismaService,
     private readonly _cloudinary: ImageUploadService,
     private readonly _productImagesService: ProductImagesService,
+    private readonly _attributeValuesService: AttributeValuesService,
   ) {}
 
   formattedProduct(product: ProductDto | null) {
     return {
       ...product,
       attributeValues: product?.attributeValues?.map((attr) => ({
+        id: attr.id,
+        attributeId: attr.attributeId,
         attributeValue: attr.attributeValue,
         nameAttribute: attr.attribute?.nameAttribute || 'Unknown',
         description: attr.attribute?.description || null,
@@ -39,11 +43,25 @@ export class ProductsService {
         `ID ${createProductDto.categoryId} không tồn tại hoặc đã bị xóa trong bảng categories`,
       );
     }
+    const { attributeValues, ...dataProduct } = createProductDto;
 
     // 1. Tạo sản phẩm
     const product = await this._prisma.products.create({
-      data: createProductDto,
+      data: dataProduct,
     });
+
+    // 2. Tạo các giá trị thuộc tính cho sản phẩm
+    const convetAttributeValues = JSON.parse(attributeValues || '[]');
+    if (convetAttributeValues && convetAttributeValues.length > 0) {
+      const newAttributeValues = convetAttributeValues.map(
+        (attributeValue) => ({
+          attributeId: attributeValue.attributeId,
+          attributeValue: attributeValue.attributeValue,
+          productId: product.id,
+        }),
+      );
+      await this._attributeValuesService.createMany(newAttributeValues);
+    }
 
     // 2. Upload ảnh và tạo bản ghi ProductImages
     for (const file of files) {
@@ -216,10 +234,54 @@ export class ProductsService {
       }
     }
 
+    // 1. Cập nhật sản phẩm
+    const { attributeValues, keepProductImages, ...dataProduct } =
+      updateProductDto;
+    const convetAttributeValues = JSON.parse(attributeValues || '[]');
+    const convetKeepProductImages = JSON.parse(keepProductImages || '[]');
+    if (convetKeepProductImages) {
+      const productImages = await this._prisma.productImages.findMany({
+        where: { productId: id },
+      });
+      const deleteProductImages = productImages
+        .filter((_: any) => !convetKeepProductImages.includes(_.id))
+        .map((_: any) => _.id);
+      await this._productImagesService.removeMany(deleteProductImages);
+    }
+
     const product = await this._prisma.products.update({
       where: { id },
-      data: updateProductDto,
+      data: dataProduct,
     });
+
+    // 2. Cập nhật các giá trị thuộc tính cho sản phẩm
+    if (convetAttributeValues && convetAttributeValues.length > 0) {
+      const newAttributeValues = convetAttributeValues.map(
+        (attributeValue) => ({
+          attributeValue: attributeValue.attributeValue,
+          productId: product.id,
+          attributeId: attributeValue.attributeId,
+          id: attributeValue.id,
+        }),
+      );
+      if (newAttributeValues[0].id === '') {
+        await this._prisma.attributeValues.deleteMany({
+          where: {
+            productId: id,
+          },
+        });
+        const newAttributeValues = convetAttributeValues.map(
+          (attributeValue) => ({
+            attributeId: attributeValue.attributeId,
+            attributeValue: attributeValue.attributeValue,
+            productId: product.id,
+          }),
+        );
+        await this._attributeValuesService.createMany(newAttributeValues);
+      } else {
+        await this._attributeValuesService.updateMany(newAttributeValues);
+      }
+    }
 
     // Nếu có ảnh mới => upload và thêm vào ProductImages
     if (files && files.length > 0) {
@@ -258,5 +320,21 @@ export class ProductsService {
       });
       return formatResponse(`This action removes a product`, product);
     }
+  }
+  async removeMany(ids: string[]) {
+    const results = await Promise.allSettled(ids.map((id) => this.remove(id)));
+
+    const success = results
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => (result as PromiseFulfilledResult<any>).value);
+
+    const failed = results
+      .filter((result) => result.status === 'rejected')
+      .map((result) => result.reason);
+
+    return formatResponse(`Đã xử lý ${success.length} sản phẩm`, {
+      success,
+      failed,
+    });
   }
 }

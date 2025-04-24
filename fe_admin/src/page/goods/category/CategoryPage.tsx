@@ -24,6 +24,8 @@ const RolePage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
 
+  const [submitLoading, setSubmitLoading] = useState(false);
+
   const openModal = (mode: Mode, data?: any) => {
     setModalMode(mode);
     setSelectedData(data || null);
@@ -33,8 +35,8 @@ const RolePage: React.FC = () => {
   const closeModal = () => setModalOpen(false);
 
   const handleAddSubmit = async (data: any) => {
-    console.log(data);
     try {
+      setSubmitLoading(true); // Bắt đầu loading
       await dispatch(createCategory(data)).unwrap();
       toast.success("Tạo thành công.");
       dataFetch(1, meta?.limit || 10, "");
@@ -42,12 +44,14 @@ const RolePage: React.FC = () => {
     } catch (err) {
       toast.error("Tạo thất bại.");
       console.log(err);
+    } finally {
+      setSubmitLoading(false); // Kết thúc loading
     }
   };
 
   const handleEditSubmit = async (data: any) => {
     try {
-      console.log(data);
+      setSubmitLoading(true); // Bắt đầu loading
       await dispatch(updateCategory(data)).unwrap();
       toast.success("Cập nhất thành công.");
       dataFetch(1, meta?.limit || 10, "");
@@ -55,6 +59,8 @@ const RolePage: React.FC = () => {
     } catch (err) {
       toast.error("Cập nhất thất bại.");
       console.log(err);
+    } finally {
+      setSubmitLoading(false); // Kết thúc loading
     }
   };
 
@@ -132,9 +138,15 @@ const RolePage: React.FC = () => {
             : "Chi tiết vai trò"
         }
       >
-        {modalMode === "add" && <Add onSubmit={handleAddSubmit} />}
+        {modalMode === "add" && (
+          <Add onSubmit={handleAddSubmit} loading={submitLoading} />
+        )}
         {modalMode === "edit" && selectedData && (
-          <Update onSubmit={handleEditSubmit} data={selectedData} />
+          <Update
+            onSubmit={handleEditSubmit}
+            data={selectedData}
+            loading={submitLoading}
+          />
         )}
         {modalMode === "view" && selectedData && (
           <View data={selectedData} onClose={closeModal} />

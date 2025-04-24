@@ -22,6 +22,8 @@ const RolePage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
 
+  const [submitLoading, setSubmitLoading] = useState(false);
+
   const openModal = (mode: Mode, data?: any) => {
     setModalMode(mode);
     setSelectedData(data || null);
@@ -36,15 +38,17 @@ const RolePage: React.FC = () => {
   };
 
   const handleEditSubmit = async (data: any) => {
-    console.log(data);
     try {
+      setSubmitLoading(true); // Bắt đầu loading
       await dispatch(editRoleUser(data)).unwrap();
-      toast.success("Tạo thành công.");
+      toast.success("Cấp quyền thành công.");
       dataFetch(1, meta?.limit || 10, "");
       closeModal();
     } catch (err) {
-      toast.error("Cập nhật thất bại.");
+      toast.error("Cấp quyền thất bại.");
       console.log(err);
+    } finally {
+      setSubmitLoading(false); // Kết thúc loading
     }
   };
 
@@ -92,7 +96,11 @@ const RolePage: React.FC = () => {
           <View data={selectedData} onClose={closeModal} />
         )}
         {modalMode === "edit-permission" && selectedData && (
-          <EditPermission onSubmit={handleEditSubmit} data={selectedData} />
+          <EditPermission
+            onSubmit={handleEditSubmit}
+            data={selectedData}
+            loading={submitLoading}
+          />
         )}
       </DynamicModal>
     </>

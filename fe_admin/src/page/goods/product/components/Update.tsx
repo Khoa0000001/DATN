@@ -1,12 +1,14 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect } from "react";
 import { useForm, Controller, useWatch, useFieldArray } from "react-hook-form";
-import { Button, Col, Form, Input, InputNumber, Row, Typography } from "antd";
+import { Button, Col, Form, Input, Row, Typography, InputNumber } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { fetchCategories } from "@/store/slice/categorySlice";
-import { fetchAttributeByCategoryId } from "@/store/slice/productSlice";
-import { CustomSelect, UploadMultipleImages } from "@/components/customAnt";
-import { useAppDispatch } from "@/store/hooks";
 import * as yup from "yup";
+import { fetchAttributeByCategoryId } from "@/store/slice/productSlice";
+import { fetchCategories } from "@/store/slice/categorySlice";
+import { useAppDispatch } from "@/store/hooks";
+
+import { CustomSelect, UploadMultipleImages } from "@/components/customAnt";
 
 export interface FormData {
   nameProduct: string;
@@ -15,10 +17,17 @@ export interface FormData {
   categoryId: string;
   productImages: File[];
   attributeValues: {
-    attributeId: string;
+    id?: string;
+    attributeId?: string;
     nameAttribute: string;
     attributeValue: string;
   }[];
+}
+
+interface Props {
+  onSubmit: (data: FormData) => void;
+  loading?: boolean;
+  data: FormData; // Dữ liệu sản phẩm cần cập nhật
 }
 
 const schema: yup.ObjectSchema<FormData> = yup.object({
@@ -26,18 +35,19 @@ const schema: yup.ObjectSchema<FormData> = yup.object({
   description: yup.string().optional(),
   price: yup
     .number()
-    .typeError("Giá phải là số")
     .positive("Giá phải lớn hơn 0")
     .required("Giá không được để trống"),
   categoryId: yup.string().required("Vui lòng chọn loại sản phẩm"),
   productImages: yup
-    .array(yup.mixed<File>().required("Cần ít nhất 1 hình ảnh"))
-    .required("Cần ít nhất 1 hình ảnh")
-    .min(1, "Cần ít nhất 1 hình ảnh"),
+    .array(yup.mixed<File>().required("Hình ảnh không hợp lệ"))
+    .min(1, "Cần ít nhất 1 hình ảnh")
+    .required("Hình ảnh không được để trống"),
   attributeValues: yup
-    .array(
+    .array()
+    .of(
       yup.object({
-        attributeId: yup.string().required(),
+        id: yup.string().optional(),
+        attributeId: yup.string().optional(),
         nameAttribute: yup.string().required(),
         attributeValue: yup.string().required("Vui lòng nhập giá trị"),
       })
@@ -45,12 +55,7 @@ const schema: yup.ObjectSchema<FormData> = yup.object({
     .default([]),
 });
 
-interface Props {
-  onSubmit: (data: FormData) => void;
-  loading?: boolean;
-}
-
-const Add: React.FC<Props> = ({ onSubmit, loading }) => {
+const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
   const dispatch = useAppDispatch();
 
   const {
@@ -60,14 +65,7 @@ const Add: React.FC<Props> = ({ onSubmit, loading }) => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
-    defaultValues: {
-      nameProduct: "",
-      description: "",
-      price: 0,
-      categoryId: "",
-      productImages: [],
-      attributeValues: [],
-    },
+    defaultValues: data,
   });
 
   const categoryId = useWatch({ control, name: "categoryId" });
@@ -76,43 +74,55 @@ const Add: React.FC<Props> = ({ onSubmit, loading }) => {
     name: "attributeValues",
   });
 
-  React.useEffect(() => {
+  const fetch = async (categoryId: string) => {
     if (!categoryId) {
       replace([]);
       return;
     }
+    try {
+      const response = await dispatch(
+        fetchAttributeByCategoryId(categoryId)
+      ).unwrap();
+      const attributes = response.data;
 
-    const fetch = async () => {
-      try {
-        const response = await dispatch(
-          fetchAttributeByCategoryId(categoryId)
-        ).unwrap();
-        const attributes = response.data;
+      const mapped = attributes.map((attr: any, index: number) => ({
+        id:
+          (categoryId === data.categoryId &&
+            data?.attributeValues[index]?.id) ||
+          "",
+        attributeId: attr.id,
+        nameAttribute: attr.nameAttribute,
+        attributeValue:
+          (categoryId === data.categoryId &&
+            data?.attributeValues[index]?.attributeValue) ||
+          "",
+        description: attr.description || null,
+      }));
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mapped = attributes.map((attr: any) => ({
-          attributeId: attr.id,
-          nameAttribute: attr.nameAttribute,
-          attributeValue: "",
-          description: attr.description || null,
-        }));
+      replace(mapped);
+    } catch (error) {
+      console.error("Lỗi lấy thuộc tính:", error);
+      replace([]);
+    }
+  };
 
-        replace(mapped);
-      } catch (error) {
-        console.error("Lỗi lấy thuộc tính:", error);
-        replace([]);
-      }
-    };
+  useEffect(() => {
+    if (categoryId) {
+      fetch(categoryId);
+    }
+  }, [categoryId]);
 
-    fetch();
-  }, [categoryId, dispatch, replace]);
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data, reset]);
 
   return (
     <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
       <Row gutter={24}>
         <Col xs={24} md={12}>
-          <Typography.Title level={4}>Thông tin chung</Typography.Title>
-
+          <Typography.Title level={4}>Cập nhật sản phẩm</Typography.Title>
           <Form.Item
             label="Tên sản phẩm"
             validateStatus={errors.nameProduct ? "error" : ""}
@@ -195,13 +205,8 @@ const Add: React.FC<Props> = ({ onSubmit, loading }) => {
 
         <Col xs={24} md={12}>
           <Typography.Title level={4}>Thuộc tính sản phẩm</Typography.Title>
-
           <div
-            style={{
-              maxHeight: "400px",
-              overflowY: "auto",
-              paddingRight: 8,
-            }}
+            style={{ maxHeight: "400px", overflowY: "auto", paddingRight: 8 }}
           >
             {!categoryId ? (
               <Typography.Text type="warning">
@@ -238,15 +243,15 @@ const Add: React.FC<Props> = ({ onSubmit, loading }) => {
       </Row>
 
       <Form.Item style={{ textAlign: "right", marginTop: 24 }}>
-        <Button style={{ marginRight: 8 }} onClick={() => reset()}>
-          Reset
+        <Button style={{ marginRight: 8 }} onClick={() => reset(data)}>
+          Đặt lại
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          Tạo sản phẩm
+          Cập nhật sản phẩm
         </Button>
       </Form.Item>
     </Form>
   );
 };
 
-export default Add;
+export default Update;

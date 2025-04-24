@@ -6,6 +6,7 @@ import {
   IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+// import { CreateAttributeValueDto } from '@/attribute-values/dto/create-attribute-value.dto';
 
 export class CreateProductDto {
   @IsNotEmpty({ message: 'Tên sản phẩm không được để trống' })
@@ -24,4 +25,6 @@ export class CreateProductDto {
   @IsBoolean({ message: 'isDeleted phải là boolean' })
   @IsOptional()
   isDeleted?: boolean;
+  @IsOptional()
+  attributeValues?: string;
 }

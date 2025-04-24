@@ -12,7 +12,6 @@ const { Content } = Layout;
 const MainLayout: React.FC = () => {
   const location = useLocation();
   const breadcrumbItems = findBreadcrumb(sidebarItems, location.pathname);
-
   return (
     <Layout className="h-screen">
       <Header />
