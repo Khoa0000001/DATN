@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "@/rudex/store";
+import { RootState } from "@/store";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { getBuildPCResponse } from "@/apis/apiCounsel";
 import Loading from "./Loading";
 import Button from "@/components/Button";
 import { useDispatch } from "react-redux";
-import { updateComponentValue } from "@/rudex/DataBuildPCSlice";
-import { AppDispatch } from "@/rudex/store";
+import { updateComponentValue } from "@/store/DataBuildPCSlice";
+import { AppDispatch } from "@/store";
 
 const validationSchema = Yup.object({
   price: Yup.number().required("Nhập giá tiền chi ra là bắt buộc"),

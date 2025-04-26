@@ -76,6 +76,7 @@ export class AttributeValuesService {
           where: { id: attr.id },
           data: {
             attributeValue: attr.attributeValue,
+            tagValue: attr.tagValue,
           },
         }),
       ),

@@ -131,7 +131,7 @@ model ProductImages {
   createDate DateTime @default(now())
   updateDate DateTime @updatedAt
   productId  String
-  imageUrl   String
+  imageUrl   String   @db.Text
   product    Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
@@ -157,6 +157,7 @@ model AttributeValues {
   productId      String
   attributeId    String
   attributeValue String
+  tagValue       String? // Giá trị tag (nếu có)
   product        Products   @relation(fields: [productId], references: [id], onDelete: Cascade)
   attribute      Attributes @relation(fields: [attributeId], references: [id], onDelete: Cascade)
 

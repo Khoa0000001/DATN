@@ -1,18 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Thumbs } from "swiper/modules";
 import { Swiper as SwiperInstance } from "swiper";
 
-const checkpoints = [
-  { id: 1, image: "src/assets/image/yaoyao.jpg" },
-  { id: 2, image: "src/assets/image/yaoyao.jpg" },
-  { id: 3, image: "src/assets/image/yaoyao.jpg" },
-  { id: 4, image: "src/assets/image/yaoyao.jpg" },
-  { id: 5, image: "src/assets/image/yaoyao.jpg" },
-  { id: 6, image: "src/assets/image/yaoyao.jpg" },
-];
-
-export default function SwiperWithImg() {
+export default function SwiperWithImg(data: any) {
+  console.log("data", data);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperInstance | null>(null);
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -24,13 +17,10 @@ export default function SwiperWithImg() {
         spaceBetween={20}
         slidesPerView={1}
       >
-        {checkpoints.map((checkpoint) => (
+        {data?.data?.map((checkpoint: any) => (
           <SwiperSlide key={checkpoint.id}>
             <div className="relative">
-              <img
-                src={checkpoint.image}
-                className="w-full h-64 object-cover"
-              />
+              <img src={checkpoint.imageUrl} className="w-full object-cover" />
             </div>
           </SwiperSlide>
         ))}
@@ -45,10 +35,10 @@ export default function SwiperWithImg() {
         watchSlidesProgress
         className="mt-4"
       >
-        {checkpoints.map((checkpoint) => (
+        {data?.data?.map((checkpoint: any) => (
           <SwiperSlide key={checkpoint.id} className="cursor-pointer">
             <img
-              src={checkpoint.image}
+              src={checkpoint.imageUrl}
               className="w-20 h-14 object-cover rounded-lg border-2 border-transparent hover:border-blue-500"
             />
           </SwiperSlide>

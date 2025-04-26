@@ -27,6 +27,7 @@ export class ProductsService {
         attributeValue: attr.attributeValue,
         nameAttribute: attr.attribute?.nameAttribute || 'Unknown',
         description: attr.attribute?.description || null,
+        tagValue: attr.tagValue || null,
       })),
     };
   }
@@ -55,6 +56,7 @@ export class ProductsService {
     if (convetAttributeValues && convetAttributeValues.length > 0) {
       const newAttributeValues = convetAttributeValues.map(
         (attributeValue) => ({
+          tagValue: attributeValue.tagValue,
           attributeId: attributeValue.attributeId,
           attributeValue: attributeValue.attributeValue,
           productId: product.id,
@@ -69,7 +71,7 @@ export class ProductsService {
         file.buffer,
         file.originalname,
       );
-
+      console.log('imageUrl', imageUrl);
       await this._productImagesService.create({
         productId: product.id,
         imageUrl,
@@ -258,6 +260,7 @@ export class ProductsService {
     if (convetAttributeValues && convetAttributeValues.length > 0) {
       const newAttributeValues = convetAttributeValues.map(
         (attributeValue) => ({
+          tagValue: attributeValue.tagValue,
           attributeValue: attributeValue.attributeValue,
           productId: product.id,
           attributeId: attributeValue.attributeId,
@@ -272,6 +275,7 @@ export class ProductsService {
         });
         const newAttributeValues = convetAttributeValues.map(
           (attributeValue) => ({
+            tagValue: attributeValue.tagValue,
             attributeId: attributeValue.attributeId,
             attributeValue: attributeValue.attributeValue,
             productId: product.id,

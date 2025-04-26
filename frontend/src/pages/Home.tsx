@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import MenuToggle from "@/components/MenuToggle";
 import SwiperComponent from "@/components/SwiperComponent";
 import WrapProduct from "@/components/WrapProduct";
@@ -10,9 +11,29 @@ import {
 } from "@/components/ui/carousel";
 import Product from "@/components/Product";
 import WrapFlashSale from "@/components/WrapFlashSale";
-import { DataPCProduct, DataFlashSaleProduct } from "@/data/DataFake";
+import { DataPCProduct } from "@/data/DataFake";
+import { useAppDispatch } from "@/store/hooks";
+import { fetchProducts } from "@/store/slice/productSlice";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const dispatch = useAppDispatch();
+  const [products, setProducts] = useState<any[]>([]);
+  const [listPc, setListPc] = useState<any[]>([]);
+
+  const handleFetchProducts = async () => {
+    const res = await dispatch(fetchProducts({}));
+    if (fetchProducts.fulfilled.match(res)) {
+      setProducts(res.payload.data);
+      setListPc(res.payload.data); // hoặc res.payload nếu bạn xử lý lại từ slice
+    } else {
+      console.error("Lỗi:", res.payload);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchProducts();
+  }, [dispatch]);
   return (
     <div className="max-w-[1220px] mx-[auto]">
       {/* Header Home */}
@@ -87,7 +108,7 @@ export default function Home() {
             className="w-full"
           >
             <CarouselContent className="-ml-1">
-              {DataFlashSaleProduct.listProdeuct.map((_, index) => (
+              {products.map((_: any, index: number) => (
                 <CarouselItem
                   key={index}
                   className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/6"
@@ -134,7 +155,7 @@ export default function Home() {
             className="w-full"
           >
             <CarouselContent className="-ml-1">
-              {DataPCProduct.listProdeuct.map((_, index) => (
+              {listPc.map((_, index) => (
                 <CarouselItem
                   key={index}
                   className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/5"

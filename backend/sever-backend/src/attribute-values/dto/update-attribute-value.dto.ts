@@ -10,4 +10,5 @@ export class UpdateAttributeValueByIdDto {
   attributeValue: string;
   productId: string;
   attributeId: string;
+  tagValue?: string;
 }

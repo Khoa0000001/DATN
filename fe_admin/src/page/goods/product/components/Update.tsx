@@ -21,6 +21,7 @@ export interface FormData {
     attributeId?: string;
     nameAttribute: string;
     attributeValue: string;
+    tagValue?: string;
   }[];
 }
 
@@ -50,6 +51,7 @@ const schema: yup.ObjectSchema<FormData> = yup.object({
         attributeId: yup.string().optional(),
         nameAttribute: yup.string().required(),
         attributeValue: yup.string().required("Vui lòng nhập giá trị"),
+        tagValue: yup.string().optional(),
       })
     )
     .default([]),
@@ -85,19 +87,19 @@ const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
       ).unwrap();
       const attributes = response.data;
 
-      const mapped = attributes.map((attr: any, index: number) => ({
-        id:
-          (categoryId === data.categoryId &&
-            data?.attributeValues[index]?.id) ||
-          "",
-        attributeId: attr.id,
-        nameAttribute: attr.nameAttribute,
-        attributeValue:
-          (categoryId === data.categoryId &&
-            data?.attributeValues[index]?.attributeValue) ||
-          "",
-        description: attr.description || null,
-      }));
+      const mapped = attributes.map((attr: any) => {
+        const matched = data.attributeValues?.find(
+          (val) => val.attributeId === attr.id
+        );
+
+        return {
+          id: matched?.id || "",
+          attributeId: attr.id,
+          nameAttribute: attr.nameAttribute,
+          attributeValue: matched?.attributeValue || "",
+          tagValue: matched?.tagValue || "",
+        };
+      });
 
       replace(mapped);
     } catch (error) {
@@ -205,8 +207,13 @@ const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
 
         <Col xs={24} md={12}>
           <Typography.Title level={4}>Thuộc tính sản phẩm</Typography.Title>
+
           <div
-            style={{ maxHeight: "400px", overflowY: "auto", paddingRight: 8 }}
+            style={{
+              maxHeight: "400px",
+              overflowY: "auto",
+              paddingRight: 8,
+            }}
           >
             {!categoryId ? (
               <Typography.Text type="warning">
@@ -218,24 +225,47 @@ const Update: React.FC<Props> = ({ onSubmit, loading, data }) => {
               </Typography.Text>
             ) : (
               attributeFields.map((field, index) => (
-                <Form.Item
-                  key={field.id}
-                  label={field.nameAttribute}
-                  validateStatus={
-                    errors.attributeValues?.[index]?.attributeValue
-                      ? "error"
-                      : ""
-                  }
-                  help={
-                    errors.attributeValues?.[index]?.attributeValue?.message
-                  }
-                >
-                  <Controller
-                    name={`attributeValues.${index}.attributeValue`}
-                    control={control}
-                    render={({ field }) => <Input {...field} />}
-                  />
-                </Form.Item>
+                <Row key={field.id} gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      label={field.nameAttribute}
+                      validateStatus={
+                        errors.attributeValues?.[index]?.attributeValue
+                          ? "error"
+                          : ""
+                      }
+                      help={
+                        errors.attributeValues?.[index]?.attributeValue?.message
+                      }
+                    >
+                      <Controller
+                        name={`attributeValues.${index}.attributeValue`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input {...field} placeholder="Giá trị" />
+                        )}
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item
+                      label="Tag (tuỳ chọn)"
+                      validateStatus={
+                        errors.attributeValues?.[index]?.tagValue ? "error" : ""
+                      }
+                      help={errors.attributeValues?.[index]?.tagValue?.message}
+                    >
+                      <Controller
+                        name={`attributeValues.${index}.tagValue`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input {...field} placeholder="Nhập tag nếu có" />
+                        )}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
               ))
             )}
           </div>

@@ -20,6 +20,7 @@ export interface DataType {
     attributeValue: string;
     nameAttribute: string;
     description: string | null;
+    tagValue: string | null;
   }[];
   isDeleted: boolean;
   createDate: Date;

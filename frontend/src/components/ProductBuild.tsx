@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import { useDispatch } from "react-redux";
-import { updateComponentValue } from "@/rudex/DataBuildPCSlice";
-import { AppDispatch } from "@/rudex/store";
+import { updateComponentValue } from "@/store/DataBuildPCSlice";
+import { AppDispatch } from "@/store";
 export default function ProductBuild({
   idDataBuildPC,
   data,

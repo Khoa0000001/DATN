@@ -65,11 +65,10 @@ const View: React.FC<Props> = ({ data, onClose }) => {
       <Descriptions bordered column={1} size="small">
         {data.attributeValues.length > 0 ? (
           data.attributeValues.map((attr, idx) => (
-            <Descriptions.Item
-              key={idx}
-              label={`${attr.nameAttribute} (${attr.description || "—"})`}
-            >
-              {attr.attributeValue}
+            <Descriptions.Item key={idx} label={`${attr.nameAttribute}`}>
+              {`${attr.attributeValue}${
+                attr.tagValue ? `-(${attr.tagValue})` : ""
+              }`}
             </Descriptions.Item>
           ))
         ) : (

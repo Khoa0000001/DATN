@@ -20,6 +20,8 @@ import MenuToggle from "../../components/MenuToggle";
 import LoginRegister from "./LoginRegister";
 import MenuMobile from "../../components/MenuMobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAppSelector } from "@/store/hooks";
+import UserDropdown from "@/components/UserDropdown";
 
 export default function Header() {
   const dataDichVu = [
@@ -54,6 +56,8 @@ export default function Header() {
       icon: faShieldHeart,
     },
   ];
+
+  const { userInfo } = useAppSelector((state) => state.auth);
 
   const [menuToggle, setMenuToggle] = useState(false);
   return (
@@ -148,7 +152,11 @@ export default function Header() {
                 </span>
               </div>
               <div className="hidden sm:block">
-                <LoginRegister />
+                {userInfo ? (
+                  <UserDropdown user={userInfo} />
+                ) : (
+                  <LoginRegister />
+                )}
               </div>
             </div>
           </div>

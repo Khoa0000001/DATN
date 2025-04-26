@@ -15,6 +15,7 @@ class AttributeValueDto {
   attributeId: string;
   attributeValue: string;
   attribute: AttributeDto;
+  tagValue: string | null;
 }
 
 class CategoryDto {

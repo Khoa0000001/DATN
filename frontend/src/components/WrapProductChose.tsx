@@ -11,8 +11,8 @@ import { DataFlashSaleProduct } from "@/data/DataFake";
 import ProductBuild from "@/components/ProductBuild";
 import Button from "@/components/Button";
 import { useDispatch } from "react-redux";
-import { updateComponentValue } from "@/rudex/DataBuildPCSlice";
-import { AppDispatch } from "@/rudex/store";
+import { updateComponentValue } from "@/store/DataBuildPCSlice";
+import { AppDispatch } from "@/store";
 
 export default function wrapProductChose({ data }: { data: any }) {
   const dispatch = useDispatch<AppDispatch>();

@@ -1,34 +1,44 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import GetIconType from "@/unit/GetIconTypeProduct";
+import GetIconType from "@/utils/GetIconTypeProduct";
+import isExitAttrubuteShow from "@/utils/isExitAttrubuteShow";
+import { Link } from "react-router-dom";
 export default function Product({ data }: { data: any }) {
   return (
-    <div className="rounded-[4px] bg-white text-white border border-gray-300 items-center">
-      <div className="p-[12px] flex justify-center items-center">
-        <a href="">
-          <img src={data.img} alt="" />
-        </a>
+    <div className="rounded-[4px] bg-white text-white border border-gray-300 items-center min-h-[330px] max-w-[220px]">
+      <div className="p-[12px] flex justify-center items-center min-h-[180px] ">
+        <Link to={`/products/${data.id}`}>
+          <img
+            src={data.productImages && data?.productImages[0]?.imageUrl}
+            alt=""
+            className="max-h-[160px] object-contain"
+          />
+        </Link>
       </div>
       <div className="px-[12px] pt-[16px] pb-[12px]">
         <h3 className="text-[14px] font-[600] mb-[16px]">
-          <a href="" className="text-[#333]">
-            {data.name}
-          </a>
+          <Link to={`/products/${data.id}`} className="text-[#333]">
+            {data.nameProduct}
+          </Link>
         </h3>
-        {data.components && (
+        {data?.attributeValues?.filter((_: any) =>
+          isExitAttrubuteShow(_.nameAttribute)
+        ).length > 0 && (
           <div className="text-[#6D6E72] text-[12px] py-[4px] px-[8px] mb-[8px] bg-[#ECECEC]">
-            {data.components?.map((_: any, index: number) => (
-              <div
-                key={index}
-                className="inline-flex pr-[5px] items-center pb-[5px]"
-              >
-                <FontAwesomeIcon
-                  icon={GetIconType(_.type)}
-                  className="mr-[5px]"
-                />
-                <span>{_.name}</span>
-              </div>
-            ))}
+            {data.attributeValues
+              ?.filter((_: any) => isExitAttrubuteShow(_.nameAttribute))
+              .map((_: any, index: number) => (
+                <div
+                  key={index}
+                  className="inline-flex pr-[5px] items-center pb-[5px]"
+                >
+                  <FontAwesomeIcon
+                    icon={GetIconType(_.nameAttribute)}
+                    className="mr-[5px]"
+                  />
+                  <span>{_.tagValue}</span>
+                </div>
+              ))}
           </div>
         )}
         <div>

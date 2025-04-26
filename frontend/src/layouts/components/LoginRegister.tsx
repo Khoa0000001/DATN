@@ -107,7 +107,7 @@ export default function LoginRegister() {
                   <div className="text-center flex justify-center cursor-pointer">
                     Bạn chưa có tài khoản?
                     <div className="text-blue-500" onClick={handleTypeLogin}>
-                      Đăng ký ngay!
+                      {typeLogin ? "Đăng ký ngay!" : "Đăng nhập ngay!"}
                     </div>
                   </div>
                 </div>
