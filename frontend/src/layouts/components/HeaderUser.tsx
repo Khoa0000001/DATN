@@ -22,6 +22,7 @@ import MenuMobile from "../../components/MenuMobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAppSelector } from "@/store/hooks";
 import UserDropdown from "@/components/UserDropdown";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   const dataDichVu = [
@@ -63,10 +64,10 @@ export default function Header() {
   return (
     <>
       <Sheet>
-        <div className="hidden sm:flex items-center justify-center bg-[rgb(255,183,67)] z-50 relative">
-          <a href="">
+        <div className="hidden sm:flex items-center justify-center bg-[rgb(0,0,0)] z-50 relative">
+          <a>
             <img
-              src="https://file.hstatic.net/200000722513/file/banner_ffb743.png"
+              src="https://file.hstatic.net/200000722513/file/banner_000000.jpg"
               alt=""
               className="max-w-[1200px] w-full"
             />
@@ -77,11 +78,13 @@ export default function Header() {
             {/* Bên trái */}
             <div className=" flex items-center space-x-4">
               <div className="hidden lg:flex items-center gap-2">
-                <img
-                  src="src/assets/image/logoCPT.png"
-                  alt="Logo"
-                  className="w-[140px] h-10 cursor-pointer"
-                />
+                <Link to={"/"}>
+                  <img
+                    src="src/assets/image/logoCPT.png"
+                    alt="Logo"
+                    className="w-[140px] h-10 cursor-pointer"
+                  />
+                </Link>
               </div>
               <div>
                 <Tippy
@@ -142,15 +145,17 @@ export default function Header() {
                   icon={faReceipt}
                 />
               </div>
-              <div className="relative mr-[10px]">
-                <CollHeader
-                  titleArray={["Giỏ", "hàng"]}
-                  icon={faCartShopping}
-                />
-                <span className="absolute -top-1 left-4 bg-[#FDD835] text-black text-xs font-bold px-1 py-0.15 rounded-full border-2 border-white">
-                  1
-                </span>
-              </div>
+              <Link to={"/cart"}>
+                <div className="relative mr-[10px]">
+                  <CollHeader
+                    titleArray={["Giỏ", "hàng"]}
+                    icon={faCartShopping}
+                  />
+                  <span className="absolute -top-1 left-4 bg-[#FDD835] text-black text-xs font-bold px-1 py-0.15 rounded-full border-2 border-white">
+                    0
+                  </span>
+                </div>
+              </Link>
               <div className="hidden sm:block">
                 {userInfo ? (
                   <UserDropdown user={userInfo} />

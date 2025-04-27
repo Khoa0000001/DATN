@@ -16,6 +16,59 @@ import { useAppDispatch } from "@/store/hooks";
 import { fetchProducts } from "@/store/slice/productSlice";
 import { useEffect, useState } from "react";
 
+const DatafileLeft03 = [
+  {
+    id: 1,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/thang_04_layout_web_-01.png",
+  },
+  {
+    id: 2,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/thang_04_layout_web_-02.png",
+  },
+  {
+    id: 3,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/thang_04_layout_web_-03.png",
+  },
+];
+
+const DatafileBottom02 = [
+  {
+    id: 5,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/thang_04_layout_web_-05.png",
+  },
+  {
+    id: 4,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/thang_04_layout_web_-04.png",
+  },
+];
+const DatafileBottom04 = [
+  {
+    id: 999,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/gearvn-festival-sub-banner.jpg",
+  },
+  {
+    id: 8,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/thang_04_layout_web_-08.png",
+  },
+  {
+    id: 7,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/thang_04_layout_web_-07.png",
+  },
+  {
+    id: 6,
+    valueSrc:
+      "https://file.hstatic.net/200000722513/file/thang_04_layout_web_-06.png",
+  },
+];
+
 export default function Home() {
   const dispatch = useAppDispatch();
   const [products, setProducts] = useState<any[]>([]);
@@ -48,14 +101,11 @@ export default function Home() {
                 <SwiperComponent />
               </div>
               <div className="hidden  gap-2 pt-[8px] lg:flex">
-                {Array.from({ length: 2 }).map((_, index) => (
+                {DatafileBottom02.map((_, index) => (
                   <div key={index}>
                     <a href="">
                       <picture>
-                        <img
-                          src="https://file.hstatic.net/200000722513/file/thang_02_layout_web_-01.png"
-                          alt=""
-                        />
+                        <img src={_.valueSrc} alt="" />
                       </picture>
                     </a>
                   </div>
@@ -64,14 +114,11 @@ export default function Home() {
             </div>
             <div className="hidden sm:block pl-[8px] w-[33.33333%]">
               <div className="flex flex-col lg:gap-4">
-                {Array.from({ length: 3 }).map((_, index) => (
+                {DatafileLeft03.map((_, index) => (
                   <div key={index}>
                     <a href="">
                       <picture>
-                        <img
-                          src="https://file.hstatic.net/200000722513/file/thang_02_layout_web_-01.png"
-                          alt=""
-                        />
+                        <img src={_.valueSrc} alt="" />
                       </picture>
                     </a>
                   </div>
@@ -81,15 +128,11 @@ export default function Home() {
           </div>
         </div>
         <div className="flex gap-4 overflow-x-auto sm:overflow-hidden">
-          {Array.from({ length: 4 }).map((_, index) => (
+          {DatafileBottom04.map((_, index) => (
             <div key={index}>
               <a href="">
                 <picture>
-                  <img
-                    src="https://file.hstatic.net/200000722513/file/thang_02_layout_web_-01.png"
-                    alt=""
-                    className="min-w-[290px]"
-                  />
+                  <img src={_.valueSrc} alt="" className="min-w-[290px]" />
                 </picture>
               </a>
             </div>
@@ -128,13 +171,13 @@ export default function Home() {
       <div className="block sm:flex gap-2 mt-[18px] px-[8px]">
         <div>
           <img
-            src="https://file.hstatic.net/200000722513/file/thang_02_build_pc_1015x325.png"
+            src="https://file.hstatic.net/200000722513/file/thang_04_layout_web__1015x325.png"
             alt=""
           />
         </div>
         <div>
           <img
-            src="https://file.hstatic.net/200000722513/file/thang_02_build_pc_1015x325.png"
+            src="https://file.hstatic.net/200000722513/file/thang_04_layout_web__1015x325_copy.png"
             alt=""
           />
         </div>

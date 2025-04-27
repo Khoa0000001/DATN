@@ -9,7 +9,7 @@ export class ImageUploadService {
     return new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
-          folder: 'products',
+          folder: 'CPTimages',
           public_id: filename,
         },
         (error, result) => {

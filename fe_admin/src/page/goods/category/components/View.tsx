@@ -34,6 +34,22 @@ const View: React.FC<Props> = ({ data, onClose }) => {
               size="middle"
               styles={{ label: { width: "120px", fontWeight: 500 } }}
             >
+              <Descriptions.Item label="Ảnh">
+                {data.imageUrl ? (
+                  <img
+                    src={data.imageUrl}
+                    alt="Ảnh danh mục"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                      borderRadius: 8,
+                    }}
+                  />
+                ) : (
+                  <Text type="secondary">Không có ảnh</Text>
+                )}
+              </Descriptions.Item>
               <Descriptions.Item label="Tên danh mục">
                 {data.nameCategory || <Text type="secondary">Không có</Text>}
               </Descriptions.Item>

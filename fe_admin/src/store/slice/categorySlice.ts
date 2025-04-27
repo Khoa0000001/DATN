@@ -43,9 +43,22 @@ export const fetchCategoryDetail = createAsyncThunk(
 );
 export const createCategory = createAsyncThunk(
   "categories/createCategory",
-  async (data, { rejectWithValue }) => {
+  async (data: any, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/categories`, data);
+      const formData = new FormData();
+      formData.append("nameCategory", data.nameCategory);
+      formData.append("description", data.description || "");
+      formData.append("attributes", JSON.stringify(data.attributes));
+      // Append ảnh
+      if (data.image) {
+        formData.append("file", data.image);
+      }
+
+      const response = await axiosInstance.post(`/categories`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
@@ -62,7 +75,28 @@ export const updateCategory = createAsyncThunk(
       delete data.createDate;
       delete data.updateDate;
       const { id, ...rest } = data;
-      const response = await axiosInstance.patch(`/categories/${id}`, rest);
+      const formData = new FormData();
+      formData.append("nameCategory", rest.nameCategory);
+      formData.append("description", rest.description || "");
+      formData.append("attributes", JSON.stringify(rest.attributes));
+      formData.append(
+        "deletedAttributeIds",
+        JSON.stringify(rest.deletedAttributeIds)
+      );
+      // Append ảnh
+      if (rest.imageUrl) {
+        formData.append("file", rest.imageUrl);
+      }
+
+      const response = await axiosInstance.patch(
+        `/categories/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       return response.data;
     } catch (err: any) {
       return rejectWithValue(

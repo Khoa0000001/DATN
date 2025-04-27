@@ -8,19 +8,27 @@ import {
   Delete,
   Query,
   BadRequestException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CheckId } from '@/common/Decorators/check-id.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly _categoriesService: CategoriesService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this._categoriesService.create(createCategoryDto);
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this._categoriesService.create(createCategoryDto, file);
   }
 
   @Get()
@@ -51,11 +59,13 @@ export class CategoriesController {
 
   @Patch(':id')
   @CheckId('categories', 'id')
+  @UseInterceptors(FileInterceptor('file'))
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this._categoriesService.update(id, updateCategoryDto);
+    return this._categoriesService.update(id, updateCategoryDto, file);
   }
 
   @Delete()

@@ -7,11 +7,14 @@ import {
 } from "swiper/modules";
 
 const images = [
+  "https://file.hstatic.net/200000722513/file/gearvn-festival-505-slider.jpg",
+  "https://file.hstatic.net/200000722513/file/thang_03_thu_cu_doi_moi_banner_web_slider_800x400.jpg",
+  "https://file.hstatic.net/200000722513/file/thang_04_pc_tang_man_banner_web_slider_800x400.jpg",
+  "https://file.hstatic.net/200000722513/file/thang_04_laptop_gaming_banner_web_slider_800x400.jpg",
+  "https://file.hstatic.net/200000722513/file/thang_03_laptop_rtx_5090_800x400.jpg",
   "https://file.hstatic.net/200000722513/file/banner_web_slider_800x400_1199a3adfc23489798d4163a97f3bc62.jpg",
-  "https://file.hstatic.net/200000722513/file/banner_web_slider_800x400_1199a3adfc23489798d4163a97f3bc62.jpg",
-  "https://file.hstatic.net/200000722513/file/banner_web_slider_800x400_1199a3adfc23489798d4163a97f3bc62.jpg",
-  "https://file.hstatic.net/200000722513/file/banner_web_slider_800x400_1199a3adfc23489798d4163a97f3bc62.jpg",
-  "https://file.hstatic.net/200000722513/file/banner_web_slider_800x400_1199a3adfc23489798d4163a97f3bc62.jpg",
+  "https://file.hstatic.net/200000722513/file/thang_04_laptop_acer.png",
+  "https://file.hstatic.net/200000722513/file/thang_04_laptop_rtx_50series_800x400.jpg",
 ];
 
 const SwiperComponent = () => {

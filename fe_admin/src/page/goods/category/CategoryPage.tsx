@@ -35,6 +35,7 @@ const RolePage: React.FC = () => {
   const closeModal = () => setModalOpen(false);
 
   const handleAddSubmit = async (data: any) => {
+    console.log("data", data);
     try {
       setSubmitLoading(true); // Bắt đầu loading
       await dispatch(createCategory(data)).unwrap();
@@ -51,6 +52,7 @@ const RolePage: React.FC = () => {
 
   const handleEditSubmit = async (data: any) => {
     try {
+      if (!(data.imageUrl instanceof File)) delete data.imageUrl;
       setSubmitLoading(true); // Bắt đầu loading
       await dispatch(updateCategory(data)).unwrap();
       toast.success("Cập nhất thành công.");

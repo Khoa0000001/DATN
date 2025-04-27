@@ -19,9 +19,9 @@ const AppRoutes = () =>
         {
           path: "cart",
           element: (
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            <Cart />
+            // </ProtectedRoute>
           ),
         },
         {

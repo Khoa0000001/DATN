@@ -6,25 +6,41 @@ import { CreateAttributeDto } from '@/attributes/dto/create-attribute.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { formatResponse } from '@/utils/response.util';
 import { AttributesService } from '@/attributes/attributes.service';
+import { ImageUploadService } from '@/upload/image-upload.service';
+import { Express } from 'express';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     private readonly _prisma: PrismaService,
     private readonly _attribute: AttributesService,
+    private readonly _cloudinary: ImageUploadService,
   ) {}
-  async create(createCategoryDto: CreateCategoryDto) {
+  async create(
+    createCategoryDto: CreateCategoryDto,
+    file: Express.Multer.File,
+  ) {
+    const imageUrl = await this._cloudinary.uploadImage(
+      file.buffer,
+      file.originalname,
+    );
     const { attributes, ...dataCategory } = createCategoryDto;
     const category = await this._prisma.categories.create({
-      data: dataCategory,
+      data: {
+        ...dataCategory,
+        imageUrl,
+      },
     });
-    const newAttributes = attributes.map((attribute) => ({
-      ...attribute,
-      categoryId: category.id,
-    }));
-    if (attributes && attributes.length > 0) {
+
+    const convetAttributes = JSON.parse(attributes || '[]');
+    if (convetAttributes && convetAttributes.length > 0) {
+      const newAttributes = convetAttributes.map((attributeValue) => ({
+        ...attributeValue,
+        categoryId: category.id,
+      }));
       await this._attribute.createMany(newAttributes);
     }
+
     return formatResponse('category created successfully', {
       category,
     });
@@ -67,12 +83,28 @@ export class CategoriesService {
     return formatResponse(`This action returns a category`, category);
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+  async update(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+    file?: Express.Multer.File,
+  ) {
     const { attributes, deletedAttributeIds, ...dataCategory } =
-      updateCategoryDto;
+      updateCategoryDto as UpdateCategoryDto & { imageUrl?: string };
     const editAttributes: UpdateAttributeDto[] = [];
     const addAttributes: CreateAttributeDto[] = [];
-    attributes.forEach((_) => {
+
+    if (file) {
+      const imageUrl = await this._cloudinary.uploadImage(
+        file.buffer,
+        file.originalname,
+      );
+      dataCategory.imageUrl = imageUrl;
+    }
+
+    const convetAttributes = JSON.parse(attributes || '[]');
+    const convetDeletedAttributeIds = JSON.parse(deletedAttributeIds || '[]');
+
+    convetAttributes.forEach((_) => {
       if (_.id) {
         const _new: UpdateAttributeDto = {
           id: _.id,
@@ -96,7 +128,7 @@ export class CategoriesService {
           data: dataCategory,
         }),
         deletedAttributeIds?.length
-          ? this._attribute.removeMany(deletedAttributeIds)
+          ? this._attribute.removeMany(convetDeletedAttributeIds)
           : Promise.resolve(),
         editAttributes.length
           ? this._attribute.updateMany(editAttributes)

@@ -7,6 +7,7 @@ export interface DataType {
   nameCategory: string;
   description: string;
   isDeleted: boolean;
+  image: string;
   attributes: [
     {
       id: string;
