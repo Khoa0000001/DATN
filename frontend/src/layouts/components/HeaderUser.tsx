@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTag,
@@ -20,9 +20,10 @@ import MenuToggle from "../../components/MenuToggle";
 import LoginRegister from "./LoginRegister";
 import MenuMobile from "../../components/MenuMobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useAppSelector } from "@/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import UserDropdown from "@/components/UserDropdown";
 import { Link } from "react-router-dom";
+import { getTotalQuantity, setCartPosition } from "@/store/slice/cartSlice";
 
 export default function Header() {
   const dataDichVu = [
@@ -59,8 +60,18 @@ export default function Header() {
   ];
 
   const { userInfo } = useAppSelector((state) => state.auth);
+  const totalQuantity = useAppSelector(getTotalQuantity);
 
   const [menuToggle, setMenuToggle] = useState(false);
+  const cartRef = useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (cartRef.current) {
+      const rect = cartRef.current.getBoundingClientRect();
+      dispatch(setCartPosition({ x: rect.left, y: rect.top }));
+    }
+  }, []);
   return (
     <>
       <Sheet>
@@ -80,7 +91,7 @@ export default function Header() {
               <div className="hidden lg:flex items-center gap-2">
                 <Link to={"/"}>
                   <img
-                    src="src/assets/image/logoCPT.png"
+                    src="public/logoCPT.png"
                     alt="Logo"
                     className="w-[140px] h-10 cursor-pointer"
                   />
@@ -146,14 +157,16 @@ export default function Header() {
                 />
               </div>
               <Link to={"/cart"}>
-                <div className="relative mr-[10px]">
+                <div className="relative mr-[10px]" ref={cartRef}>
                   <CollHeader
                     titleArray={["Giỏ", "hàng"]}
                     icon={faCartShopping}
                   />
-                  <span className="absolute -top-1 left-4 bg-[#FDD835] text-black text-xs font-bold px-1 py-0.15 rounded-full border-2 border-white">
-                    0
-                  </span>
+                  {totalQuantity > 0 && (
+                    <span className="absolute -top-1 left-4 bg-[#FDD835] text-black text-xs font-bold px-1 py-0.15 rounded-full border-2 border-white">
+                      {totalQuantity}
+                    </span>
+                  )}
                 </div>
               </Link>
               <div className="hidden sm:block">

@@ -1,7 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 interface CartItemProps {
+  id: string;
   image: string;
   name: string;
   price: number;
@@ -13,6 +15,7 @@ interface CartItemProps {
 }
 
 const CartItem: React.FC<CartItemProps> = ({
+  id,
   image,
   name,
   price,
@@ -26,11 +29,13 @@ const CartItem: React.FC<CartItemProps> = ({
     <div className="flex items-center gap-4 p-4 border-b">
       <div className="flex justify-between">
         <div className="flex flex-col justify-center items-center">
-          <img
-            src={image}
-            alt={name}
-            className="w-32 object-cover border p-[3px]"
-          />
+          <Link to={`/products/${id}`}>
+            <img
+              src={image}
+              alt={name}
+              className="w-32 object-cover border p-[3px]"
+            />
+          </Link>
           <button
             className="flex items-center text-gray-500 hover:text-red-500 mt-2 cursor-pointer"
             onClick={onRemove}
@@ -38,9 +43,11 @@ const CartItem: React.FC<CartItemProps> = ({
             <FontAwesomeIcon icon={faTrash} className="mr-1" /> Xóa
           </button>
         </div>
-        <div className="items-center ml-[10px]">
-          <h2 className="text-[14px] font-medium">{name}</h2>
-        </div>
+        <Link to={`/products/${id}`}>
+          <div className="items-center ml-[10px]">
+            <h2 className="text-[14px] font-medium">{name}</h2>
+          </div>
+        </Link>
       </div>
       <div>
         <div className="text-right">

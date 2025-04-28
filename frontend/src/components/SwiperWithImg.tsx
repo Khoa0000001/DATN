@@ -5,7 +5,6 @@ import { Navigation, Thumbs } from "swiper/modules";
 import { Swiper as SwiperInstance } from "swiper";
 
 export default function SwiperWithImg(data: any) {
-  console.log("data", data);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperInstance | null>(null);
   return (
     <div className="w-full max-w-3xl mx-auto">

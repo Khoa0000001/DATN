@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import MenuToggle from "@/components/MenuToggle";
 import SwiperComponent from "@/components/SwiperComponent";
 import WrapProduct from "@/components/WrapProduct";
@@ -12,9 +13,9 @@ import {
 import Product from "@/components/Product";
 import WrapFlashSale from "@/components/WrapFlashSale";
 import { DataPCProduct } from "@/data/DataFake";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchProducts } from "@/store/slice/productSlice";
-import { useEffect, useState } from "react";
+import { fetchCategories } from "@/store/slice/categorySlice";
 
 const DatafileLeft03 = [
   {
@@ -73,6 +74,7 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const [products, setProducts] = useState<any[]>([]);
   const [listPc, setListPc] = useState<any[]>([]);
+  const { categories } = useAppSelector((state) => state.categories);
 
   const handleFetchProducts = async () => {
     const res = await dispatch(fetchProducts({}));
@@ -86,6 +88,7 @@ export default function Home() {
 
   useEffect(() => {
     handleFetchProducts();
+    dispatch(fetchCategories({})).unwrap(); // Pass an empty object or the required argument(s)
   }, [dispatch]);
   return (
     <div className="max-w-[1220px] mx-[auto]">
@@ -222,17 +225,17 @@ export default function Home() {
           </div>
           <div className="p-[16px]">
             <div className="gap-4 flex flex-wrap">
-              {Array.from({ length: 18 }).map((_, index) => (
+              {categories?.map((_: any, index: number) => (
                 <div key={index} className="mx-[12px] cursor-pointer">
-                  <div className="w-22">
+                  <div className="w-[88px] h-[88px] flex items-center justify-center overflow-hidden  rounded-md">
                     <img
-                      className="p-[10px]"
-                      src="src/assets/image/typeLaptop.webp"
+                      className="object-cover w-full h-full p-[10px]"
+                      src={_.imageUrl || ""}
                       alt=""
                     />
                   </div>
-                  <div className="items-center flex justify-center font-[500]">
-                    Laptop
+                  <div className="items-center flex justify-center font-[500] mt-2 text-center">
+                    {_.nameCategory}
                   </div>
                 </div>
               ))}

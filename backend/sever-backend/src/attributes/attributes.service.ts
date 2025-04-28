@@ -36,7 +36,7 @@ export class AttributesService {
     const queryOptions: any = {
       where: {
         categoryId: categoryId, // lọc theo categoryId
-      },
+      }
     };
 
     if (page && limit) {

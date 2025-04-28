@@ -1,4 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  faPodcast,
+  faTvAlt,
+  faObjectGroup,
+  faLayerGroup,
   faMicrochip,
   faTachographDigital,
   faMemory,
@@ -11,35 +16,20 @@ import {
   faLightbulb,
   faBatteryFull,
   faMaximize,
+  faBox,
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function GetIconType(iconType: string) {
+export default function GetIconType(iconType: any) {
   switch (iconType) {
-    case "CPU":
-      return faMicrochip;
-    case "GPU":
-      return faTachographDigital;
-    case "RAM":
-      return faMemory;
-    case "DISK":
-      return faHardDrive;
-    case "MAIN":
-      return faEthernet;
-    case "SSD":
-      return faFloppyDisk;
-    case "TV":
-      return faTv;
-    case "HZ":
-      return faSatelliteDish;
-    case "Day":
-      return faPlug;
-    case "LED":
-      return faLightbulb;
-    case "PIN":
-      return faBatteryFull;
-    case "SIZE":
-      return faMaximize;
+    case "Tần số quét":
+      return faPodcast;
+    case "Tấm nền":
+      return faLayerGroup;
+    case "Kích thước":
+      return faTvAlt;
+    case "Góc nhìn":
+      return faObjectGroup;
     default:
-      return faMicrochip;
+      return faBox;
   } // end of switch()
 } // end of GetIconType() function

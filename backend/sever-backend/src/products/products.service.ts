@@ -103,10 +103,16 @@ export class ProductsService {
             id: true,
             imageUrl: true,
           },
+          orderBy: {
+            createDate: 'asc',
+          },
         },
         attributeValues: {
           include: {
             attribute: true,
+          },
+          orderBy: {
+            createDate: 'asc',
           },
         },
         category: {
@@ -148,10 +154,16 @@ export class ProductsService {
             id: true,
             imageUrl: true,
           },
+          orderBy: {
+            createDate: 'asc',
+          },
         },
         attributeValues: {
           include: {
             attribute: true,
+          },
+          orderBy: {
+            createDate: 'asc',
           },
         },
         category: {

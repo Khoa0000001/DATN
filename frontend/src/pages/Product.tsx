@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SwiperWithImg from "@/components/SwiperWithImg";
 import Button from "@/components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,10 +17,15 @@ import {
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchProductDetail } from "@/store/slice/productSlice";
+import { addItem } from "@/store/slice/cartSlice";
 export default function Products() {
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
   const { product } = useAppSelector((state) => state.products);
+  const [showAll, setShowAll] = useState(false);
+  const handleAddToCart = () => {
+    dispatch(addItem(product));
+  };
 
   useEffect(() => {
     if (id) {
@@ -71,7 +76,7 @@ export default function Products() {
                       </div>
                     </div>
                     <div className="mt-[28px]">
-                      <Button color="#E30019">
+                      <Button color="#E30019" onClick={handleAddToCart}>
                         <div className="text-white px-[84px]">
                           <div>MUA NGAY</div>
                           <span className="text-[13px]">
@@ -182,25 +187,38 @@ export default function Products() {
                     Thông tin sản phẩm
                   </h1>
                   <div className="px-[24px]">
-                    <table className="w-full border-collapse border border-gray-300  overflow-hidden">
+                    <table className="w-full border-collapse border border-gray-300 overflow-hidden">
                       <tbody>
-                        {product?.attributeValues?.map(
-                          (_: any, index: number) => (
-                            <tr
-                              key={index}
-                              className="hover:bg-gray-100 transition"
-                            >
-                              <td className="border border-gray-300 px-4 py-2 bg-gray-100 font-semibold text-[20px] text-[#428bca]">
-                                {_.nameAttribute}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-2 text-[17px]">
-                                {_.attributeValue}
-                              </td>
-                            </tr>
-                          )
-                        )}
+                        {(showAll
+                          ? product?.attributeValues
+                          : product?.attributeValues?.slice(0, 5)
+                        )?.map((_: any, index: number) => (
+                          <tr
+                            key={index}
+                            className="hover:bg-gray-100 transition"
+                          >
+                            <td className="border border-gray-300 px-4 py-2 bg-gray-100 font-semibold text-[16px]  w-1/4">
+                              {_.nameAttribute}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2 text-[17px] w-3/4">
+                              {_.attributeValue}
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
+
+                    {/* Nút Xem thêm / Thu gọn */}
+                    {product?.attributeValues?.length > 5 && (
+                      <div className="text-center mt-4">
+                        <button
+                          onClick={() => setShowAll(!showAll)}
+                          className="text-[16px] text-blue-500 hover:underline"
+                        >
+                          {showAll ? "Thu gọn" : "Xem thêm"}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -229,7 +247,7 @@ export default function Products() {
           <div className="bg-white rounded-[4px]">
             <div className="px-[10px] pb-[12px]">
               <h1 className="font-[600] text-[22px] px-[24px] py-[12px] ">
-                Thông tin sản phẩm
+                Sản phẩm liên quan
               </h1>
               <div>
                 <Carousel

@@ -22,11 +22,13 @@ export default function Product({ data }: { data: any }) {
           </Link>
         </h3>
         {data?.attributeValues?.filter((_: any) =>
-          isExitAttrubuteShow(_.nameAttribute)
+          isExitAttrubuteShow(data.category.nameCategory, _.nameAttribute)
         ).length > 0 && (
           <div className="text-[#6D6E72] text-[12px] py-[4px] px-[8px] mb-[8px] bg-[#ECECEC]">
             {data.attributeValues
-              ?.filter((_: any) => isExitAttrubuteShow(_.nameAttribute))
+              ?.filter((_: any) =>
+                isExitAttrubuteShow(data.category.nameCategory, _.nameAttribute)
+              )
               .map((_: any, index: number) => (
                 <div
                   key={index}

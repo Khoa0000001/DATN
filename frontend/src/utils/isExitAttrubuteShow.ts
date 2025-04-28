@@ -1,30 +1,15 @@
-export default function isExitAttrubuteShow(type: string) {
-  switch (type) {
-    case "CPU":
-      return true;
-    case "GPU":
-      return true;
-    case "RAM":
-      return true;
-    case "DISK":
-      return true;
-    case "MAIN":
-      return true;
-    case "SSD":
-      return true;
-    case "TV":
-      return true;
-    case "HZ":
-      return true;
-    case "Day":
-      return true;
-    case "LED":
-      return true;
-    case "PIN":
-      return true;
-    case "SIZE":
-      return true;
-    default:
-      return false;
-  }
+export default function isExitAttrubuteShow(type: string, name: string) {
+  if (type === "Màn hình")
+    switch (name) {
+      case "Tần số quét":
+        return true;
+      case "Tấm nền":
+        return true;
+      case "Kích thước":
+        return true;
+      case "Góc nhìn":
+        return true;
+      default:
+        return false;
+    }
 }
