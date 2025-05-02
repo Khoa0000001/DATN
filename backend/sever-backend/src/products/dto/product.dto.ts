@@ -45,4 +45,6 @@ export class ProductDto {
   productImages: ProductImageDto[];
 
   attributeValues: AttributeValueDto[];
+
+  embedding: number[] | null;
 }

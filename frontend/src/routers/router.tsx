@@ -5,6 +5,7 @@ import Home from "@/pages/Home";
 import Cart from "@/pages/Cart";
 import Product from "@/pages/Product";
 import ListProdeucts from "@/pages/ListProducts";
+import BuildPC from "@/pages/BuildPC";
 
 const AppRoutes = () =>
   useRoutes([
@@ -31,6 +32,10 @@ const AppRoutes = () =>
         {
           path: "list-products",
           element: <ListProdeucts />,
+        },
+        {
+          path: "build-pc",
+          element: <BuildPC />,
         },
       ],
     },

@@ -40,6 +40,7 @@ model Users {
   Wishlists        Wishlists[]
   Logs             Logs[]
   Carts            Carts[]
+  
 
   @@index([isDeleted, id])
   @@index([email])
@@ -100,6 +101,7 @@ model Products {
   description     String?
   categoryId      String
   isDeleted       Boolean           @default(false)
+  embedding       Json?
   category        Categories        @relation(fields: [categoryId], references: [id])
   productImages   ProductImages[]
   attributeValues AttributeValues[]
@@ -137,6 +139,16 @@ model ProductImages {
 
   @@index([productId])
 }
+
+model ChatHistory {
+  id        String   @id @default(uuid())
+  question  String   @db.Text
+  answer    String   @db.Text
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+  userId    String?     // nếu có đăng nhập người dùng
+}
+
 
 model Attributes {
   id              String            @id @default(uuid())

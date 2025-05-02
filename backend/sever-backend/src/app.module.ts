@@ -25,6 +25,8 @@ import { RolesModule } from './roles/roles.module';
 import { UserRolesModule } from './user-roles/user-roles.module';
 import { CartsModule } from './carts/carts.module';
 import { AuthModule } from './auth/auth.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
+import { ChatHistoryModule } from './chat-history/chat-history.module';
 
 @Module({
   imports: [
@@ -55,6 +57,8 @@ import { AuthModule } from './auth/auth.module';
     ShippingMethodsModule,
     CartsModule,
     AuthModule,
+    ChatbotModule,
+    ChatHistoryModule,
     // LogsModule,
   ],
 })

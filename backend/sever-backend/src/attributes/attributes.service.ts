@@ -36,7 +36,10 @@ export class AttributesService {
     const queryOptions: any = {
       where: {
         categoryId: categoryId, // lọc theo categoryId
-      }
+      },
+      orderBy: {
+        createDate: 'asc', // Thêm dòng này để order theo createDate
+      },
     };
 
     if (page && limit) {

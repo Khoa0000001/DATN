@@ -12,20 +12,23 @@ import {
 } from "@/components/ui/dialog";
 import Button from "@/components/Button";
 import WrapProductChose from "@/components/WrapProductChose";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
-import { resetComponent } from "@/store/DataBuildPCSlice";
 import Counsel from "@/components/Counsel";
 export default function BuildPC() {
-  const dispatch = useDispatch<AppDispatch>();
-  const dataBuildPC = useSelector(
-    (state: RootState) => state.DataBuildPC.components
-  );
-  const handleReset = () => {
-    dispatch(resetComponent());
-  };
+  interface ComponentValue {
+    name: string;
+    price: number;
+  }
+
+  interface BuildPCComponent {
+    id: string;
+    title: string;
+    image: string;
+    color: string;
+    value?: ComponentValue;
+  }
+
+  const dataBuildPC: BuildPCComponent[] = [];
+  const handleReset = () => {}; 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   return (
     <div>

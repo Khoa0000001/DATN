@@ -5,6 +5,7 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { ProductImagesModule } from '@/product-images/product-images.module';
 import { UploadModule } from '@/upload/upload.module';
 import { AttributeValuesModule } from '@/attribute-values/attribute-values.module';
+import { EmbeddingModule } from '@/embedding/embedding.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AttributeValuesModule } from '@/attribute-values/attribute-values.modul
     ProductImagesModule,
     UploadModule,
     AttributeValuesModule,
+    EmbeddingModule,
   ],
   controllers: [ProductsController],
   providers: [ProductsService],

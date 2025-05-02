@@ -29,7 +29,7 @@ export default function Header() {
   const dataDichVu = [
     {
       title: "Tự Build PC theo ý của bạn",
-      link: "",
+      link: "/build-pc",
       icon: faTag,
     },
     {
@@ -186,8 +186,8 @@ export default function Header() {
                 key={index}
                 className="relative flex items-center whitespace-nowrap hover:text-[var(--primary-color)]"
               >
-                <a
-                  href={item.link}
+                <Link
+                  to={item.link}
                   className="text-[13px] py-[12px] px-[26px] font-semibold"
                 >
                   <FontAwesomeIcon
@@ -195,7 +195,7 @@ export default function Header() {
                     className="mr-[7px] text-[19px]"
                   />
                   <span>{item.title}</span>
-                </a>
+                </Link>
                 {index < arr.length - 1 && (
                   <span className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-[62%] bg-gray-300"></span>
                 )}

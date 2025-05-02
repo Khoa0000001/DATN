@@ -8,6 +8,7 @@ import { ImageUploadService } from '@/upload/image-upload.service';
 import { ProductImagesService } from '@/product-images/product-images.service';
 import { Express } from 'express';
 import { AttributeValuesService } from '@/attribute-values/attribute-values.service';
+import { EmbeddingService } from '@/embedding/embedding.service';
 
 @Injectable()
 export class ProductsService {
@@ -16,6 +17,7 @@ export class ProductsService {
     private readonly _cloudinary: ImageUploadService,
     private readonly _productImagesService: ProductImagesService,
     private readonly _attributeValuesService: AttributeValuesService,
+    private readonly _embeddingService: EmbeddingService,
   ) {}
 
   formattedProduct(product: ProductDto | null) {
@@ -44,15 +46,19 @@ export class ProductsService {
         `ID ${createProductDto.categoryId} không tồn tại hoặc đã bị xóa trong bảng categories`,
       );
     }
-    const { attributeValues, ...dataProduct } = createProductDto;
 
+    const { attributeValues, ...dataProduct } = createProductDto;
+    const convetAttributeValues = JSON.parse(attributeValues || '[]');
+
+    const embedText = `Tên sản phẩm: ${dataProduct.nameProduct}Mô tả: ${dataProduct.description}Giá: ${dataProduct.price}Danh mục: ${category?.nameCategory}Thuộc tính:${convetAttributeValues.map((a) => `${a.nameAttribute || ''}: ${a.attributeValue}`).join('')}
+`;
+    const embedding = await this._embeddingService.getEmbedding(embedText);
     // 1. Tạo sản phẩm
     const product = await this._prisma.products.create({
-      data: dataProduct,
+      data: { ...dataProduct, embedding },
     });
 
     // 2. Tạo các giá trị thuộc tính cho sản phẩm
-    const convetAttributeValues = JSON.parse(attributeValues || '[]');
     if (convetAttributeValues && convetAttributeValues.length > 0) {
       const newAttributeValues = convetAttributeValues.map(
         (attributeValue) => ({
@@ -146,7 +152,7 @@ export class ProductsService {
   }
 
   async findOne(id: string) {
-    const product: ProductDto | null = await this._prisma.products.findUnique({
+    const product: any = await this._prisma.products.findUnique({
       where: { isDeleted: false, id },
       include: {
         productImages: {
