@@ -27,7 +27,7 @@ export default function GetIconType(iconType: any) {
       return faLayerGroup;
     case "Kích thước":
       return faTvAlt;
-    case "Góc nhìn":
+    case "Độ phân giải":
       return faObjectGroup;
     default:
       return faBox;

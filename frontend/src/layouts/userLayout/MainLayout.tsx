@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/HeaderUser";
 import Footer from "../components/FooterUser";
+import ChatbotWidget from "@/components/ChatbotWidget";
 
 export default function MainLayout() {
   return (
@@ -10,6 +11,7 @@ export default function MainLayout() {
         <Outlet /> {/* Hiển thị trang con */}
       </div>
       <Footer />
+      <ChatbotWidget />
     </div>
   );
 }

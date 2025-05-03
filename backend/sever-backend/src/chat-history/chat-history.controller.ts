@@ -1,45 +1,32 @@
 import {
+  BadRequestException,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
+  Query,
 } from '@nestjs/common';
 import { ChatHistoryService } from './chat-history.service';
-import { CreateChatHistoryDto } from './dto/create-chat-history.dto';
-import { UpdateChatHistoryDto } from './dto/update-chat-history.dto';
 
 @Controller('chat-history')
 export class ChatHistoryController {
   constructor(private readonly _chatHistoryService: ChatHistoryService) {}
 
-  @Post()
-  create(@Body() createChatHistoryDto: CreateChatHistoryDto) {
-    return this._chatHistoryService.create(createChatHistoryDto);
-  }
-
-  @Get()
-  findAll() {
-    return this._chatHistoryService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this._chatHistoryService.findOne(id);
-  }
-
-  @Patch(':id')
-  update(
+  findByUserId(
     @Param('id') id: string,
-    @Body() updateChatHistoryDto: UpdateChatHistoryDto,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
   ) {
-    return this._chatHistoryService.update(id, updateChatHistoryDto);
-  }
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this._chatHistoryService.remove(id);
+    if (page && limit) {
+      if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
+        throw new BadRequestException(
+          'Page and limit must be positive numbers.',
+        );
+      }
+    }
+    return this._chatHistoryService.findByUserId(id, pageNum, limitNum);
   }
 }

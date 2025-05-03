@@ -5,7 +5,7 @@ import isExitAttrubuteShow from "@/utils/isExitAttrubuteShow";
 import { Link } from "react-router-dom";
 export default function Product({ data }: { data: any }) {
   return (
-    <div className="rounded-[4px] bg-white text-white border border-gray-300 items-center min-h-[330px] max-w-[220px]">
+    <div className="rounded-[4px] bg-white text-white border border-gray-300 items-center min-h-[400px]  max-w-[220px]">
       <div className="p-[12px] flex justify-center items-center min-h-[180px] ">
         <Link to={`/products/${data.id}`}>
           <img
@@ -16,11 +16,12 @@ export default function Product({ data }: { data: any }) {
         </Link>
       </div>
       <div className="px-[12px] pt-[16px] pb-[12px]">
-        <h3 className="text-[14px] font-[600] mb-[16px]">
+        <h3 className="text-[14px] font-[600] mb-[16px] line-clamp-2">
           <Link to={`/products/${data.id}`} className="text-[#333]">
             {data.nameProduct}
           </Link>
         </h3>
+
         {data?.attributeValues?.filter((_: any) =>
           isExitAttrubuteShow(data.category.nameCategory, _.nameAttribute)
         ).length > 0 && (

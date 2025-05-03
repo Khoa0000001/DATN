@@ -50,7 +50,7 @@ export class ProductsService {
     const { attributeValues, ...dataProduct } = createProductDto;
     const convetAttributeValues = JSON.parse(attributeValues || '[]');
 
-    const embedText = `Tên sản phẩm: ${dataProduct.nameProduct}Mô tả: ${dataProduct.description}Giá: ${dataProduct.price}Danh mục: ${category?.nameCategory}Thuộc tính:${convetAttributeValues.map((a) => `${a.nameAttribute || ''}: ${a.attributeValue}`).join('')}
+    const embedText = `Tên sản phẩm: ${dataProduct.nameProduct}Mô tả: ${dataProduct.description}Giá: ${dataProduct.price} VND Danh mục: ${category?.nameCategory}Thuộc tính:${convetAttributeValues.map((a) => `${a.nameAttribute || ''}: ${a.attributeValue}`).join('')}
 `;
     const embedding = await this._embeddingService.getEmbedding(embedText);
     // 1. Tạo sản phẩm

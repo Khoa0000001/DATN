@@ -72,6 +72,7 @@ export class AuthService {
     return formatResponse('Login successfully', {
       access_token: accessToken,
       user_info: {
+        userId: user.id,
         email: user.email,
         nameUser: user.nameUser,
         phone: user.phone,

@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { CreateChatHistoryDto } from './dto/create-chat-history.dto';
-import { UpdateChatHistoryDto } from './dto/update-chat-history.dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { formatResponse } from '@/utils/response.util';
 
 @Injectable()
 export class ChatHistoryService {
-  create(createChatHistoryDto: CreateChatHistoryDto) {
-    return 'This action adds a new chatHistory';
-  }
+  constructor(private readonly _prismaService: PrismaService) {}
 
-  findAll() {
-    return `This action returns all chatHistory`;
-  }
+  async findByUserId(id: string, page?: number, limit?: number) {
+    const where: any = {
+      userId: id,
+    };
 
-  findOne(id: string) {
-    return `This action returns a #${id} chatHistory`;
-  }
+    const queryOptions: any = {
+      where,
+      orderBy: {
+        createDate: 'asc', // Sắp xếp theo ngày tạo từ sớm nhất đến muộn nhất
+      },
+    };
 
-  update(id: string, updateChatHistoryDto: UpdateChatHistoryDto) {
-    return `This action updates a #${id} chatHistory`;
-  }
+    if (page && limit) {
+      queryOptions.skip = (page - 1) * limit;
+      queryOptions.take = limit;
+    }
 
-  remove(id: string) {
-    return `This action removes a #${id} chatHistory`;
+    const [history, totalhistory] = await Promise.all([
+      this._prismaService.chatHistory.findMany(queryOptions),
+      this._prismaService.chatHistory.count({ where }),
+    ]);
+
+    return formatResponse('This action returns all roles', history, {
+      page,
+      limit,
+      total: totalhistory,
+    });
   }
 }
