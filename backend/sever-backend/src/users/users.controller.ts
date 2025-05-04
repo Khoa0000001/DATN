@@ -15,7 +15,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CheckId } from '@/common/Decorators/check-id.decorator';
 import { Roles } from '@/common/Decorators/roles.decorator';
-import { Permissions } from '@/common/Decorators/permissions.decorator';
+// import { Permissions } from '@/common/Decorators/permissions.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { PermissionsGuard } from '@/common/guards/permissions.guard';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';

@@ -1,10 +1,16 @@
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slice/authSlice";
+import { deleteAllData } from "@/store/slice/cartSlice";
 import Dropdown from "@/components/Dropdown"; // import dropdown
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function UserDropdown({ user }: { user: any }) {
   const dispatch = useAppDispatch();
+
+  const headleLogout = () => {
+    dispatch(logout());
+    dispatch(deleteAllData());
+  };
 
   const content = (
     <div className="py-1 bg-white shadow-lg rounded-md w-48">
@@ -20,7 +26,7 @@ export default function UserDropdown({ user }: { user: any }) {
           Cài đặt tài khoản
         </a>
         <button
-          onClick={() => dispatch(logout())}
+          onClick={headleLogout}
           className="w-full text-left px-4 py-2 text-sm text-red-500"
         >
           Đăng xuất

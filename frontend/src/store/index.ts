@@ -14,11 +14,16 @@ const persistConfig = {
   storage,
 };
 
+const cartPersistConfig = {
+  key: "carts",
+  storage,
+};
+
 const rootReducer = {
   auth: persistReducer(persistConfig, authReducer),
   categories: categoryReducer,
   products: productReducer,
-  carts: cartReducer,
+  carts: persistReducer(cartPersistConfig, cartReducer),
   chatbots: chatReducer,
 };
 

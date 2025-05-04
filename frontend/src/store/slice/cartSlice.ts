@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState: any = {
   carts: [],
   cartPosition: null,
+  shippingInfo: null, // 👈 thêm trường mới
   loading: false,
   error: null,
 };
@@ -12,6 +13,16 @@ const cartSlice = createSlice({
   name: "carts",
   initialState,
   reducers: {
+    deleteAllData: (state) => {
+      state.carts = [];
+      state.cartPosition = null;
+      state.loading = false;
+      state.error = null;
+      localStorage.removeItem("persist:carts");
+    },
+    setShippingInfo: (state, action: PayloadAction<any>) => {
+      state.shippingInfo = action.payload;
+    },
     setCartPosition(state, action: PayloadAction<{ x: number; y: number }>) {
       state.cartPosition = action.payload;
     },
@@ -37,7 +48,6 @@ const cartSlice = createSlice({
         if (existingItem.quantity > 1) {
           // Nếu số lượng > 1, giảm số lượng
           existingItem.quantity -= 1;
-          
         } else {
           // Nếu số lượng = 1, xóa sản phẩm khỏi giỏ hàng
           state.carts = state.carts.filter(
@@ -80,6 +90,8 @@ export const getTotalPrice = (state: any) => {
 };
 
 export const {
+  deleteAllData,
+  setShippingInfo,
   setCartPosition,
   addItem,
   removeItem,

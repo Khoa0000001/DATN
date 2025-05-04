@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import CheckoutSteps from "@/components/CheckoutSteps";
 import Button from "@/components/Button";
 import CartItem from "@/components/CartItemProps";
 import DiscountCode from "@/components/DiscountCode";
+import CheckoutModal from "@/components/CheckoutModal";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   removeItem,
@@ -13,9 +15,14 @@ import {
 import { Link } from "react-router-dom";
 export default function Cart() {
   const dispatch = useAppDispatch();
-  const { carts } = useAppSelector((state) => state.carts);
+  const { carts, shippingInfo } = useAppSelector((state) => state.carts);
   const totalPrice = useAppSelector(getTotalPrice);
-  console.log(carts);
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  const handlCheckoutSteps = () => {
+    if (carts.length === 0) return -1;
+    return shippingInfo?.phone && shippingInfo?.address ? 1 : 0;
+  };
 
   // Xóa sản phẩm khỏi giỏ hàng
   const handleRemoveItem = (item: any) => {
@@ -37,7 +44,7 @@ export default function Cart() {
         <div className="bg-white">
           <div className="p-[8px]">
             <div className="px-[14px] bg-[#FFEDED]">
-              <CheckoutSteps currentStep={1} />
+              <CheckoutSteps currentStep={handlCheckoutSteps()} />
             </div>
           </div>
           {Array.isArray(carts) && carts.length > 0 ? (
@@ -77,6 +84,7 @@ export default function Cart() {
                 <Button
                   color="var(--primary-color)"
                   className="w-[100%] text-white py-[20px]"
+                  onClick={() => setShowCheckout(true)}
                 >
                   ĐẶT HÀNG NGAY
                 </Button>
@@ -103,6 +111,7 @@ export default function Cart() {
           )}
         </div>
       </div>
+      {showCheckout && <CheckoutModal onClose={() => setShowCheckout(false)} />}
     </div>
   );
 }
