@@ -30,11 +30,17 @@ export class ProductsController {
     return this._productsService.create(createProductDto, files);
   }
 
+  @Get('grouped-by-category')
+  findProductByCategory() {
+    return this._productsService.findProductByCategory();
+  }
+
   @Get()
   findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('search') search?: string,
+    @Query('categoryId') categoryId?: string,
   ) {
     const pageNum = Number(page);
     const limitNum = Number(limit);
@@ -47,7 +53,12 @@ export class ProductsController {
         );
       }
     }
-    return this._productsService.findAll(pageNum, limitNum, newSearch);
+    return this._productsService.findAll(
+      pageNum,
+      limitNum,
+      newSearch,
+      categoryId,
+    );
   }
 
   @Get(':id')

@@ -140,7 +140,6 @@ export class CategoriesService {
 
       return formatResponse(`This action updates a category`, category);
     } catch (error) {
-      console.log(error.message);
       throw new BadRequestException(
         error.message || 'Lỗi khi cập nhật danh mục',
       );

@@ -31,7 +31,7 @@ export default function Products() {
     if (id) {
       dispatch(fetchProductDetail(id)).unwrap();
     }
-  }, [dispatch]);
+  }, [dispatch, id]);
   return (
     <div className="mb-[8x]">
       <div className="max-w-[1220px] mx-[auto]">

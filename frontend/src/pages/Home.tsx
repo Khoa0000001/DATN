@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import MenuToggle from "@/components/MenuToggle";
 import SwiperComponent from "@/components/SwiperComponent";
 import WrapProduct from "@/components/WrapProduct";
@@ -12,10 +12,13 @@ import {
 } from "@/components/ui/carousel";
 import Product from "@/components/Product";
 import WrapFlashSale from "@/components/WrapFlashSale";
-import { DataPCProduct } from "@/data/DataFake";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchProducts } from "@/store/slice/productSlice";
+import {
+  fetchGroupedByCategory,
+  fetchProductsFlSale,
+} from "@/store/slice/productSlice";
 import { fetchCategories } from "@/store/slice/categorySlice";
+import { Link } from "react-router-dom";
 
 const DatafileLeft03 = [
   {
@@ -72,23 +75,16 @@ const DatafileBottom04 = [
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const [products, setProducts] = useState<any[]>([]);
-  const [listPc, setListPc] = useState<any[]>([]);
   const { categories } = useAppSelector((state) => state.categories);
-
-  const handleFetchProducts = async () => {
-    const res = await dispatch(fetchProducts({}));
-    if (fetchProducts.fulfilled.match(res)) {
-      setProducts(res.payload.data);
-      setListPc(res.payload.data); // hoặc res.payload nếu bạn xử lý lại từ slice
-    } else {
-      console.error("Lỗi:", res.payload);
-    }
-  };
+  const listCategories = useAppSelector((state) => state.products.categories);
+  const listProductFlSale = useAppSelector(
+    (state) => state.products.listProductFlSale
+  );
 
   useEffect(() => {
-    handleFetchProducts();
     dispatch(fetchCategories({})).unwrap(); // Pass an empty object or the required argument(s)
+    dispatch(fetchGroupedByCategory()).unwrap();
+    dispatch(fetchProductsFlSale({ page: 1, limit: 20 })).unwrap();
   }, [dispatch]);
   return (
     <div className="max-w-[1220px] mx-[auto]">
@@ -154,7 +150,7 @@ export default function Home() {
             className="w-full"
           >
             <CarouselContent className="-ml-1">
-              {products.map((_: any, index: number) => (
+              {listProductFlSale.map((_: any, index: number) => (
                 <CarouselItem
                   key={index}
                   className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/6"
@@ -186,37 +182,40 @@ export default function Home() {
         </div>
       </div>
       {/* PC bán chạy */}
-      <div className="pt-[18px]">
-        <WrapProduct
-          title={DataPCProduct.title}
-          condition={DataPCProduct.condition}
-          data={DataPCProduct.listType}
-        >
-          <Carousel
-            opts={{
-              align: "start",
-              slidesToScroll: 2,
-              loop: true,
-            }}
-            className="w-full"
+      {listCategories.map((item: any, index: number) => (
+        <div className="pt-[18px]" key={index}>
+          <WrapProduct
+            title={item?.category?.nameCategory}
+            condition={"Trả góp 0%"}
+            data={[]}
+            link={item?.categoryId}
           >
-            <CarouselContent className="-ml-1">
-              {listPc.map((_, index) => (
-                <CarouselItem
-                  key={index}
-                  className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/5"
-                >
-                  <div className="p-1">
-                    <Product data={_} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="ml-[32px]" />
-            <CarouselNext className="mr-[32px]" />
-          </Carousel>
-        </WrapProduct>
-      </div>
+            <Carousel
+              opts={{
+                align: "start",
+                slidesToScroll: 2,
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-1">
+                {item?.products.map((_: any, index: number) => (
+                  <CarouselItem
+                    key={index}
+                    className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/5"
+                  >
+                    <div className="p-1">
+                      <Product data={_} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="ml-[32px]" />
+              <CarouselNext className="mr-[32px]" />
+            </Carousel>
+          </WrapProduct>
+        </div>
+      ))}
       {/* Danh mục sản phẩm */}
       <div className="pt-[18px]">
         <div className="bg-white rounded-[4px]">
@@ -227,16 +226,18 @@ export default function Home() {
             <div className="gap-4 flex flex-wrap">
               {categories?.map((_: any, index: number) => (
                 <div key={index} className="mx-[12px] cursor-pointer">
-                  <div className="w-[88px] h-[88px] flex items-center justify-center overflow-hidden  rounded-md">
-                    <img
-                      className="object-cover w-full h-full p-[10px]"
-                      src={_.imageUrl || ""}
-                      alt=""
-                    />
-                  </div>
-                  <div className="items-center flex justify-center font-[500] mt-2 text-center">
-                    {_.nameCategory}
-                  </div>
+                  <Link to={`/list-products/${_.id}`}>
+                    <div className="w-[88px] h-[88px] flex items-center justify-center overflow-hidden  rounded-md">
+                      <img
+                        className="object-cover w-full h-full p-[10px]"
+                        src={_.imageUrl || ""}
+                        alt=""
+                      />
+                    </div>
+                    <div className="items-center flex justify-center font-[500] mt-2 text-center">
+                      {_.nameCategory}
+                    </div>
+                  </Link>
                 </div>
               ))}
             </div>

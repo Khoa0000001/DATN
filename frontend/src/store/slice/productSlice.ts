@@ -3,15 +3,51 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axiosInstance";
 
 const initialState: any = {
+  categories: [],
   products: [],
+  productByCategoryId: [],
+  listProductFlSale: [],
   meta: {},
   product: {},
   loading: false,
   error: null,
 };
 
+export const fetchGroupedByCategory = createAsyncThunk(
+  "products/fetchGroupedByCategory",
+  async (__dirname, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/products/grouped-by-category`);
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Fetch products failed"
+      );
+    }
+  }
+);
+
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
+  async (
+    credentials: { page?: number; limit?: number; search?: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axiosInstance.get(`/products`, {
+        params: credentials,
+      });
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Fetch products failed"
+      );
+    }
+  }
+);
+
+export const fetchProductsFlSale = createAsyncThunk(
+  "products/fetchProductsFlSale",
   async (
     credentials: { page?: number; limit?: number; search?: string },
     { rejectWithValue }
@@ -142,11 +178,68 @@ export const fetchAttributeByCategoryId = createAsyncThunk(
   }
 );
 
+export const fetchProductByCategoryId = createAsyncThunk(
+  "products/fetchProductByCategoryId",
+  async (CategoryId: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/products`, {
+        params: {
+          categoryId: CategoryId,
+        },
+      });
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Fetch ProductByCategoryId failed"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "products",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    builder
+      .addCase(fetchProductsFlSale.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductsFlSale.fulfilled, (state, action) => {
+        state.loading = false;
+        state.listProductFlSale = action.payload.data;
+      })
+      .addCase(fetchProductsFlSale.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    builder
+      .addCase(fetchProductByCategoryId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductByCategoryId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.productByCategoryId = action.payload.data;
+      })
+      .addCase(fetchProductByCategoryId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    builder
+      .addCase(fetchGroupedByCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchGroupedByCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.categories = action.payload.data;
+      })
+      .addCase(fetchGroupedByCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
     builder
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;

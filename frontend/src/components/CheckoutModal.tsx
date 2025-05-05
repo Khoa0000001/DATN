@@ -14,7 +14,7 @@ export default function CheckoutModal({ onClose }: CheckoutModalProps) {
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-2xl shadow-lg max-w-lg w-full relative">
         <button
           onClick={onClose}

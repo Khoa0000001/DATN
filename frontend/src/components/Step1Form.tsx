@@ -26,10 +26,10 @@ export default function Step1Form({ shippingInfo, onNext }: Step1FormProps) {
 
   const validate = () => {
     const newErrors: typeof errors = {};
-    if (!/^0\d{9}$/.test(shippingInfo.phone)) {
+    if (!/^0\d{9}$/.test(shippingInfo?.phone)) {
       newErrors.phone = "Số điện thoại không hợp lệ. VD: 0123456789";
     }
-    if (!shippingInfo.address.trim()) {
+    if (!shippingInfo?.address.trim()) {
       newErrors.address = "Địa chỉ không được để trống.";
     }
     setErrors(newErrors);
@@ -54,7 +54,7 @@ export default function Step1Form({ shippingInfo, onNext }: Step1FormProps) {
             className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Nguyễn Văn A"
             name="name"
-            value={shippingInfo.name}
+            value={shippingInfo?.name}
             onChange={handleChange}
           />
         </div>
@@ -65,7 +65,7 @@ export default function Step1Form({ shippingInfo, onNext }: Step1FormProps) {
             className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="0123456789"
             name="phone"
-            value={shippingInfo.phone}
+            value={shippingInfo?.phone}
             onChange={handleChange}
           />
           {errors.phone && (
@@ -79,7 +79,7 @@ export default function Step1Form({ shippingInfo, onNext }: Step1FormProps) {
             className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="123 Lê Lợi, Quận 1, TP.HCM"
             name="address"
-            value={shippingInfo.address}
+            value={shippingInfo?.address}
             onChange={handleChange}
           />
           {errors.address && (
@@ -95,7 +95,7 @@ export default function Step1Form({ shippingInfo, onNext }: Step1FormProps) {
             className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Chiều mai, 10h sáng thứ 7, ..."
             name="deliveryTime"
-            value={shippingInfo.deliveryTime}
+            value={shippingInfo?.deliveryTime}
             onChange={handleChange}
           />
         </div>

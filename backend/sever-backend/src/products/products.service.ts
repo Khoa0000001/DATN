@@ -86,9 +86,15 @@ export class ProductsService {
     return formatResponse('product created successfully', product);
   }
 
-  async findAll(page?: number, limit?: number, search?: string) {
+  async findAll(
+    page?: number,
+    limit?: number,
+    search?: string,
+    categoryId?: string,
+  ) {
     const where: any = {
       isDeleted: false,
+      categoryId: categoryId,
     };
 
     if (search) {
@@ -103,7 +109,15 @@ export class ProductsService {
 
     const queryOptions: any = {
       where,
-      include: {
+      select: {
+        id: true,
+        nameProduct: true,
+        price: true,
+        createDate: true,
+        updateDate: true,
+        description: true,
+        categoryId: true,
+        isDeleted: true,
         productImages: {
           select: {
             id: true,
@@ -140,6 +154,8 @@ export class ProductsService {
       this._prisma.products.count({ where }),
     ]);
 
+    console.log(products);
+
     const resultProducts = products.map((product: ProductDto) =>
       this.formattedProduct(product),
     );
@@ -149,6 +165,99 @@ export class ProductsService {
       limit,
       total: totalProducts,
     });
+  }
+
+  async findProductByCategory() {
+    const listProduct = await this._prisma.products.findMany({
+      where: {
+        isDeleted: false,
+      },
+      select: {
+        id: true,
+        nameProduct: true,
+        price: true,
+        createDate: true,
+        updateDate: true,
+        description: true,
+        categoryId: true,
+        isDeleted: true,
+        productImages: {
+          select: {
+            id: true,
+            imageUrl: true,
+          },
+          orderBy: {
+            createDate: 'asc',
+          },
+        },
+        attributeValues: {
+          include: {
+            attribute: true,
+          },
+          orderBy: {
+            createDate: 'asc',
+          },
+        },
+        category: {
+          select: {
+            nameCategory: true,
+            description: true,
+          },
+        },
+      },
+    });
+    const groupedByCategory = Object.values(
+      listProduct.reduce(
+        (acc, product) => {
+          const { categoryId, category } = product;
+
+          if (!acc[categoryId]) {
+            acc[categoryId] = {
+              categoryId,
+              category,
+              products: [],
+            };
+          }
+
+          // Format lại từng sản phẩm
+          const formattedProduct = {
+            id: product.id,
+            nameProduct: product.nameProduct,
+            price: product.price,
+            createDate: product.createDate,
+            updateDate: product.updateDate,
+            description: product.description,
+            productImages: product.productImages,
+            category: product.category,
+            categoryId: product.categoryId,
+            attributeValues: product.attributeValues?.map((attr) => ({
+              id: attr.id,
+              attributeId: attr.attributeId,
+              attributeValue: attr.attributeValue,
+              nameAttribute: attr.attribute?.nameAttribute || 'Unknown',
+              description: attr.attribute?.description || null,
+              tagValue: attr.tagValue || null,
+            })),
+          };
+
+          acc[categoryId].products.push(formattedProduct);
+          return acc;
+        },
+        {} as Record<
+          string,
+          {
+            categoryId: string;
+            category: any;
+            products: any[];
+          }
+        >,
+      ),
+    );
+
+    return formatResponse(
+      `This action returns all products by category`,
+      groupedByCategory,
+    );
   }
 
   async findOne(id: string) {

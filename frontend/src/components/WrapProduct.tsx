@@ -1,16 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTruckMoving } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 export default function WrapProduct({
   children,
   title,
   condition,
   data,
+  link,
 }: {
   children: React.ReactNode;
   title: string;
   condition: string;
   data: any;
+  link: string;
 }) {
   return (
     <div className="rounded-[4px] bg-[#fff]">
@@ -19,7 +23,7 @@ export default function WrapProduct({
           <h2 className="text-[22px] font-[600] mb-[8px] hover:text-[var(--primary-color)]">
             <a href="">{title}</a>
           </h2>
-          <div className="hidden ms:flex items-center justify-center">
+          <div className="flex items-center justify-center">
             <div className="bg-gray-400 h-[20px] w-[1px] mx-[26px]"></div>
             <FontAwesomeIcon
               icon={faTruckMoving}
@@ -33,23 +37,23 @@ export default function WrapProduct({
             <ul className="inline-flex gap-4">
               {data.map((_: any, index: number) => (
                 <li key={index}>
-                  <a
-                    href=""
+                  <Link
+                    to={`/list-products/${link}`}
                     className="px-[5px] py-[16px] text-[#333] text-[18px] font-[500] hover:text-[var(--primary-color)] hover:underline"
                   >
                     {_.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
           <div className="ml-[20px]">
-            <a
-              href=""
+            <Link
+              to={`/list-products/${link}`}
               className="text-[#1982F9] items-center font-[500] text-[18px] hover:text-[var(--primary-color)]"
             >
               Xem tất cả
-            </a>
+            </Link>
           </div>
         </div>
       </div>
