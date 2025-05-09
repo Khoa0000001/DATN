@@ -6,11 +6,19 @@ import { formatResponse } from '@/utils/response.util';
 @Injectable()
 export class CartsService {
   constructor(private readonly _prisma: PrismaService) {}
-  async create(createCartDto: CreateCartDto) {
-    const cart = await this._prisma.carts.create({
-      data: createCartDto,
-    });
-    return formatResponse('Cart created successfully', cart);
+  async createMany(createCartDtos: CreateCartDto[]) {
+    const createdCarts = await Promise.all(
+      createCartDtos.map((dto) =>
+        this._prisma.carts.create({
+          data: dto,
+          select: { id: true }, // chỉ lấy trường id
+        }),
+      ),
+    );
+
+    const ids = createdCarts.map((cart) => cart.id);
+
+    return formatResponse('Carts created successfully', ids); // => mảng các id
   }
 
   async findAll(page?: number, limit?: number) {

@@ -14,8 +14,10 @@ export class CreateOrderDto {
   userId: string;
   @IsNotEmpty({ message: 'shippingInfo không được để trống' })
   @IsString({ message: 'shippingInfo phải là 1 chuỗi' })
-  shippingInfo: string;
-  @IsNotEmpty({ message: 'paymentMethod không được để trống' })
+  nameCustomer: string;
+  phoneCustomer: string;
+  address: string;
+  timeOfReceipt: string;
   @IsString({ message: 'paymentMethod phải là 1 chuỗi' })
   paymentMethod: string;
   @IsNotEmpty({ message: 'shippingMethod không được để trống' })

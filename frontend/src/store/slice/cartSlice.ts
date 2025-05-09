@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from "@/utils/axiosInstance";
 
 const initialState: any = {
   carts: [],
@@ -8,6 +9,20 @@ const initialState: any = {
   loading: false,
   error: null,
 };
+
+export const createQR = createAsyncThunk(
+  "carts/createQR",
+  async (data: any, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/hook-pay/creat-QR`, data);
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Fetch categories failed"
+      );
+    }
+  }
+);
 
 const cartSlice = createSlice({
   name: "carts",

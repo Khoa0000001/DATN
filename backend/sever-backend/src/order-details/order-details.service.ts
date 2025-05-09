@@ -14,6 +14,14 @@ export class OrderDetailsService {
     return formatResponse('OrderDetail created successfully', orderDetail);
   }
 
+  async createMany(createOrderDetailDtos: CreateOrderDetailDto[]) {
+    const created = await this._prisma.orderDetails.createMany({
+      data: createOrderDetailDtos,
+      skipDuplicates: true, // nếu muốn bỏ qua các bản ghi trùng (tùy chọn)
+    });
+    return formatResponse('OrderDetails created successfully', created);
+  }
+
   async findAll(page?: number, limit?: number) {
     const queryOptions: any = {};
     if (page && limit) {

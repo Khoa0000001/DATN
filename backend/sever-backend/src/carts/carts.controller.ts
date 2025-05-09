@@ -19,10 +19,10 @@ export class CartsController {
   constructor(private readonly _cartsService: CartsService) {}
 
   @Post()
-  @CheckId('users', 'userId')
-  @CheckId('products', 'productId')
-  create(@Body() createCartDto: CreateCartDto) {
-    return this._cartsService.create(createCartDto);
+  // @CheckId('users', 'userId')
+  // @CheckId('products', 'productId')
+  create(@Body() createCartDto: CreateCartDto[]) {
+    return this._cartsService.createMany(createCartDto);
   }
 
   @Get()

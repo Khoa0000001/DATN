@@ -40,7 +40,6 @@ model Users {
   Wishlists        Wishlists[]
   Logs             Logs[]
   Carts            Carts[]
-  
 
   @@index([isDeleted, id])
   @@index([email])
@@ -141,14 +140,13 @@ model ProductImages {
 }
 
 model ChatHistory {
-  id        String   @id @default(uuid())
-  question  String   @db.Text
-  answer    String   @db.Text
+  id         String   @id @default(uuid())
+  question   String   @db.Text
+  answer     String   @db.Text
   createDate DateTime @default(now())
   updateDate DateTime @updatedAt
-  userId    String?     // nếu có đăng nhập người dùng
+  userId     String? // nếu có đăng nhập người dùng
 }
-
 
 model Attributes {
   id              String            @id @default(uuid())
@@ -231,7 +229,10 @@ model Orders {
   createDate     DateTime       @default(now())
   updateDate     DateTime       @updatedAt
   userId         String
-  shippingInfo   String // Thông tin giao hàng
+  nameCustomer   String?
+  phoneCustomer  String
+  address        String
+  timeOfReceipt  String?
   paymentMethod  String // Phương thức thanh toán
   shippingMethod String // Phương thức vận chuyển
   totalAmount    Float
@@ -332,6 +333,7 @@ model Carts {
   updateDate DateTime @updatedAt // Ngày cập nhật
   userId     String // ID người dùng
   productId  String // ID sản phẩm
+  price      Float
   quantity   Int      @default(1) // Số lượng sản phẩm
   isDeleted  Boolean  @default(false) // Soft delete (nếu cần)
   user       Users    @relation(fields: [userId], references: [id], onDelete: Cascade) // Quan hệ với bảng Users

@@ -27,6 +27,7 @@ import { CartsModule } from './carts/carts.module';
 import { AuthModule } from './auth/auth.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ChatHistoryModule } from './chat-history/chat-history.module';
+import { HookPayModule } from './hookPay/hookPay.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { ChatHistoryModule } from './chat-history/chat-history.module';
     AuthModule,
     ChatbotModule,
     ChatHistoryModule,
+    HookPayModule,
     // LogsModule,
   ],
 })

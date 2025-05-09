@@ -28,7 +28,11 @@ export default function CheckoutModal({ onClose }: CheckoutModalProps) {
         )}
 
         {step === 2 && (
-          <Step2QR shippingInfo={shippingInfo} onBack={() => setStep(1)} />
+          <Step2QR
+            shippingInfo={shippingInfo}
+            onBack={() => setStep(1)}
+            onClose={onClose}
+          />
         )}
       </div>
     </div>

@@ -5,6 +5,7 @@ import axios from "axios";
 interface AuthState {
   accessToken: string | null;
   userInfo: {
+    userId: string;
     nameUser: string;
     email: string;
     phone: string;

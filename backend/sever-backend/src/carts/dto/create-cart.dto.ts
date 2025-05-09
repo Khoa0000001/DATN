@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsOptional,
   IsInt,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateCartDto {
@@ -13,6 +14,9 @@ export class CreateCartDto {
   @IsNotEmpty({ message: 'productId không được để trống' })
   @IsString({ message: 'productId phải là 1 chu��i' })
   productId: string;
+  @IsNotEmpty({ message: 'price không được để trống ' })
+  @IsNumber({}, { message: 'price phải là 1 số' })
+  price: number;
   @IsInt({ message: 'quantity phải là 1 số nguyên' })
   @IsOptional()
   quantity: number;
