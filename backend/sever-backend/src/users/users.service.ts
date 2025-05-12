@@ -16,6 +16,9 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const newCreateUserDto: CreateUserDto = {
       ...createUserDto,
+      profilePicture: createUserDto.profilePicture
+        ? createUserDto.profilePicture
+        : 'https://th.bing.com/th/id/OIP.CfjwItjNaprcFge4CBfb4gHaHa?cb=iwp2&rs=1&pid=ImgDetMain',
       password: hashPassword(createUserDto.password),
     };
     const user = await this._prisma.users.create({

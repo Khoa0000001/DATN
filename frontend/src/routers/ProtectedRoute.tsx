@@ -19,7 +19,7 @@ const ProtectedRoute = ({
   const hasAccess = useHasAccess();
 
   if (!accessToken) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return hasAccess({

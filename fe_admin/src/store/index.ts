@@ -9,6 +9,7 @@ import roleReducer from "@/store/slice/roleSlice";
 import permissionReducer from "@/store/slice/permissionSlice";
 import categoryReducer from "@/store/slice/categorySlice";
 import productReducer from "@/store/slice/productSlice";
+import orderReducer from "@/store/slice/orderSlice";
 
 const persistConfig = {
   key: "auth",
@@ -22,6 +23,7 @@ const rootReducer = {
   permissions: permissionReducer,
   categories: categoryReducer,
   products: productReducer,
+  orders: orderReducer,
 };
 
 export const store = configureStore({

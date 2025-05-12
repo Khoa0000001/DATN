@@ -107,7 +107,7 @@ export class AuthService {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
     if (!user || user.verificationCode !== code) {
-      redirectUrl = `${frontendUrl}/login?verified=false`;
+      redirectUrl = `${frontendUrl}?verified=false`;
       res.redirect(redirectUrl);
       return formatResponse('Xác thực thất bại', { success: false });
     }
@@ -117,7 +117,7 @@ export class AuthService {
       verificationCode: '',
     });
 
-    redirectUrl = `${frontendUrl}/login?verified=true`;
+    redirectUrl = `${frontendUrl}?verified=true`;
     res.redirect(redirectUrl);
     return formatResponse('Tài khoản đã được xác thực', { success: true });
   }

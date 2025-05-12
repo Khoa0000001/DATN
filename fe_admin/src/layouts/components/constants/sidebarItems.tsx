@@ -47,6 +47,18 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
   {
+    key: "orders",
+    label: "Đơn hàng",
+    icon: <AppstoreOutlined />,
+    children: [
+      {
+        key: "order",
+        label: "Danh sách đơn hàng",
+        path: "/orders/order",
+      },
+    ],
+  },
+  {
     key: "roles",
     label: "Phân quyền",
     icon: <CrownOutlined />,
@@ -69,6 +81,7 @@ export const sidebarItems: SidebarItem[] = [
       },
     ],
   },
+
   {
     key: "settings",
     label: "Cài đặt",

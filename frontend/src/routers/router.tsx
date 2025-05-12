@@ -6,6 +6,7 @@ import Cart from "@/pages/Cart";
 import Product from "@/pages/Product";
 import ListProdeucts from "@/pages/ListProducts";
 import BuildPC from "@/pages/BuildPC";
+import OrderHistoryPage from "@/pages/OrderHistoryPage";
 
 const AppRoutes = () =>
   useRoutes([
@@ -36,6 +37,14 @@ const AppRoutes = () =>
         {
           path: "build-pc",
           element: <BuildPC />,
+        },
+        {
+          path: "order-history-page",
+          element: (
+            <ProtectedRoute>
+              <OrderHistoryPage />
+            </ProtectedRoute>
+          ),
         },
       ],
     },

@@ -151,10 +151,12 @@ export default function Header() {
                 />
               </div>
               <div className="mr-[10px]">
-                <CollHeader
-                  titleArray={["Kiểm tra", "đơn hàng"]}
-                  icon={faReceipt}
-                />
+                <Link to={"/order-history-page"}>
+                  <CollHeader
+                    titleArray={["Kiểm tra", "đơn hàng"]}
+                    icon={faReceipt}
+                  />
+                </Link>
               </div>
               <Link to={"/cart"}>
                 <div className="relative mr-[10px]" ref={cartRef}>

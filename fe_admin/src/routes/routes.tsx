@@ -11,6 +11,7 @@ import Pormission from "@/page/grantPermission/permission/PermissionPage";
 import User from "@/page/grantPermission/user/UserPage";
 import Category from "@/page/goods/category/CategoryPage";
 import Product from "@/page/goods/product/ProductPage";
+import OrderPage from "@/page/orders/order/OrderPage";
 
 const AppRoutes = () =>
   useRoutes([
@@ -83,6 +84,14 @@ const AppRoutes = () =>
           element: (
             <ProtectedRoute>
               <Product />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/orders/order",
+          element: (
+            <ProtectedRoute>
+              <OrderPage />
             </ProtectedRoute>
           ),
         },

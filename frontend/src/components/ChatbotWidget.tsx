@@ -8,7 +8,7 @@ const ChatbotWidget = () => {
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {isOpen ? (
-        <div className="relative w-[400px] max-h-[90vh]">
+        <div className="relative w-[450px] max-h-[90vh]">
           <div className="flex justify-between items-center bg-[#e30019] text-white px-4 py-2 rounded-t-lg">
             <span className="font-semibold">Chatbot Hỗ Trợ Bán Hàng</span>
             <button

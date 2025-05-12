@@ -33,6 +33,7 @@ const cartSlice = createSlice({
       state.cartPosition = null;
       state.loading = false;
       state.error = null;
+      state.shippingInfo = null;
       localStorage.removeItem("persist:carts");
     },
     setShippingInfo: (state, action: PayloadAction<any>) => {

@@ -8,6 +8,7 @@ import categoryReducer from "@/store/slice/categorySlice";
 import productReducer from "@/store/slice/productSlice";
 import cartReducer from "@/store/slice/cartSlice";
 import chatReducer from "@/store/slice/chatbotSlice";
+import orderReducer from "@/store/slice/orderSlice";
 
 const persistConfig = {
   key: "auth",
@@ -25,6 +26,7 @@ const rootReducer = {
   products: productReducer,
   carts: persistReducer(cartPersistConfig, cartReducer),
   chatbots: chatReducer,
+  orders: orderReducer,
 };
 
 export const store = configureStore({

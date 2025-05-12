@@ -25,9 +25,15 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+  ) {
     const pageNum = Number(page);
     const limitNum = Number(limit);
+    const newSearch =
+      search && search.trim().length > 0 ? search.trim() : undefined;
     if (page && limit) {
       if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
         throw new BadRequestException(
@@ -35,7 +41,7 @@ export class OrdersController {
         );
       }
     }
-    return this._ordersService.findAll(pageNum, limitNum);
+    return this._ordersService.findAll(pageNum, limitNum, newSearch);
   }
 
   @Get(':id')
@@ -43,6 +49,11 @@ export class OrdersController {
   @CheckId('users', 'userId')
   findOne(@Param('id') id: string) {
     return this._ordersService.findOne(id);
+  }
+
+  @Get('order-by-userId/:id')
+  findOrderByUserId(@Param('id') id: string) {
+    return this._ordersService.findOrderByUserId(id);
   }
 
   @Patch(':id')
