@@ -24,9 +24,15 @@ export class SuppliersController {
   }
 
   @Get()
-  findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+  ) {
     const pageNum = Number(page);
     const limitNum = Number(limit);
+    const newSearch =
+      search && search.trim().length > 0 ? search.trim() : undefined;
     if (page && limit) {
       if (isNaN(pageNum) || pageNum <= 0 || isNaN(limitNum) || limitNum <= 0) {
         throw new BadRequestException(
@@ -34,7 +40,7 @@ export class SuppliersController {
         );
       }
     }
-    return this._suppliersService.findAll(pageNum, limitNum);
+    return this._suppliersService.findAll(pageNum, limitNum, newSearch);
   }
 
   @Get(':id')
@@ -52,9 +58,8 @@ export class SuppliersController {
     return this._suppliersService.update(id, updateSupplierDto);
   }
 
-  @Delete(':id')
-  @CheckId('suppliers', 'id')
-  remove(@Param('id') id: string) {
-    return this._suppliersService.remove(id);
+  @Delete()
+  removeMany(@Body() dto: { ids: string[] }) {
+    return this._suppliersService.removeMany(dto.ids);
   }
 }

@@ -14,11 +14,13 @@ export class SuppliersService {
     return formatResponse('Supplier created successfully', supplier);
   }
 
-  async findAll(page?: number, limit?: number) {
+  async findAll(page?: number, limit?: number, search?: string) {
+    const where: any = {};
+    if (search) {
+      where.OR = [{ nameSupplier: { contains: search } }];
+    }
     const queryOptions: any = {
-      where: {
-        isDeleted: false,
-      },
+      where,
     };
     if (page && limit) {
       queryOptions.skip = (page - 1) * limit;
@@ -26,9 +28,7 @@ export class SuppliersService {
     }
     const suppliers = await this._prisma.suppliers.findMany(queryOptions);
     const totalSuppliers = await this._prisma.suppliers.count({
-      where: {
-        isDeleted: false,
-      },
+      where,
     });
     return formatResponse(`This action returns all suppliers`, suppliers, {
       page,
@@ -39,7 +39,7 @@ export class SuppliersService {
 
   async findOne(id: string) {
     const supplier = await this._prisma.suppliers.findUnique({
-      where: { isDeleted: false, id },
+      where: { id },
     });
     return formatResponse(`This action returns a supplier`, supplier);
   }
@@ -52,25 +52,30 @@ export class SuppliersService {
     return formatResponse(`This action updates supplier`, supplier);
   }
 
-  async remove(id: string) {
-    const [hasRelatedImportInvoices] = await Promise.all([
-      this._prisma.importInvoices.count({
-        where: {
-          supplierId: id,
-        },
+  async removeMany(ids: string[]) {
+    const results = await Promise.all(
+      ids.map(async (id) => {
+        const relatedCount = await this._prisma.importInvoices.count({
+          where: { supplierId: id },
+        });
+
+        if (relatedCount > 0) {
+          // Cập nhật isDeleted: true nếu có liên kết
+          const updatedSupplier = await this._prisma.suppliers.update({
+            where: { id },
+            data: { isDeleted: true },
+          });
+          return { id, action: 'soft-deleted', supplier: updatedSupplier };
+        } else {
+          // Xóa hoàn toàn nếu không có liên kết
+          const deletedSupplier = await this._prisma.suppliers.delete({
+            where: { id },
+          });
+          return { id, action: 'deleted', supplier: deletedSupplier };
+        }
       }),
-    ]);
-    if (hasRelatedImportInvoices > 0) {
-      const supplier = await this._prisma.suppliers.update({
-        where: { isDeleted: false, id },
-        data: { isDeleted: true },
-      });
-      return formatResponse(`This action removes supplier`, supplier);
-    } else {
-      const supplier = await this._prisma.suppliers.delete({
-        where: { id },
-      });
-      return formatResponse(`This action removes supplier`, supplier);
-    }
+    );
+
+    return formatResponse('Batch supplier removal completed', results);
   }
 }

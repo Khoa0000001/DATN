@@ -21,6 +21,8 @@ export class UpdateProductDto {
   @IsNotEmpty({ message: 'Giá sản phẩm không được để trống' })
   @Type(() => Number)
   @IsNumber({}, { message: 'price phải là 1 số' })
+  @IsOptional()
+  quantity: number;
   price: number;
   @IsString({ message: 'Mô tả sản phẩm phải là 1 chuỗi' })
   @IsOptional()

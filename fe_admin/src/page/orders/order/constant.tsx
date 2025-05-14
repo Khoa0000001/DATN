@@ -57,6 +57,12 @@ export const columns: ColumnsType<DataType> = [
     sorter: (a, b) => a.address.localeCompare(b.address),
   },
   {
+    title: "Thời gian nhận",
+    dataIndex: "timeOfReceipt",
+    key: "timeOfReceipt",
+    sorter: (a, b) => a.timeOfReceipt.localeCompare(b.timeOfReceipt),
+  },
+  {
     title: "Phương thức thanh toán",
     dataIndex: "paymentMethod",
     key: "paymentMethod",

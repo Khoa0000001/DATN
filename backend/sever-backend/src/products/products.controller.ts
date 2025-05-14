@@ -41,6 +41,7 @@ export class ProductsController {
     @Query('limit') limit?: number,
     @Query('search') search?: string,
     @Query('categoryId') categoryId?: string,
+    @Query('exit') exit?: boolean,
   ) {
     const pageNum = Number(page);
     const limitNum = Number(limit);
@@ -58,6 +59,7 @@ export class ProductsController {
       limitNum,
       newSearch,
       categoryId,
+      exit,
     );
   }
 

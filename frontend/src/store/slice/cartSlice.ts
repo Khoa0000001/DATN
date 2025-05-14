@@ -49,10 +49,11 @@ const cartSlice = createSlice({
 
       if (existingItem) {
         // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
-        existingItem.quantity += 1;
+        if (existingItem.quantityCart < existingItem.quantity)
+          existingItem.quantityCart += 1;
       } else {
         // Nếu sản phẩm chưa có trong giỏ hàng, thêm vào giỏ hàng
-        state.carts.push({ ...action.payload, quantity: 1 });
+        state.carts.push({ ...action.payload, quantityCart: 1 });
       }
     },
     removeItem: (state, action: PayloadAction<any>) => {
@@ -61,31 +62,25 @@ const cartSlice = createSlice({
       );
 
       if (existingItem) {
-        if (existingItem.quantity > 1) {
-          // Nếu số lượng > 1, giảm số lượng
-          existingItem.quantity -= 1;
-        } else {
-          // Nếu số lượng = 1, xóa sản phẩm khỏi giỏ hàng
-          state.carts = state.carts.filter(
-            (item: any) => item.id !== action.payload.id
-          );
-        }
+        state.carts = state.carts.filter(
+          (item: any) => item.id !== action.payload.id
+        );
       }
     },
     increaseQuantity: (state, action: PayloadAction<any>) => {
       const item = state.carts.find(
         (item: any) => item.id === action.payload.id
       );
-      if (item) {
-        item.quantity += 1;
+      if (item && item.quantityCart < item.quantity) {
+        item.quantityCart += 1;
       }
     },
     decreaseQuantity: (state, action: PayloadAction<any>) => {
       const item = state.carts.find(
         (item: any) => item.id === action.payload.id
       );
-      if (item && item.quantity > 1) {
-        item.quantity -= 1;
+      if (item && item.quantityCart > 1) {
+        item.quantityCart -= 1;
       }
     },
   },
@@ -94,13 +89,13 @@ const cartSlice = createSlice({
 // Selector tính tổng số lượng sản phẩm
 export const getTotalQuantity = (state: any) => {
   return state.carts.carts.reduce(
-    (total: number, item: any) => total + item.quantity,
+    (total: number, item: any) => total + item.quantityCart,
     0
   );
 };
 export const getTotalPrice = (state: any) => {
   return state.carts.carts.reduce(
-    (total: number, item: any) => total + item.price * item.quantity,
+    (total: number, item: any) => total + item.price * item.quantityCart,
     0
   );
 };

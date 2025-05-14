@@ -16,6 +16,8 @@ export class CreateProductDto {
   @Type(() => Number)
   @IsNumber({}, { message: 'price phải là 1 số' })
   price: number;
+  @IsOptional()
+  quantity: number;
   @IsString({ message: 'Mô tả sản phẩm phải là 1 chuỗi' })
   @IsOptional()
   description?: string;

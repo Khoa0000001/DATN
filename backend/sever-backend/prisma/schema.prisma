@@ -97,6 +97,7 @@ model Products {
   updateDate      DateTime          @updatedAt
   nameProduct     String
   price           Float
+   quantity       Int               @default(0)
   description     String?
   categoryId      String
   isDeleted       Boolean           @default(false)

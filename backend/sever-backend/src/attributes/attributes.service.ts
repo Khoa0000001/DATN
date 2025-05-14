@@ -96,7 +96,6 @@ export class AttributesService {
   }
 
   async removeMany(ids: string[]) {
-    console.log('ids', ids);
     const attributes = await this._prisma.attributes.findMany({
       where: { id: { in: ids } },
     });

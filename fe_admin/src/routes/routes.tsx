@@ -12,6 +12,7 @@ import User from "@/page/grantPermission/user/UserPage";
 import Category from "@/page/goods/category/CategoryPage";
 import Product from "@/page/goods/product/ProductPage";
 import OrderPage from "@/page/orders/order/OrderPage";
+import SupplierPage from "@/page/orders/supplier/SupplierPage";
 
 const AppRoutes = () =>
   useRoutes([
@@ -92,6 +93,14 @@ const AppRoutes = () =>
           element: (
             <ProtectedRoute>
               <OrderPage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/orders/supplier",
+          element: (
+            <ProtectedRoute>
+              <SupplierPage />
             </ProtectedRoute>
           ),
         },

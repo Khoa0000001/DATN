@@ -31,6 +31,7 @@ export class ProductDto {
   updateDate: Date;
 
   nameProduct: string;
+  quantity: number;
 
   price: number;
 

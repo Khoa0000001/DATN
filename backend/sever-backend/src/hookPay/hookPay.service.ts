@@ -19,12 +19,9 @@ export class HookPayService {
     if (this.tempQRDataStore) {
       const content = data.content;
       const afterSEVQR = content.split('SEVQR ')[1]?.split(' ')[0];
-      console.log('afterSEVQR:', afterSEVQR);
-      console.log('tempQRDataStore:', this.tempQRDataStore);
       const dataCln = this.tempQRDataStore.find(
         (item) => item?.id === afterSEVQR,
       );
-      console.log('dataCln:', dataCln);
       const shippingInfo = dataCln?.shippingInfo;
       const listCarts = dataCln?.listCarts;
       const userId = shippingInfo?.userId;
@@ -49,6 +46,18 @@ export class HookPayService {
       }));
 
       await this._orderDetailsService.createMany(createOrderDetailDtos);
+      await Promise.all(
+        listCarts.map((item) =>
+          this._prismaService.products.update({
+            where: { id: item.productId },
+            data: {
+              quantity: {
+                decrement: item.quantity,
+              },
+            },
+          }),
+        ),
+      );
 
       // Gửi thông báo qua socket
       this._notificationGateway.sendPaymentSuccess(userId, {
@@ -68,7 +77,10 @@ export class HookPayService {
       ...data,
     };
     this.tempQRDataStore.push(newData);
-    console.log(this.tempQRDataStore);
+    console.log(
+      'tempQRDataStore:',
+      JSON.stringify(this.tempQRDataStore, null, 2),
+    );
     return formatResponse('id-QR', { MaQR: id });
   }
 }

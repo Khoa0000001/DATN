@@ -57,7 +57,6 @@ export class OrdersController {
   }
 
   @Patch(':id')
-  @CheckId('orders', 'id')
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this._ordersService.update(id, updateOrderDto);
   }

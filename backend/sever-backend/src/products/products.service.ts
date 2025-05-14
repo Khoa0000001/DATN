@@ -91,11 +91,21 @@ export class ProductsService {
     limit?: number,
     search?: string,
     categoryId?: string,
+    exit?: boolean,
   ) {
-    const where: any = {
+    let where: any = {
       isDeleted: false,
       categoryId: categoryId,
     };
+    console.log(exit);
+
+    if (exit) {
+      where = {
+        isDeleted: false,
+        categoryId: categoryId,
+        quantity: { gt: 0 },
+      };
+    }
 
     if (search) {
       where.OR = [
@@ -113,6 +123,7 @@ export class ProductsService {
         id: true,
         nameProduct: true,
         price: true,
+        quantity: true,
         createDate: true,
         updateDate: true,
         description: true,
@@ -154,8 +165,6 @@ export class ProductsService {
       this._prisma.products.count({ where }),
     ]);
 
-    console.log(products);
-
     const resultProducts = products.map((product: ProductDto) =>
       this.formattedProduct(product),
     );
@@ -171,6 +180,7 @@ export class ProductsService {
     const listProduct = await this._prisma.products.findMany({
       where: {
         isDeleted: false,
+        quantity: { gt: 0 },
       },
       select: {
         id: true,

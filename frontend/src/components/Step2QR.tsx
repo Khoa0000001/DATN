@@ -46,7 +46,7 @@ export default function Step2QR({
             listCarts: carts.map((_: any) => ({
               productId: _.id,
               price: _.price,
-              quantity: _.quantity,
+              quantity: _.quantityCart,
             })),
           })
         ).unwrap();
@@ -93,16 +93,16 @@ export default function Step2QR({
 
       <div className="mb-4 text-sm text-gray-700">
         <p>
-          Họ tên: <strong>{shippingInfo.name}</strong>
+          Họ tên: <strong>{shippingInfo?.name}</strong>
         </p>
         <p>
-          SĐT: <strong>{shippingInfo.phone}</strong>
+          SĐT: <strong>{shippingInfo?.phone}</strong>
         </p>
         <p>
-          Địa chỉ: <strong>{shippingInfo.address}</strong>
+          Địa chỉ: <strong>{shippingInfo?.address}</strong>
         </p>
         <p>
-          Thời gian nhận: <strong>{shippingInfo.deliveryTime}</strong>
+          Thời gian nhận: <strong>{shippingInfo?.deliveryTime}</strong>
         </p>
       </div>
 
@@ -110,7 +110,7 @@ export default function Step2QR({
         {carts.map((item: any, i: number) => (
           <div key={i} className="flex justify-between text-sm mb-2">
             <span>
-              {item.nameProduct} x{item.quantity}
+              {item?.nameProduct} x{item?.quantity}
             </span>
             <span>{(item.price * item.quantity).toLocaleString("vi-VN")}₫</span>
           </div>

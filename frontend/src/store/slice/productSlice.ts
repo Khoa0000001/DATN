@@ -34,8 +34,12 @@ export const fetchProducts = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      const params = {
+        ...credentials,
+        exit: true, // always set exit to true
+      };
       const response = await axiosInstance.get(`/products`, {
-        params: credentials,
+        params,
       });
       return response.data;
     } catch (err: any) {
@@ -49,12 +53,20 @@ export const fetchProducts = createAsyncThunk(
 export const fetchProductsFlSale = createAsyncThunk(
   "products/fetchProductsFlSale",
   async (
-    credentials: { page?: number; limit?: number; search?: string },
+    credentials: {
+      page?: number;
+      limit?: number;
+      search?: string;
+    },
     { rejectWithValue }
   ) => {
     try {
+      const params = {
+        ...credentials,
+        exit: true, // always set exit to true
+      };
       const response = await axiosInstance.get(`/products`, {
-        params: credentials,
+        params,
       });
       return response.data;
     } catch (err: any) {
@@ -185,6 +197,7 @@ export const fetchProductByCategoryId = createAsyncThunk(
       const response = await axiosInstance.get(`/products`, {
         params: {
           categoryId: CategoryId,
+          exit: true,
         },
       });
       return response.data;

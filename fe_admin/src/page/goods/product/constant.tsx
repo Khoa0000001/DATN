@@ -6,6 +6,7 @@ export interface DataType {
   id: string;
   nameProduct: string;
   description: string;
+  quantity: number;
   price: number;
   categoryId: string;
   category: {
@@ -43,6 +44,12 @@ export const columns: ColumnsType<DataType> = [
     sorter: (a, b) =>
       a.category.nameCategory.localeCompare(b.category.nameCategory),
     render: (_, record) => record.category.nameCategory,
+  },
+  {
+    title: "Số lượng",
+    dataIndex: "quantity",
+    key: "quantity",
+    sorter: (a, b) => a.quantity - b.quantity,
   },
   {
     title: "Mô tả",

@@ -3,10 +3,15 @@ import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { CustomTable } from "@/components/customAnt";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchOrders } from "@/store/slice/orderSlice";
+import {
+  fetchOrders,
+  fetchOrderDetail,
+  updateOrders,
+} from "@/store/slice/orderSlice";
 import DynamicModal from "@/components/DynamicModal";
 import { columns } from "./constant";
 import type { Mode } from "./constant";
+import Update from "./components/Update";
 
 const OrderPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -26,10 +31,15 @@ const OrderPage: React.FC = () => {
 
   const closeModal = () => setModalOpen(false);
 
+  const handleEdit = async (record: any) => {
+    const { data } = await dispatch(fetchOrderDetail(record.id)).unwrap();
+    openModal("edit", data);
+  };
+
   const handleEditSubmit = async (data: any) => {
     try {
       setSubmitLoading(true); // Bắt đầu loading
-      //   await dispatch(editRoleUser(data)).unwrap();
+      await dispatch(updateOrders(data)).unwrap();
       toast.success("Cấp quyền thành công.");
       dataFetch(1, meta?.limit || 10, "");
       closeModal();
@@ -39,10 +49,6 @@ const OrderPage: React.FC = () => {
     } finally {
       setSubmitLoading(false); // Kết thúc loading
     }
-  };
-
-  const handleEdit = async (record: any) => {
-    openModal("edit", record);
   };
 
   const dataFetch = useCallback(
@@ -73,19 +79,19 @@ const OrderPage: React.FC = () => {
           view: { roles: ["admin"] },
         }}
       />
-      {/* <DynamicModal
+      <DynamicModal
         open={modalOpen}
         onCancel={closeModal}
         title={modalMode === "edit" ? "Chuyển trạng thái" : "Chi tiết đơn hàng"}
       >
         {modalMode === "edit" && selectedData && (
-          <EditPermission
+          <Update
             onSubmit={handleEditSubmit}
             data={selectedData}
             loading={submitLoading}
           />
         )}
-      </DynamicModal> */}
+      </DynamicModal>
     </>
   );
 };

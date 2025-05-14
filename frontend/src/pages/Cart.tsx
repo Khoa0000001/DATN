@@ -18,6 +18,7 @@ export default function Cart() {
   const { carts, shippingInfo } = useAppSelector((state) => state.carts);
   const totalPrice = useAppSelector(getTotalPrice);
   const [showCheckout, setShowCheckout] = useState(false);
+  console.log(carts);
 
   const handlCheckoutSteps = () => {
     if (carts.length === 0) return -1;
@@ -58,7 +59,7 @@ export default function Cart() {
                     name={item.nameProduct}
                     price={item.price}
                     oldPrice={4550000}
-                    quantity={item.quantity}
+                    quantity={item.quantityCart}
                     onRemove={() => handleRemoveItem(item)}
                     onIncrease={() => handleIncreaseQuantity(item)}
                     onDecrease={() => handleDecreaseQuantity(item)}

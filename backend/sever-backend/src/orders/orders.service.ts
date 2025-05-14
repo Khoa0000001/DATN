@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -101,9 +101,52 @@ export class OrdersService {
 
   async findOne(id: string) {
     const order = await this._prisma.orders.findUnique({
-      where: { isDeleted: false, id },
+      where: {
+        isDeleted: false,
+        id: id,
+      },
+      select: {
+        id: true,
+        createDate: true,
+        updateDate: true,
+        nameCustomer: true,
+        phoneCustomer: true,
+        address: true,
+        timeOfReceipt: true,
+        paymentMethod: true,
+        shippingMethod: true,
+        totalAmount: true,
+        status: true,
+        user: {
+          select: {
+            nameUser: true,
+            email: true,
+          },
+        },
+      },
     });
-    return formatResponse(`This action returns a order`, order);
+
+    if (!order) {
+      throw new BadRequestException(
+        'Một số ID order xóa không tồn tại trong hệ thống',
+      );
+    }
+    const newOrder = {
+      id: order.id,
+      createDate: order.createDate,
+      updateDate: order.updateDate,
+      nameCustomer: order.nameCustomer,
+      phoneCustomer: order.phoneCustomer,
+      address: order.address,
+      timeOfReceipt: order.timeOfReceipt,
+      paymentMethod: order.paymentMethod,
+      shippingMethod: order.shippingMethod,
+      totalAmount: order.totalAmount,
+      status: order.status,
+      nameUser: order.user?.nameUser || null,
+      email: order.user?.email || null,
+    };
+    return formatResponse(`This action returns a order`, newOrder);
   }
 
   formatOrders(rawOrders: any[]) {
