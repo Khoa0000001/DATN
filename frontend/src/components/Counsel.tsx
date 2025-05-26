@@ -1,21 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { getBuildPCResponse } from "@/apis/apiCounsel";
 import Loading from "./Loading";
-import Button from "@/components/Button";
-import { useDispatch } from "react-redux";
-import { updateComponentValue } from "@/store/DataBuildPCSlice";
-import { AppDispatch } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 const validationSchema = Yup.object({
   price: Yup.number().required("Nhập giá tiền chi ra là bắt buộc"),
   purpose: Yup.string().required("Nhập mục đích sử dụng là bắt buộc"),
 });
+
 interface Component {
-  id: number;
+  id: string;
   title: string;
   value: {
     name: string;
@@ -23,55 +19,47 @@ interface Component {
   };
 }
 
-export default function Counsel() {
-  const dispatch = useDispatch<AppDispatch>();
-  const dataBuildPC = useSelector(
-    (state: RootState) => state.DataBuildPC.components
-  );
-  const [result, setResult] = useState<Component[]>();
+interface FormValues {
+  price: string;
+  purpose: string;
+  components: string[];
+}
 
-  const handleChon = () => {
-    result?.forEach((component: Component) => {
-      dispatch(
-        updateComponentValue({
-          id: component.id,
-          newValue: {
-            id: 1,
-            name: component.value.name,
-            price: Number(component.value.price),
-            img: "https://product.hstatic.net/200000722513/product/pc_case_msi_-_70_ddeb58e9f4734404b74d621a25441f44_medium.png",
-          },
-        })
-      );
-    });
-  };
+export default function Counsel() {
+  const [result, setResult] = useState<Component[]>();
+  const { computer_components } = useAppSelector((state) => state.buildPc);
+  const [listComponents] = useState(computer_components);
+  const handleChon = () => {};
 
   return (
-    <Formik
-      initialValues={{ price: "", purpose: "", components: {} }}
+    <Formik<FormValues>
+      initialValues={{ price: "", purpose: "", components: [] }}
       validationSchema={validationSchema}
-      onSubmit={async (values, { setSubmitting, resetForm }) => {
+      onSubmit={async (values, { setSubmitting }) => {
+        const newValues = {
+          ...values,
+          components: listComponents.filter(
+            (component: any) =>
+              !values.components.includes(String(component.id))
+          ),
+        };
+        console.log("Data: ", newValues);
         try {
-          const response = await getBuildPCResponse(
-            Number(values.price),
-            values.purpose,
-            values.components
-          );
+          const response: Component[] = [];
           setResult(response);
         } catch (error) {
           console.error(error);
         } finally {
-          setSubmitting(false); // Cho phép submit tiếp
-          //   resetForm(); // Reset form về giá trị ban đầu
+          setSubmitting(false);
         }
       }}
     >
-      {({ isSubmitting, values }) =>
+      {({ isSubmitting, values, setFieldValue }) =>
         isSubmitting ? (
           <Loading title="Đang xử lý và đưa ra gợi ý ..." />
         ) : (
           <Form className="p-4 flex-1 overflow-auto">
-            <div className="flex flex-row-reverse mb-4 sticky top-0 mr-6">
+            <div className="flex flex-row-reverse mb-4  mr-6">
               <button
                 type="submit"
                 className="bg-[#e01a1d] hover:opacity-[.8] text-white font-bold py-2 px-4 rounded cursor-pointer"
@@ -80,9 +68,12 @@ export default function Counsel() {
                 Tư vấn
               </button>
             </div>
+
+            {/* Giá tiền */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 items-center">
-                Nhập giá tiền chi ra (VNĐ): {values.price.toLocaleString()}
+                Nhập giá tiền chi ra (VNĐ):{" "}
+                {Number(values.price).toLocaleString()}
               </label>
               <Field
                 type="number"
@@ -97,6 +88,8 @@ export default function Counsel() {
                 className="text-red-500 text-sm"
               />
             </div>
+
+            {/* Mục đích */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Nhập mục đích sử dụng:
@@ -114,36 +107,51 @@ export default function Counsel() {
                 className="text-red-500 text-sm"
               />
             </div>
+
+            {/* Checkbox loại trừ */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Chọn linh kiện không muốn mua:
               </label>
               <div className="mt-2 grid grid-cols-3 gap-4">
-                {dataBuildPC.map((component) => (
-                  <div key={component.id} className="flex items-center">
-                    <Field
-                      type="checkbox"
-                      id={`component-${component.id}`}
-                      name={`components.${component.title}`}
-                      className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                    />
-                    <label
-                      htmlFor={`component-${component.id}`}
-                      className="ml-2 block text-sm text-gray-900"
-                    >
-                      {component.title}
-                    </label>
-                  </div>
-                ))}
+                {listComponents.map((component: any) => {
+                  const id = String(component.id);
+                  const isChecked = values.components.includes(id);
+
+                  return (
+                    <div key={id} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={`component-${id}`}
+                        checked={isChecked}
+                        onChange={() => {
+                          const next = isChecked
+                            ? values.components.filter((cid) => cid !== id)
+                            : [...values.components, id];
+                          setFieldValue("components", next);
+                        }}
+                        className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <label
+                        htmlFor={`component-${id}`}
+                        className="ml-2 block text-sm text-gray-900"
+                      >
+                        {component.nameCategory}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-            {result && (
+
+            {/* Kết quả */}
+            {result && result?.length > 0 && (
               <div className="p-4 bg-gray-900 text-white min-h-screen">
                 <h1 className="text-3xl font-bold text-center mb-6">
                   Cấu hình PC
                 </h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {result.map((component) => (
+                  {result?.map((component) => (
                     <div
                       key={component.id}
                       className="p-4 border rounded-lg bg-gray-800 shadow-lg"
@@ -155,7 +163,7 @@ export default function Counsel() {
                         Tên: {component.value.name}
                       </p>
                       <p className="text-gray-300">
-                        Giá: {component.value.price} VNĐ
+                        Giá: {component.value.price.toLocaleString()} VNĐ
                       </p>
                     </div>
                   ))}

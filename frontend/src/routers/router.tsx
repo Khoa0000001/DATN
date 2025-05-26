@@ -50,7 +50,7 @@ const AppRoutes = () =>
     },
     {
       path: "*",
-      element: <div>23</div>,
+      element: <div>404</div>,
     },
   ]);
 

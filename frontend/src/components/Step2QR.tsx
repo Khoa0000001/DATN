@@ -110,9 +110,11 @@ export default function Step2QR({
         {carts.map((item: any, i: number) => (
           <div key={i} className="flex justify-between text-sm mb-2">
             <span>
-              {item?.nameProduct} x{item?.quantity}
+              {item?.nameProduct} x{item?.quantityCart}
             </span>
-            <span>{(item.price * item.quantity).toLocaleString("vi-VN")}₫</span>
+            <span>
+              {(item.price * item.quantityCart).toLocaleString("vi-VN")}₫
+            </span>
           </div>
         ))}
       </div>

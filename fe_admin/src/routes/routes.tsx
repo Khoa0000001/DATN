@@ -13,6 +13,7 @@ import Category from "@/page/goods/category/CategoryPage";
 import Product from "@/page/goods/product/ProductPage";
 import OrderPage from "@/page/orders/order/OrderPage";
 import SupplierPage from "@/page/orders/supplier/SupplierPage";
+import ImportInvoicePage from "@/page/orders/importInvoices/ImportInvoicePage";
 
 const AppRoutes = () =>
   useRoutes([
@@ -101,6 +102,14 @@ const AppRoutes = () =>
           element: (
             <ProtectedRoute>
               <SupplierPage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/orders/import-invoice",
+          element: (
+            <ProtectedRoute>
+              <ImportInvoicePage />
             </ProtectedRoute>
           ),
         },

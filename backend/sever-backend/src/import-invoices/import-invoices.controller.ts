@@ -19,7 +19,6 @@ export class ImportInvoicesController {
   constructor(private readonly _importInvoicesService: ImportInvoicesService) {}
 
   @Post()
-  @CheckId('suppliers', 'supplierId')
   create(@Body() createImportInvoiceDto: CreateImportInvoiceDto) {
     return this._importInvoicesService.create(createImportInvoiceDto);
   }

@@ -11,6 +11,7 @@ import categoryReducer from "@/store/slice/categorySlice";
 import productReducer from "@/store/slice/productSlice";
 import orderReducer from "@/store/slice/orderSlice";
 import supplierReducer from "@/store/slice/supplierSlice";
+import importInvoiceReducer from "@/store/slice/importInvoiceSlice";
 
 const persistConfig = {
   key: "auth",
@@ -26,6 +27,7 @@ const rootReducer = {
   products: productReducer,
   orders: orderReducer,
   suppliers: supplierReducer,
+  importInvoices: importInvoiceReducer,
 };
 
 export const store = configureStore({

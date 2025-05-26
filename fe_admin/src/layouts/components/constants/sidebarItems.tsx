@@ -61,6 +61,11 @@ export const sidebarItems: SidebarItem[] = [
         label: "Danh sách nhà cung cấp",
         path: "/orders/supplier",
       },
+      {
+        key: "import-invoice",
+        label: "Danh sách nhập hàng",
+        path: "/orders/import-invoice",
+      },
     ],
   },
   {

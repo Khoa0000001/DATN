@@ -1,38 +1,39 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from "@/components/Button";
-import { useDispatch } from "react-redux";
-import { updateComponentValue } from "@/store/DataBuildPCSlice";
-import { AppDispatch } from "@/store";
+import { useAppDispatch } from "@/store/hooks";
+import { setValueComponent } from "@/store/slice/buildPcSlice";
+
 export default function ProductBuild({
-  idDataBuildPC,
   data,
   callBack,
 }: {
-  idDataBuildPC: number;
   data: any;
   callBack: Function;
 }) {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   function handleChon(data: any) {
-    console.log(data, idDataBuildPC);
-    dispatch(updateComponentValue({ id: idDataBuildPC, newValue: data }));
+    dispatch(setValueComponent({ id: data.categoryId, newValue: data }));
     callBack();
   }
   return (
     <div className="rounded-[4px] bg-white text-white border border-gray-300 items-center">
       <div className="p-[12px] flex justify-center items-center">
-        <a href="">
-          <img src={data.img} alt="" />
+        <a href={`/products/${data.id}`}>
+          <img src={data?.productImages[0].imageUrl || ""} alt="" />
         </a>
       </div>
       <div className="px-[12px] pt-[10px] pb-[10px]">
-        <h3 className="text-[14px] font-[600]">
-          <a href="" className="text-[#333]">
-            {data.name}
+        <h3 className="text-[14px] font-[600] overflow-hidden line-clamp-3 break-words">
+          <a href={`/products/${data.id}`} className="text-[#333]">
+            {data.nameProduct}
           </a>
         </h3>
         <div className="flex justify-between items-center">
           <div>
-            <del className="text-[12px] text-[#999]">1.299.000đ</del>
+            <del className="text-[12px] text-[#999]">
+              {data.price.toLocaleString("vi-VN")}đ
+            </del>
           </div>
           <div className="items-center">
             <span className="text-[14px] text-[var(--primary-color)]">
@@ -41,7 +42,12 @@ export default function ProductBuild({
           </div>
         </div>
         <div className="flex justify-between items-center mt-[8px]">
-          <a className="text-[#0082e7] text-[13px] font-[600] cursor-pointer">
+          <a
+            href={`/products/${data.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#0082e7] text-[13px] font-[600] cursor-pointer"
+          >
             Xem chi tiết
           </a>
           <Button

@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCommentNodes,
@@ -13,23 +14,19 @@ import {
 import Button from "@/components/Button";
 import WrapProductChose from "@/components/WrapProductChose";
 import Counsel from "@/components/Counsel";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { fetchCategories, resetAllComponent } from "@/store/slice/buildPcSlice";
+
 export default function BuildPC() {
-  interface ComponentValue {
-    name: string;
-    price: number;
-  }
-
-  interface BuildPCComponent {
-    id: string;
-    title: string;
-    image: string;
-    color: string;
-    value?: ComponentValue;
-  }
-
-  const dataBuildPC: BuildPCComponent[] = [];
-  const handleReset = () => {}; 
+  const dispatch = useAppDispatch();
+  const handleReset = () => {
+    dispatch(resetAllComponent());
+  };
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { computer_components } = useAppSelector((state) => state.buildPc);
+  useEffect(() => {
+    dispatch(fetchCategories({})).unwrap();
+  }, []);
   return (
     <div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -58,13 +55,13 @@ export default function BuildPC() {
                 <div className="p-[6px] rounded-lg flex gap-4">
                   {/* Chọn linh kiện */}
                   <div className="flex flex-col flex-3/5 gap-4">
-                    {dataBuildPC.map((_) => (
+                    {computer_components.map((_: any) => (
                       <WrapProductChose
                         key={_.id}
                         data={{
                           id: _.id,
-                          title: _.title,
-                          image: _.image,
+                          title: _.nameCategory,
+                          image: _.imageUrl,
                           color: _.color,
                           value: _.value,
                         }}
@@ -78,15 +75,15 @@ export default function BuildPC() {
                         Hóa đơn
                       </h1>
                       <div className="flex flex-col gap-1">
-                        {dataBuildPC.map((component) => (
+                        {computer_components.map((component: any) => (
                           <div
                             key={component.id}
                             className="flex justify-between"
                           >
                             <span className="font-[600] min-w-[125px]">
-                              {component.title}:
+                              {component.nameCategory}:
                             </span>
-                            <span>{component.value?.name}</span>
+                            <span>{component.value?.nameProduct}</span>
                             <span className="text-[#ea1c04] font-[600]">
                               {component.value?.price.toLocaleString("vi-VN")}
                             </span>
@@ -96,13 +93,14 @@ export default function BuildPC() {
                       <div className="flex justify-between items-center mt-[16px]">
                         <div className="text-[24px] font-[600]">Tổng tiền:</div>
                         <div className="text-[24px] font-[800] text-[var(--primary-color)]">
-                          {dataBuildPC
+                          {computer_components
                             .reduce(
-                              (total, component) =>
+                              (total: number, component: any) =>
                                 total + (component.value?.price || 0),
                               0
                             )
                             .toLocaleString("vi-VN")}
+                          đ
                         </div>
                       </div>
                     </div>
