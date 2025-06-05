@@ -35,6 +35,7 @@ export const columns: ColumnsType<DataType> = [
     title: "Tên sản phẩm",
     dataIndex: "nameProduct",
     key: "nameProduct",
+    width: 300,
     sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
   },
   {
@@ -49,12 +50,21 @@ export const columns: ColumnsType<DataType> = [
     title: "Số lượng",
     dataIndex: "quantity",
     key: "quantity",
+    align: "right" as const,
     sorter: (a, b) => a.quantity - b.quantity,
+  },
+  {
+    title: "Giá",
+    dataIndex: "price",
+    key: "price",
+    align: "right" as const,
+    sorter: (a, b) => a.price - b.price,
   },
   {
     title: "Mô tả",
     dataIndex: "description",
     key: "description",
+    width: 200,
     sorter: (a, b) => a.description.localeCompare(b.description),
   },
   {
@@ -79,18 +89,18 @@ export const columns: ColumnsType<DataType> = [
       </Image.PreviewGroup>
     ),
   },
-  {
-    title: "Đã xóa",
-    dataIndex: "isDeleted",
-    key: "isDeleted",
-    align: "center" as const,
-    sorter: (a, b) => Number(b.isDeleted) - Number(a.isDeleted), // true > false
-    render: (isDeleted: boolean) => (
-      <Tag color={isDeleted ? "volcano" : "green"}>
-        {isDeleted ? "Đã xóa" : "Chưa xóa"}
-      </Tag>
-    ),
-  },
+  // {
+  //   title: "Đã xóa",
+  //   dataIndex: "isDeleted",
+  //   key: "isDeleted",
+  //   align: "center" as const,
+  //   sorter: (a, b) => Number(b.isDeleted) - Number(a.isDeleted), // true > false
+  //   render: (isDeleted: boolean) => (
+  //     <Tag color={isDeleted ? "volcano" : "green"}>
+  //       {isDeleted ? "Đã xóa" : "Chưa xóa"}
+  //     </Tag>
+  //   ),
+  // },
   {
     title: "Ngày tạo",
     dataIndex: "createDate",

@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import ProductRow from "@/components/ProducrRow";
 import Product from "@/components/Product";
-import { DataPCProduct } from "@/data/DataFake";
 import {
   Carousel,
   CarouselContent,
@@ -16,7 +15,10 @@ import {
 } from "@/components/ui/carousel";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchProductDetail } from "@/store/slice/productSlice";
+import {
+  fetchProductByCategoryId,
+  fetchProductDetail,
+} from "@/store/slice/productSlice";
 import { addItem } from "@/store/slice/cartSlice";
 export default function Products() {
   const dispatch = useAppDispatch();
@@ -27,11 +29,20 @@ export default function Products() {
     dispatch(addItem(product));
   };
 
+  const listProducts = useAppSelector(
+    (state) => state.products.productByCategoryId
+  );
+
   useEffect(() => {
     if (id) {
       dispatch(fetchProductDetail(id)).unwrap();
     }
   }, [dispatch, id]);
+  useEffect(() => {
+    if (product.categoryId) {
+      dispatch(fetchProductByCategoryId(product.categoryId)).unwrap();
+    }
+  }, [dispatch, product.categoryId]);
   return (
     <div className="mb-[8x]">
       <div className="max-w-[1220px] mx-[auto]">
@@ -65,13 +76,13 @@ export default function Products() {
                       </div>
                       <div className="flex items-center gap-4 my-[10px]">
                         <h3 className="text-3xl text-[var(--primary-color)] font-[600]">
-                          21.790.000₫
+                          {product?.price?.toLocaleString("vi-VN")}₫
                         </h3>
                         <del className="text-[18px] text-gray-400">
-                          {product?.price?.toLocaleString("vi-VN")}₫
+                          {(product?.price * 1.2)?.toLocaleString("vi-VN")}₫
                         </del>
                         <div className="rounded-[4px] border-1 border-[var(--primary-color)] text-[var(--primary-color)] px-[6px] py-[4px] text-[12px]">
-                          -1%
+                          -20%
                         </div>
                       </div>
                     </div>
@@ -90,25 +101,27 @@ export default function Products() {
                         <li>
                           <div className="flex gap-2 items-center text-[18px] mt-[12px]">
                             <FontAwesomeIcon icon={faCheck} />
-                            <span>Bảo hành chính hãng 24 tháng.</span>
+                            <span>Bảo hành chính hãng.</span>
                           </div>
                         </li>
                         <li>
                           <div className="flex gap-2 items-center text-[18px] mt-[12px]">
                             <FontAwesomeIcon icon={faCheck} />
-                            <span>Bảo hành chính hãng 24 tháng.</span>
+                            <span>Nhiều phần quà hấp dẫn.</span>
                           </div>
                         </li>
                         <li>
                           <div className="flex gap-2 items-center text-[18px] mt-[12px]">
                             <FontAwesomeIcon icon={faCheck} />
-                            <span>Bảo hành chính hãng 24 tháng.</span>
+                            <span>
+                              Chính sách đổi trả 1 1 với sản phẩm lỗi.
+                            </span>
                           </div>
                         </li>
                         <li>
                           <div className="flex gap-2 items-center text-[18px] mt-[12px]">
                             <FontAwesomeIcon icon={faCheck} />
-                            <span>Bảo hành chính hãng 24 tháng.</span>
+                            <span>Hỗ trợ 24/7.</span>
                           </div>
                         </li>
                       </ul>
@@ -178,7 +191,7 @@ export default function Products() {
         </div>
         {/* Phần giữa */}
         <div className="pt-[18px]">
-          <div className="flex gap-4 flex-col sm:flex-row">
+          <div className="flex gap-4 flex-col  sm:flex-row ">
             {/* Thông tin sản phẩm */}
             <div className="basis-3/5">
               <div className="bg-white rounded-[4px]">
@@ -191,7 +204,7 @@ export default function Products() {
                       <tbody>
                         {(showAll
                           ? product?.attributeValues
-                          : product?.attributeValues?.slice(0, 5)
+                          : product?.attributeValues?.slice(0, 6)
                         )?.map((_: any, index: number) => (
                           <tr
                             key={index}
@@ -232,9 +245,11 @@ export default function Products() {
                   </h1>
                   <div className="px-[24px]">
                     <div className="flex flex-col gap-2">
-                      {Array.from({ length: 3 }).map((_, index) => (
-                        <ProductRow key={index} />
-                      ))}
+                      {listProducts
+                        .slice(0, 3)
+                        .map((item: any, index: number) => (
+                          <ProductRow key={index} data={item} />
+                        ))}
                     </div>
                   </div>
                 </div>
@@ -259,7 +274,7 @@ export default function Products() {
                   className="w-full"
                 >
                   <CarouselContent className="-ml-1">
-                    {DataPCProduct.listProdeuct.map((_, index) => (
+                    {listProducts.map((_: any, index: number) => (
                       <CarouselItem
                         key={index}
                         className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/5"

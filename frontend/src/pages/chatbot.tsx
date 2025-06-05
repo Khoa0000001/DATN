@@ -3,10 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { chatBotQuestion, fetchChatHistory } from "@/store/slice/chatbotSlice";
+import Loading from "@/components/Loading";
 
 const Chatbot = () => {
   const dispatch = useAppDispatch();
-  const { chatHistory, error } = useAppSelector((state: any) => state.chatbots);
+  const { chatHistory, error, loading } = useAppSelector(
+    (state: any) => state.chatbots
+  );
   const { userInfo } = useAppSelector((state: any) => state.auth);
   const userId = userInfo?.userId;
   const [question, setQuestion] = useState("");
@@ -44,43 +47,46 @@ const Chatbot = () => {
       >
         {error && <div className="text-red-500">{error}</div>}
 
-        {chatHistory?.map((msg: any, index: number) => (
-          <div key={index} className="space-y-2">
-            <div
-              className={`flex ${
-                msg.sender === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`px-4 py-2 rounded-lg max-w-[75%] text-sm whitespace-pre-wrap ${
-                  msg.sender === "user"
-                    ? "bg-[#e30019] text-white"
-                    : "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {msg.question}
-              </div>
-            </div>
-
-            {msg.answer && (
+        {loading && chatHistory.length === 0 ? (
+          <Loading title="Đang tải tin nhắn..." />
+        ) : (
+          chatHistory?.map((msg: any, index: number) => (
+            <div key={index} className="space-y-2">
               <div
                 className={`flex ${
-                  msg.sender === "user" ? "justify-start" : "justify-end"
+                  msg.sender === "user" ? "justify-end" : "justify-start"
                 }`}
               >
                 <div
                   className={`px-4 py-2 rounded-lg max-w-[75%] text-sm whitespace-pre-wrap ${
                     msg.sender === "user"
-                      ? "bg-gray-100 text-gray-800"
-                      : "bg-[#e30019] text-white"
+                      ? "bg-[#e30019] text-white"
+                      : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {msg.answer}
+                  {msg.question}
                 </div>
               </div>
-            )}
-          </div>
-        ))}
+
+              {msg.answer && (
+                <div
+                  className={`flex ${
+                    msg.sender === "user" ? "justify-start" : "justify-end"
+                  }`}
+                >
+                  <div
+                    className={`px-4 py-2 rounded-lg max-w-[75%] text-sm whitespace-pre-wrap ${
+                      msg.sender === "user"
+                        ? "bg-gray-100 text-gray-800"
+                        : "bg-[#e30019] text-white"
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: msg.answer }}
+                  />
+                </div>
+              )}
+            </div>
+          ))
+        )}
 
         {showQustion && (
           <div className="space-y-2">

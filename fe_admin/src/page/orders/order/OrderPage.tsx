@@ -75,8 +75,8 @@ const OrderPage: React.FC = () => {
         }}
         onEdit={handleEdit}
         permissions={{
-          delete: { roles: ["admin"] },
-          view: { roles: ["admin"] },
+          delete: { roles: ["admin", "NVNH"] },
+          view: { roles: ["admin", "NVNH"] },
         }}
       />
       <DynamicModal

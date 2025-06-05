@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+  import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axiosInstance";
 
 const initialState: any = {
@@ -71,6 +71,7 @@ const cartSlice = createSlice({
       const item = state.carts.find(
         (item: any) => item.id === action.payload.id
       );
+      console.log("item", item);
       if (item && item.quantityCart < item.quantity) {
         item.quantityCart += 1;
       }

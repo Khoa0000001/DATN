@@ -91,7 +91,7 @@ export default function Header() {
               <div className="hidden lg:flex items-center gap-2">
                 <Link to={"/"}>
                   <img
-                    src="public/logoCPT.png"
+                    src="/src/assets/logoCPT.png"
                     alt="Logo"
                     className="w-[140px] h-10 cursor-pointer"
                   />

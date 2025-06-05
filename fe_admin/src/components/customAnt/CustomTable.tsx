@@ -177,7 +177,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
         columns={newColumns}
         dataSource={dataSource}
         rowKey="id"
-        scroll={{ x: "max-content", y: 400 }}
+        scroll={{ x: "max-content", y: 335 }}
         pagination={{
           current: currentPage,
           total: total || 0,

@@ -46,7 +46,9 @@ export default function Product({ data }: { data: any }) {
         )}
         <div>
           <div>
-            <del className="text-[14px] text-[#999]">1.299.000đ</del>
+            <del className="text-[14px] text-[#999]">
+              {(data.price * 1.2).toLocaleString("vi-VN")}đ
+            </del>
           </div>
           <div className="items-center">
             <span className="text-[16px] text-[var(--primary-color)]">

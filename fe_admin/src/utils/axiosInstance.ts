@@ -16,7 +16,7 @@ export const injectStore = (_store: {
 };
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_APP_API_URL,
-  timeout: 10000,
+  timeout: 0,
   headers: {
     "Content-Type": "application/json",
   },

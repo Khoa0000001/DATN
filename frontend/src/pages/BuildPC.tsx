@@ -83,7 +83,9 @@ export default function BuildPC() {
                             <span className="font-[600] min-w-[125px]">
                               {component.nameCategory}:
                             </span>
-                            <span>{component.value?.nameProduct}</span>
+                            <span className="text-left flex-1">
+                              {component.value?.nameProduct}
+                            </span>
                             <span className="text-[#ea1c04] font-[600]">
                               {component.value?.price.toLocaleString("vi-VN")}
                             </span>
@@ -120,7 +122,7 @@ export default function BuildPC() {
             </h3>
           </DialogHeader>
           <DialogTitle></DialogTitle>
-          <Counsel />
+          <Counsel onClose={() => setIsDialogOpen(false)} />
         </DialogContent>
       </Dialog>
     </div>

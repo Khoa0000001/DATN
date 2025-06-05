@@ -35,16 +35,22 @@ export default function WrapProductChose({ data }: { data: any }) {
         <div className="flex justify-between items-center p-[10px] bg-[#f2f4f7]">
           {data.value ? (
             <div className="flex justify-between items-center flex-1">
-              <div className="flex items-center ">
-                <img
-                  src={data?.value?.productImages[0].imageUrl || ""}
-                  alt=""
-                  className="w-[3.5rem]"
-                />
-                <h1 className="text-[18px] font-[600] ml-[14px]">
-                  {data.value.nameProduct}
-                </h1>
-              </div>
+              <a
+                href={`products/${data.value.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="flex items-center ">
+                  <img
+                    src={data?.value?.productImages[0].imageUrl || ""}
+                    alt=""
+                    className="w-[3.5rem] h-[3.5rem] object-cover rounded"
+                  />
+                  <h1 className="text-[18px] font-[600] ml-[14px]">
+                    {data.value.nameProduct}
+                  </h1>
+                </div>
+              </a>
               <div className="flex items-center">
                 <div className="flex flex-col gap-1 text-right">
                   <del className="text-[14px] text-[#999]">
@@ -65,7 +71,12 @@ export default function WrapProductChose({ data }: { data: any }) {
             </div>
           ) : (
             <div className="flex items-center">
-              <img src={data.image} alt="" className="w-[3.5rem]" />
+              <img
+                src={data.image}
+                alt=""
+                className="w-[3.5rem] h-[3.5rem] object-cover rounded"
+              />
+
               <h1
                 className="text-[24px] font-[800] ml-[14px]"
                 style={{ color: data.color }}

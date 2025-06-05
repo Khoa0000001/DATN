@@ -97,7 +97,6 @@ export class ProductsService {
       isDeleted: false,
       categoryId: categoryId,
     };
-    console.log(exit);
 
     if (exit) {
       where = {
@@ -116,9 +115,11 @@ export class ProductsService {
         { description: { contains: search } },
       ];
     }
-
     const queryOptions: any = {
       where,
+      orderBy: {
+        updateDate: 'desc', // Sắp xếp theo createDate giảm dần (mới nhất trước)
+      },
       select: {
         id: true,
         nameProduct: true,
@@ -273,7 +274,16 @@ export class ProductsService {
   async findOne(id: string) {
     const product: any = await this._prisma.products.findUnique({
       where: { isDeleted: false, id },
-      include: {
+      select: {
+        id: true,
+        nameProduct: true,
+        price: true,
+        quantity: true,
+        createDate: true,
+        updateDate: true,
+        description: true,
+        categoryId: true,
+        isDeleted: true,
         productImages: {
           select: {
             id: true,
@@ -443,23 +453,26 @@ export class ProductsService {
   }
 
   async remove(id: string) {
-    const [hasRelatedimportDetails, hasRelatedOrderDetails] = await Promise.all(
+    const [hasRelatedImportDetails, hasRelatedOrderDetails] = await Promise.all(
       [
         this._prisma.importDetails.count({ where: { productId: id } }),
         this._prisma.orderDetails.count({ where: { productId: id } }),
       ],
     );
-    if (hasRelatedimportDetails > 0 && hasRelatedOrderDetails > 0) {
+
+    if (hasRelatedImportDetails > 0 || hasRelatedOrderDetails > 0) {
+      // Nếu có liên kết, thì soft delete
       const product = await this._prisma.products.update({
-        where: { isDeleted: false, id },
+        where: { id },
         data: { isDeleted: true },
       });
-      return formatResponse(`This action removes a product`, product);
+      return formatResponse(`Sản phẩm đã được đánh dấu xóa`, product);
     } else {
+      // Nếu không liên kết thì xóa hẳn
       const product = await this._prisma.products.delete({
         where: { id },
       });
-      return formatResponse(`This action removes a product`, product);
+      return formatResponse(`Sản phẩm đã được xóa khỏi hệ thống`, product);
     }
   }
   async removeMany(ids: string[]) {

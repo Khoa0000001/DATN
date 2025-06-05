@@ -122,8 +122,8 @@ const PermissionPage: React.FC = () => {
         onDelete={handleDelete}
         onEdit={handleEdit}
         permissions={{
-          add: { roles: ["admin", "editor"] },
-          edit: { roles: ["admin", "editor"], permissions: [] },
+          add: { roles: ["admin"] },
+          edit: { roles: ["admin"], permissions: [] },
           delete: { roles: ["admin"] },
           view: { roles: ["admin"] },
         }}

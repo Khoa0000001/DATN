@@ -11,6 +11,7 @@ export default function MenuToggle() {
   const newCategories = categories.map((item: any) => {
     return {
       title: item.nameCategory,
+      idCategory: item.id,
       icon: faBars,
       data: [
         {
@@ -44,6 +45,7 @@ export default function MenuToggle() {
       {newCategories.map((item: any, index: number) => (
         <ItemMenuToggle
           key={index}
+          idCategory={item.idCategory}
           icon={item.icon}
           title={item.title}
           data={item.data}

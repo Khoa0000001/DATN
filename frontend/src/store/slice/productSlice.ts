@@ -212,7 +212,38 @@ export const fetchProductByCategoryId = createAsyncThunk(
 const userSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    LocProducts(state, action) {
+      const { priceMin, priceMax, sortBy } = action.payload;
+
+      let filtered = state.productByCategoryId;
+
+      // Lọc theo khoảng giá
+      if (typeof priceMin === "number") {
+        filtered = filtered.filter((p: any) => p.price >= priceMin);
+      }
+      if (typeof priceMax === "number") {
+        filtered = filtered.filter((p: any) => p.price <= priceMax);
+      }
+
+      // Sắp xếp
+      if (sortBy === "name-asc") {
+        filtered = filtered
+          .slice()
+          .sort((a: any, b: any) => a.nameProduct.localeCompare(b.nameProduct));
+      } else if (sortBy === "name-desc") {
+        filtered = filtered
+          .slice()
+          .sort((a: any, b: any) => b.nameProduct.localeCompare(a.nameProduct));
+      } else if (sortBy === "price-asc") {
+        filtered = filtered.slice().sort((a: any, b: any) => a.price - b.price);
+      } else if (sortBy === "price-desc") {
+        filtered = filtered.slice().sort((a: any, b: any) => b.price - a.price);
+      }
+
+      state.productByCategoryId = filtered;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProductsFlSale.pending, (state) => {
@@ -331,4 +362,5 @@ const userSlice = createSlice({
   },
 });
 
+export const { LocProducts } = userSlice.actions;
 export default userSlice.reducer;

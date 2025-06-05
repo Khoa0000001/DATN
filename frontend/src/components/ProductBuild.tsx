@@ -20,7 +20,11 @@ export default function ProductBuild({
     <div className="rounded-[4px] bg-white text-white border border-gray-300 items-center">
       <div className="p-[12px] flex justify-center items-center">
         <a href={`/products/${data.id}`}>
-          <img src={data?.productImages[0].imageUrl || ""} alt="" />
+          <img
+            src={data?.productImages[0].imageUrl || ""}
+            alt=""
+            className="min-h-[150px] object-contain w-full h-[150px]"
+          />
         </a>
       </div>
       <div className="px-[12px] pt-[10px] pb-[10px]">

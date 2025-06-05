@@ -1,32 +1,40 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 export default function ItemMenuToggle({
   title,
   icon,
   data,
+  idCategory,
 }: {
   title: string;
   icon: any;
   data: any[];
+  idCategory: string;
 }) {
   return (
     <div className="group">
       <div className="relative">
-        <a className=" cursor-pointer flex items-center py-[2px] px-[16px]  h-[32px] relative hover:bg-[#ea1c04] hover:text-whit transition group-hover:bg-[#ea1c04]">
+        <Link
+          to={`/list-products/${idCategory}`}
+          className=" cursor-pointer flex items-center py-[2px] px-[16px]  h-[32px] relative hover:bg-[#ea1c04] hover:text-whit transition group-hover:bg-[#ea1c04]"
+        >
           <FontAwesomeIcon
             icon={icon}
             className="text-[16px] text-[#333] mr-[10px] group-hover:text-white"
           />
+
           <span className="text-[13px] font-[600] text-[#333] group-hover:text-white">
             {title}
           </span>
+
           <FontAwesomeIcon
             icon={faAngleRight}
             className="text-[16px] text-[#333] ml-auto group-hover:text-white"
           />
-        </a>
+        </Link>
         {/* Pseudo Element ::before */}
         <div className="absolute z-20 top-0 right-[-32px] hidden group-hover:block">
           <div className="w-0 h-0 border-t-[16px] border-t-transparent border-l-[16px] border-l-[#ea1c04] border-b-[15px] border-b-transparent border-r-[16px] border-r-transparent z-10 "></div>
@@ -45,7 +53,9 @@ export default function ItemMenuToggle({
                     key={index}
                     className="p-[6px] cursor-pointer hover:text-[var(--primary-color)]"
                   >
-                    {subItem.title}
+                    <Link to={`/list-products/${idCategory}`}>
+                      {subItem.title}
+                    </Link>
                   </li>
                 ))}
               </ul>

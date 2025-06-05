@@ -47,6 +47,7 @@ export default function RegisterUser() {
         nameUser: data.name,
       };
       await dispatch(registerUser(newData)).unwrap();
+      alert("Vui lòng kiểm tra email để xác thực tài khoản");
     } catch (err) {
       console.error("Lỗi đăng ký:", err);
     } finally {

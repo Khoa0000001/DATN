@@ -122,10 +122,10 @@ const SupplierPage: React.FC = () => {
         onDelete={handleDelete}
         onEdit={handleEdit}
         permissions={{
-          add: { roles: ["admin"] },
-          edit: { roles: ["admin"], permissions: [] },
-          delete: { roles: ["admin"] },
-          view: { roles: ["admin"] },
+          add: { roles: ["admin", "NVNH"] },
+          edit: { roles: ["admin", "NVNH"], permissions: [] },
+          delete: { roles: ["admin", "NVNH"] },
+          view: { roles: ["admin", "NVNH"] },
         }}
       />
       <DynamicModal

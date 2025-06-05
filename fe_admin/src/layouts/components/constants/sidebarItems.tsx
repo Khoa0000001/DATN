@@ -27,22 +27,25 @@ export const sidebarItems: SidebarItem[] = [
     key: "goods",
     label: "Hàng hóa",
     icon: <AppstoreOutlined />,
-    roles: ["admin"],
+    // roles: ["admin", "NVS", "NVNH"],
     children: [
       {
         key: "goods-list",
-        label: "Danh sách sản phẩm",
+        label: "Sản phẩm",
         path: "/products",
+        roles: ["admin", "NVS", "NVNH"],
       },
       {
         key: "goods-history",
         label: "Lịch sử bán",
-        path: "/products/history",
+        path: "/orders/order",
+        roles: ["admin", "NVS"],
       },
       {
         key: "categories",
-        label: "Danh sách loại sản phẩm",
+        label: "Loại sản phẩm",
         path: "/categories",
+        roles: ["admin", "NVS", "NVNH"],
       },
     ],
   },
@@ -50,20 +53,21 @@ export const sidebarItems: SidebarItem[] = [
     key: "orders",
     label: "Đơn hàng",
     icon: <AppstoreOutlined />,
+    roles: ["admin", "NVNH"],
     children: [
       {
         key: "order",
-        label: "Danh sách đơn hàng",
+        label: "Đơn hàng",
         path: "/orders/order",
       },
       {
         key: "supplier",
-        label: "Danh sách nhà cung cấp",
+        label: "Nhà cung cấp",
         path: "/orders/supplier",
       },
       {
         key: "import-invoice",
-        label: "Danh sách nhập hàng",
+        label: "Nhập hàng",
         path: "/orders/import-invoice",
       },
     ],
@@ -72,11 +76,11 @@ export const sidebarItems: SidebarItem[] = [
     key: "roles",
     label: "Phân quyền",
     icon: <CrownOutlined />,
-    // roles: ["admin"],
+    roles: ["admin"],
     children: [
       {
         key: "role-list",
-        label: "Danh sách chức vụ",
+        label: "Chức vụ quyền",
         path: "/roles",
       },
       {
@@ -86,7 +90,7 @@ export const sidebarItems: SidebarItem[] = [
       },
       {
         key: "role-user",
-        label: "Danh sách người dùng",
+        label: "Người dùng",
         path: "/roles/user",
       },
     ],
@@ -97,6 +101,6 @@ export const sidebarItems: SidebarItem[] = [
     label: "Cài đặt",
     icon: <SettingOutlined />,
     path: "/settings",
-    roles: ["admin"],
+    // roles: ["admin"],
   },
 ];

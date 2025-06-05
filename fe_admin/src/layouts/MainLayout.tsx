@@ -24,7 +24,10 @@ const MainLayout: React.FC = () => {
           }}
         >
           <Breadcrumb style={{ margin: "16px 0" }} items={breadcrumbItems} />
-          <Content className="p-6 bg-white rounded-lg">
+          <Content
+            className="p-6 bg-white rounded-lg"
+            style={{ height: "100%", overflow: "auto" }}
+          >
             <Outlet />
           </Content>
         </Layout>

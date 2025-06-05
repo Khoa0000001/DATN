@@ -42,6 +42,7 @@ export const chatBotQuestion = createAsyncThunk(
     try {
       const response = await axiosInstance.get(`/chatbot`, {
         params: data,
+        timeout: 0,
       });
       return response.data;
     } catch (err: any) {

@@ -9,19 +9,57 @@ import {
   faBarsStaggered,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchProductByCategoryId } from "@/store/slice/productSlice";
+import {
+  fetchProductByCategoryId,
+  LocProducts,
+} from "@/store/slice/productSlice";
 import { useParams } from "react-router-dom";
 export default function ListProdeucts() {
   const dispath = useAppDispatch();
   const { id } = useParams<{ id: string }>();
   const sortOptions = [
-    "Nổi bật",
-    "Tên từ A-Z",
-    "Tên từ Z-A",
-    "Giá tăng dần",
-    "Giá giảm dần",
+    {
+      value: "",
+      title: "Nổi bật",
+    },
+    {
+      value: "name-asc",
+      title: "Tên từ A-Z",
+    },
+    {
+      value: "name-desc",
+      title: "Tên từ Z-A",
+    },
+    {
+      value: "price-asc",
+      title: "Giá tăng dần",
+    },
+    {
+      value: "price-desc",
+      title: "Giá giảm dần",
+    },
   ];
   const [selectedSort, setSelectedSort] = useState<string>("Nổi bật");
+  const [priceMin, setPriceMin] = useState<number | undefined>();
+  const [priceMax, setPriceMax] = useState<number | undefined>();
+  const headleMinMax = () => {
+    dispath(
+      LocProducts({
+        priceMin,
+        priceMax,
+      })
+    );
+  };
+
+  const headleSlt = (data) => {
+    setSelectedSort(data.title);
+    dispath(
+      LocProducts({
+        sortBy: data.value,
+      })
+    );
+  };
+
   const listProducts = useAppSelector(
     (state) => state.products.productByCategoryId
   );
@@ -58,6 +96,14 @@ export default function ListProdeucts() {
                               className="border border-gray-300 rounded-[4px] p-[8px] w-full"
                               min="0"
                               id="minPrice"
+                              value={priceMin}
+                              onChange={(e) =>
+                                setPriceMin(
+                                  e.target.value === ""
+                                    ? undefined
+                                    : Number(e.target.value)
+                                )
+                              }
                             />
                           </div>
                           <div className="py-[8px] px-[12px]">
@@ -67,11 +113,22 @@ export default function ListProdeucts() {
                               className="border border-gray-300 rounded-[4px] p-[8px] w-full"
                               min="0"
                               id="maxPrice"
+                              value={priceMax}
+                              onChange={(e) =>
+                                setPriceMax(
+                                  e.target.value === ""
+                                    ? undefined
+                                    : Number(e.target.value)
+                                )
+                              }
                             />
                           </div>
                         </div>
                         <div className="py-[8px] px-[12px]">
-                          <button className="bg-blue-500 text-white rounded-[4px] p-[8px] w-full">
+                          <button
+                            onClick={headleMinMax}
+                            className="bg-blue-500 text-white rounded-[4px] p-[8px] w-full"
+                          >
                             Áp dụng
                           </button>
                         </div>
@@ -101,10 +158,10 @@ export default function ListProdeucts() {
                           {sortOptions.map((option, index) => (
                             <button
                               key={index}
-                              onClick={() => setSelectedSort(option)}
+                              onClick={() => headleSlt(option)}
                               className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                             >
-                              {option}
+                              {option.title}
                             </button>
                           ))}
                         </div>

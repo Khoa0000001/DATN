@@ -21,7 +21,12 @@ export default function WrapProduct({
       <div className="py-[12px] pr-[28px] pl-[24px] flex justify-between items-center">
         <div className="flex justify-center items-center">
           <h2 className="text-[22px] font-[600] mb-[8px] hover:text-[var(--primary-color)]">
-            <a href="">{title}</a>
+            <Link
+              to={`/list-products/${link}`}
+              className="text-[#1982F9] items-center font-[500] text-[18px] hover:text-[var(--primary-color)]"
+            >
+              {title}
+            </Link>
           </h2>
           <div className="flex items-center justify-center">
             <div className="bg-gray-400 h-[20px] w-[1px] mx-[26px]"></div>

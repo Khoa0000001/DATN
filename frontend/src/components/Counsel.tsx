@@ -3,7 +3,12 @@ import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Loading from "./Loading";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import {
+  buildPcByChatbot,
+  setValueComponents,
+  resetdataAiProductBuildPC,
+} from "@/store/slice/buildPcSlice";
 
 const validationSchema = Yup.object({
   price: Yup.number().required("Nhập giá tiền chi ra là bắt buộc"),
@@ -11,51 +16,83 @@ const validationSchema = Yup.object({
 });
 
 interface Component {
-  id: string;
-  title: string;
-  value: {
-    name: string;
-    price: number;
+  categoryId: string;
+  productId: string;
+  nameCategory: string;
+  nameProduct: string;
+  price: number;
+  productImages: {
+    id: string;
+    imageUrl: string;
   };
 }
 
 interface FormValues {
-  price: string;
+  price: number;
   purpose: string;
   components: string[];
 }
 
-export default function Counsel() {
-  const [result, setResult] = useState<Component[]>();
+interface CounselProps {
+  onClose: () => void;
+}
+
+export default function Counsel({ onClose }: CounselProps) {
+  const dispatch = useAppDispatch();
   const { computer_components } = useAppSelector((state) => state.buildPc);
+  const { dataAiProductBuildPC, loading } = useAppSelector(
+    (state) => state.buildPc
+  );
+
   const [listComponents] = useState(computer_components);
-  const handleChon = () => {};
+  const handleChon = () => {
+    dispatch(
+      setValueComponents(
+        dataAiProductBuildPC.map((item: Component) => ({
+          id: item.categoryId,
+          newValue: {
+            categoryId: item.categoryId,
+            id: item.productId,
+            nameProduct: item.nameProduct,
+            price: item.price,
+            productImages: item.productImages || [],
+            category: {
+              nameCategory: item.nameCategory,
+            },
+          },
+        }))
+      )
+    );
+    dispatch(resetdataAiProductBuildPC());
+    onClose();
+  };
 
   return (
     <Formik<FormValues>
-      initialValues={{ price: "", purpose: "", components: [] }}
+      initialValues={{ price: 0, purpose: "", components: [] }}
       validationSchema={validationSchema}
-      onSubmit={async (values, { setSubmitting }) => {
+      onSubmit={async (values) => {
         const newValues = {
           ...values,
-          components: listComponents.filter(
-            (component: any) =>
-              !values.components.includes(String(component.id))
-          ),
+          categoryIds: listComponents
+            .filter(
+              (component: any) =>
+                !values.components.includes(String(component.id))
+            )
+            .map((item: any) => ({
+              id: String(item.id),
+              nameCategory: item.nameCategory,
+            })),
         };
-        console.log("Data: ", newValues);
         try {
-          const response: Component[] = [];
-          setResult(response);
+          dispatch(buildPcByChatbot(newValues)).unwrap();
         } catch (error) {
           console.error(error);
-        } finally {
-          setSubmitting(false);
         }
       }}
     >
-      {({ isSubmitting, values, setFieldValue }) =>
-        isSubmitting ? (
+      {({ values, setFieldValue }) =>
+        loading ? (
           <Loading title="Đang xử lý và đưa ra gợi ý ..." />
         ) : (
           <Form className="p-4 flex-1 overflow-auto">
@@ -63,7 +100,7 @@ export default function Counsel() {
               <button
                 type="submit"
                 className="bg-[#e01a1d] hover:opacity-[.8] text-white font-bold py-2 px-4 rounded cursor-pointer"
-                disabled={isSubmitting}
+                disabled={loading}
               >
                 Tư vấn
               </button>
@@ -145,26 +182,43 @@ export default function Counsel() {
             </div>
 
             {/* Kết quả */}
-            {result && result?.length > 0 && (
-              <div className="p-4 bg-gray-900 text-white min-h-screen">
+            {dataAiProductBuildPC.length > 0 && (
+              <div className="p-4 bg-gray-900 text-white min-h-screen rounded-lg">
                 <h1 className="text-3xl font-bold text-center mb-6">
                   Cấu hình PC
                 </h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {result?.map((component) => (
+                  {dataAiProductBuildPC?.map((component: Component) => (
                     <div
-                      key={component.id}
+                      key={component.categoryId}
                       className="p-4 border rounded-lg bg-gray-800 shadow-lg"
                     >
                       <h2 className="text-xl font-semibold text-blue-400">
-                        {component.title}
+                        {component.nameCategory}
                       </h2>
-                      <p className="text-gray-300">
-                        Tên: {component.value.name}
-                      </p>
-                      <p className="text-gray-300">
-                        Giá: {component.value.price.toLocaleString()} VNĐ
-                      </p>
+                      {component.productId ? (
+                        <>
+                          <p className="text-gray-300">
+                            Tên: {component.nameProduct}
+                          </p>
+                          <p className="text-gray-300">
+                            Giá: {component.price.toLocaleString()} VNĐ
+                          </p>
+                          <a
+                            className="mt-2 text-blue-400 underline hover:text-blue-200 text-sm inline-block"
+                            href={`/products/${component.productId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Xem chi tiết
+                          </a>
+                        </>
+                      ) : (
+                        <div className="mt-2 p-3 rounded-lg bg-red-500/10 text-red-400 border border-red-500 flex items-start gap-2">
+                          <span className="text-xl">⚠️</span>
+                          <span>Tạm thời chưa có sản phẩm phù hợp.</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

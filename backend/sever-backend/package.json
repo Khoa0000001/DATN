@@ -40,6 +40,7 @@
     "compute-cosine-similarity": "^1.1.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
+    "gpt-tokenizer": "^2.9.0",
     "langchain": "^0.3.24",
     "module-alias": "^2.2.3",
     "ms": "^2.1.3",

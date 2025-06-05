@@ -4,7 +4,6 @@ import MainLayout from "@/layouts/MainLayout";
 import ResultPage from "@/page/result/ResultPage";
 import LoginPage from "@/page/auth/LoginPage";
 import RegisterPage from "@/page/auth/RegisterPage";
-import Dashboard from "@/page/dashboard/Dashboard";
 import Setting from "@/page/setting/Setting";
 import Role from "@/page/grantPermission/role/RolePage";
 import Pormission from "@/page/grantPermission/permission/PermissionPage";
@@ -14,6 +13,7 @@ import Product from "@/page/goods/product/ProductPage";
 import OrderPage from "@/page/orders/order/OrderPage";
 import SupplierPage from "@/page/orders/supplier/SupplierPage";
 import ImportInvoicePage from "@/page/orders/importInvoices/ImportInvoicePage";
+import { OverviewAnalyticsView } from "@/page/dashboard/view";
 
 const AppRoutes = () =>
   useRoutes([
@@ -37,7 +37,7 @@ const AppRoutes = () =>
           path: "",
           element: (
             <ProtectedRoute>
-              <Dashboard />
+              <OverviewAnalyticsView />
             </ProtectedRoute>
           ),
         },

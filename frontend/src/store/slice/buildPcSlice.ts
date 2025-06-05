@@ -40,10 +40,56 @@ export const fetchProductByCategoryId = createAsyncThunk(
   }
 );
 
+export const buildPcByChatbot = createAsyncThunk(
+  "buildPc/buildPcByChatbot",
+  async (
+    params: { price: number; purpose: string; categoryIds: any[] },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axiosInstance.get(`/chatbot/build-pc`, {
+        params: {
+          budget: params.price,
+          purpose: params.purpose,
+          categoryIds: params.categoryIds.map((item) => item.id).join(","),
+        },
+        timeout: 0,
+      });
+      const dataBuildPC = response.data?.data.answer;
+      const kq = params.categoryIds?.map((item: any) => {
+        const found = dataBuildPC.find((p: any) => p.categoryId === item.id);
+        if (found) {
+          return {
+            categoryId: item.id,
+            productId: found.productId,
+            nameCategory: item.nameCategory,
+            nameProduct: found.nameProduct,
+            price: found.price,
+            productImages: found.productImages || [],
+          };
+        } else {
+          return {
+            categoryId: item.id,
+            productId: null,
+            nameCategory: item.nameCategory,
+            nameProduct: null,
+            price: 0,
+            productImages: [],
+          };
+        }
+      });
+      return kq || [];
+    } catch (err: any) {
+      console.error("Error in buildPcByChatbot:", err);
+      return rejectWithValue(err?.response?.data?.message || "Build PC failed");
+    }
+  }
+);
+
 const initialState: any = {
   computer_components: [],
-  dataBuildPC: {},
   dataProductBuildPC: [],
+  dataAiProductBuildPC: [],
   loading: false,
   error: null,
 };
@@ -63,6 +109,22 @@ const buildPcSlice = createSlice({
       if (component) {
         component.value = newValue;
       }
+    },
+    setValueComponents: (state, action) => {
+      const updates = action.payload as { id: string; newValue: any }[];
+      updates
+        .filter((item) => item.newValue.id)
+        .forEach(({ id, newValue }) => {
+          const component = state.computer_components.find(
+            (component: any) => component.id === id
+          );
+          if (component) {
+            component.value = newValue;
+          }
+        });
+    },
+    resetdataAiProductBuildPC: (state) => {
+      state.dataAiProductBuildPC = [];
     },
     resetAllComponent: (state) => {
       state.computer_components = state.computer_components.map(
@@ -101,10 +163,29 @@ const buildPcSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
+    builder
+      // get ai build pc
+      .addCase(buildPcByChatbot.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(buildPcByChatbot.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dataAiProductBuildPC = action.payload;
+      })
+      .addCase(buildPcByChatbot.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { setComputerComponents, setValueComponent, resetAllComponent } =
-  buildPcSlice.actions;
+export const {
+  setComputerComponents,
+  setValueComponent,
+  resetAllComponent,
+  setValueComponents,
+  resetdataAiProductBuildPC,
+} = buildPcSlice.actions;
 
 export default buildPcSlice.reducer;
